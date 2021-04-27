@@ -1,4 +1,4 @@
-import { ITransport } from './../Interfaces/Transport.interface';
+import { ITransport } from '../Models/Transport/Transport.interface';
 import { Request, Response, NextFunction } from 'express';
 import { Transport, User } from '../Models/index';
 import bcrypt from 'bcrypt';

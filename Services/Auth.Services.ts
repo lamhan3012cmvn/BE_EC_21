@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { IUser, ETypeLogin } from '../Interfaces/User.Interface';
+import { IUser, ETypeLogin } from '../Models/User/User.Interface';
 import { User } from '../Models/index';
 import bcrypt from 'bcrypt';
 
