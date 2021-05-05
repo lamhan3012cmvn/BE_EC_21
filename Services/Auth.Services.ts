@@ -96,7 +96,6 @@ export default class AuthService {
 					oldPassword,
 					user.password
 				);
-        console.log(`LHA:  ===> file: Auth.Services.ts ===> line 98 ===> isPasswordEqual`, isPasswordEqual)
 				if(!isPasswordEqual) return { message: 'Invalid password', success: false };
 				const hashedPassword = await bcrypt.hash(newPassword, 10);
 				user.password = hashedPassword;
