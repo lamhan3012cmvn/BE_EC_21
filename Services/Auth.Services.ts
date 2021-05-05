@@ -51,34 +51,22 @@ export default class AuthService {
 
 	public forgotPassword = async (
 		email: string,
-		password: string
 	): Promise<AuthReturnData> => {
 		try {
-			const resDbUser: IUser | null = await User.findOne({
-				email: email
-			});
-			
-			if (resDbUser) {
-				if(resDbUser.isVerify===false)
+			const resUser=await User.findOne({email})
+			if(resUser)
+			{
+				const randOtp=Math.floor(Math.random()*1000000)
+				resUser.otp=randOtp+""
+				const send:SendMail = new SendMail()
+				send.sendMail(resUser.email,"Verify",randOtp+"")
+				await resUser.save()
 				return {
-					message: 'Please verify your account',
-					success: false,
+					message: 'Successfully find a user to forgotPassword', success: true 
 				}
-				const isPasswordEqual = await bcrypt.compare(
-					password,
-					resDbUser.password
-				);
-				if (isPasswordEqual) {
-					return {
-						message: 'Successfully logged in',
-						success: true,
-						data: resDbUser
-					};
-				} else {
-					return { message: 'Invalid password', success: false };
-				}
-			} else {
-				return { message: 'Invalid user', success: false };
+			}
+			return {
+				message: 'Can not find a user to forgotPassword', success: false 
 			}
 		} catch (e) {
 			console.log(e);

@@ -89,11 +89,23 @@ export default class AuthController extends Controller {
 		}
 	}
 	async handleForgotPassword(
-		req: IValidateRequest,
+		req: IValidateRequest|any,
 		res: Response,
 		next: NextFunction
 	): Promise<void> {
 		//Handle
+		try{
+			const {email}=req.value.body
+			const authService: AuthService = new AuthService();
+			const result = await authService.forgotPassword(email);
+			if (result.success) {
+				super.sendSuccess(res, result.data!, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		}catch(e){
+			super.sendError(res);
+		}
 		super.sendSuccess(res, {}, 'handleForgotPassword');
 	}
 	async handleChangePassword(
@@ -104,7 +116,6 @@ export default class AuthController extends Controller {
 		//Handle
 		try {
 			const { oldPassword,newPassword ,token}: any = req.value.body;
-      console.log(`LHA:  ===> file: Auth.Controller.ts ===> line 107 ===> req.value.body`, req.value.body)
 			const authService: AuthService = new AuthService(token.data);
 			const result = await authService.changePassword(oldPassword,newPassword);
 			if (result.success) {
