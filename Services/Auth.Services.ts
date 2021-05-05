@@ -48,6 +48,43 @@ export default class AuthService {
 			return { message: 'An error occured', success: false };
 		}
 	};
+
+	public forgotPassword = async (
+		email: string,
+		password: string
+	): Promise<AuthReturnData> => {
+		try {
+			const resDbUser: IUser | null = await User.findOne({
+				email: email
+			});
+			
+			if (resDbUser) {
+				if(resDbUser.isVerify===false)
+				return {
+					message: 'Please verify your account',
+					success: false,
+				}
+				const isPasswordEqual = await bcrypt.compare(
+					password,
+					resDbUser.password
+				);
+				if (isPasswordEqual) {
+					return {
+						message: 'Successfully logged in',
+						success: true,
+						data: resDbUser
+					};
+				} else {
+					return { message: 'Invalid password', success: false };
+				}
+			} else {
+				return { message: 'Invalid user', success: false };
+			}
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occured', success: false };
+		}
+	};
 	public register = async (
 		email: string,
 		password: string,
