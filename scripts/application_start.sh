@@ -12,5 +12,4 @@ echo "build docker image..."
 sudo docker build -t lambiengcode/ec-2021:latest .
 
 # Run docker container
-sudo docker rm -f ec-2021
 sudo docker run -d --name ec-2021  -p 3000:3000 --env-file .env lambiengcode/ec-2021
