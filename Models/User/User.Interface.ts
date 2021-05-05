@@ -20,5 +20,9 @@ export interface IUser extends Document {
 	isVerify?: boolean;
 	typeLogin: ETypeLogin;
 	role: ERole;
-	cartId?: string;
+	FK_cart?: string;
+	otp: string;
+	FK_address: string;
+	image: string;
+	FK_merchant: string;
 }

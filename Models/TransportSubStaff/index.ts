@@ -5,5 +5,5 @@ import {ITransportSubStaff} from './TransportSubStaff.Interface'
 import model from "./TransportSubStaff.Mode"
 
 
-const TransportSubStaff = mongoose.model<ITransportSubStaff>('Transport', createSchema(model));
+const TransportSubStaff = mongoose.model<ITransportSubStaff>('TransportSubStaff', createSchema(model));
 export default TransportSubStaff

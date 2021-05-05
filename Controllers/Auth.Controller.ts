@@ -31,19 +31,20 @@ export default class AuthController extends Controller {
 			path: `/${AuthPath.CHANGE_PASSWORD}`,
 			method: Methods.PUT,
 			handler: this.handleChangePassword,
-			localMiddleware: [TokenServices.verify]
+			localMiddleware: [TokenServices.verify,Validate.body(schemaAuth.changePassword)]
 		},
 		{
 			path: `/${AuthPath.VERIFY}`,
-			method: Methods.GET,
+			method: Methods.POST,
 			handler: this.handleVerifyAccount,
-			localMiddleware: [TokenServices.verify]
+			localMiddleware: [Validate.body(schemaAuth.verifyOtp)]
 		}
 	];
 	constructor() {
 		super();
 	}
 
+	
 	async handleLogin(
 		req: IValidateRequest | any,
 		res: Response,
@@ -102,9 +103,10 @@ export default class AuthController extends Controller {
 	): Promise<void> {
 		//Handle
 		try {
-			const { email, password, newPassword }: any = req.value.body;
-			const authService: AuthService = new AuthService(req.value.param);
-			const result = await authService.changePassword(newPassword);
+			const { oldPassword,newPassword ,token}: any = req.value.body;
+      console.log(`LHA:  ===> file: Auth.Controller.ts ===> line 107 ===> req.value.body`, req.value.body)
+			const authService: AuthService = new AuthService(token.data);
+			const result = await authService.changePassword(oldPassword,newPassword);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {
@@ -115,11 +117,22 @@ export default class AuthController extends Controller {
 		}
 	}
 	async handleVerifyAccount(
-		req: IValidateRequest,
+		req: IValidateRequest|any,
 		res: Response,
 		next: NextFunction
 	): Promise<void> {
 		//Handle
-		super.sendSuccess(res, {}, 'handleVerifyAccount');
+		try {
+			const { email, otp }: any = req.value.body;
+			const authService: AuthService = new AuthService(req.value.param);
+			const result = await authService.verify(email,otp);
+			if (result.success) {
+				super.sendSuccess(res, result.data!, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
 	}
 }

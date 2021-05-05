@@ -11,6 +11,14 @@ const validate = {
 		password: joi.string().min(6).max(24).required(),
 		phone: joi.string().required(),
 		fullName: joi.string().required()
+	}),
+	verifyOtp:joi.object().keys({
+		email: joi.string().email().required(),
+		otp:joi.string().min(6).max(6).required()
+	}),
+	changePassword:joi.object().keys({
+		oldPassword:joi.string().min(6).max(24).required(),
+		newPassword:joi.string().min(6).max(24).required()
 	})
 };
 export default validate;
