@@ -25,7 +25,7 @@ export default class AuthController extends Controller {
 			path: `/${AuthPath.FORGOT_PASSWORD}`,
 			method: Methods.PUT,
 			handler: this.handleForgotPassword,
-			localMiddleware: [TokenServices.verify]
+			localMiddleware: []
 		},
 		{
 			path: `/${AuthPath.CHANGE_PASSWORD}`,

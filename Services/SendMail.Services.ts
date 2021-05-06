@@ -7,7 +7,9 @@ export class SendMail {
 	constructor() {
     const mailHost = 'smtp.gmail.com';
     this._ADMIN_EMAIL= process.env.ADMIN_EMAIL!;
+    console.log(`LHA:  ===> file: SendMail.Services.ts ===> line 10 ===> _ADMIN_EMAIL`, _ADMIN_EMAIL)
     this._ADMIN_EMAIL_PASSWORD= process.env.ADMIN_EMAIL_PASSWORD!;
+    console.log(`LHA:  ===> file: SendMail.Services.ts ===> line 12 ===> _ADMIN_EMAIL_PASSWORD`, _ADMIN_EMAIL_PASSWORD)
 
 		this._transporter = nodemailer.createTransport({
 			host: mailHost,
