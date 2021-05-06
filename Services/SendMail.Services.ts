@@ -13,8 +13,8 @@ export class SendMail {
 
 		this._transporter = nodemailer.createTransport({
 			host: mailHost,
-			port: 465, 
-			secure: true,
+			port: 587, 
+			secure: false,
 			auth: {
 				user: this._ADMIN_EMAIL,
 				pass: this._ADMIN_EMAIL_PASSWORD
