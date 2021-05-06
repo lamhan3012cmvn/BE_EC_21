@@ -23,9 +23,16 @@ export default class AuthService {
 			
 			if (resDbUser) {
 				if(resDbUser.isVerify===false)
-				return {
-					message: 'Please verify your account',
-					success: false,
+				{
+					const randOtp=Math.floor(Math.random()*1000000)
+					resDbUser.otp=randOtp+""
+					const send:SendMail = new SendMail()
+					send.sendMail(resDbUser.email,"Verify",randOtp+"")
+					await resDbUser.save()
+					return {
+						message: 'Please verify your account',
+						success: false,
+					}
 				}
 				const isPasswordEqual = await bcrypt.compare(
 					password,
