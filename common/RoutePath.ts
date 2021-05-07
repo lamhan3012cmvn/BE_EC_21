@@ -5,3 +5,10 @@ export const AuthPath = {
 	CHANGE_PASSWORD: 'ChangePassword',
 	VERIFY: 'Verify'
 };
+
+
+export const TransportPath = {
+	CREATE: 'create',
+	GET_INFO:'getInfo',
+	UPDATE:"update"
+};

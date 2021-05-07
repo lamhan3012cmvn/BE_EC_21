@@ -56,9 +56,10 @@ export default abstract class Controller {
 	protected sendSuccess(
 		res: Response,
 		data: object,
-		message?: string
+		message?: string,
+		status:number=200,
 	): Response {
-		return res.status(200).json({
+		return res.status(status).json({
 			message: message || 'success',
 			data: data
 		});

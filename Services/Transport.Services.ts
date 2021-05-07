@@ -2,18 +2,13 @@ import { ITransport } from '../Models/Transport/Transport.interface';
 import { Request, Response, NextFunction } from 'express';
 import { Transport, User } from '../Models/index';
 import bcrypt from 'bcrypt';
+import { ReturnServices } from '../Interfaces/Services';
 
-interface ReturnData {
-	message: string;
-	success: boolean;
-	data?: {};
-}
 export default class TransportServices {
 	constructor(
-    public readonly _id?:string
 	) {}
 
-  public createTransport = async (data:any): Promise<ReturnData> => {
+  public createTransport = async (data:any): Promise<ReturnServices> => {
    try{
       const newTransport= new Transport(data)
       await newTransport.save()
@@ -28,10 +23,9 @@ export default class TransportServices {
 			return { message: 'An error occured', success: false };
     }
   }
-  public updateTransport = async (newData:any): Promise<ReturnData> => {
+  public updateTransport = async (id:string,newData:any): Promise<ReturnServices> => {
     try{
-      const transport = await Transport.findById(this._id!);
-      console.log(`LHA:  ===> file: Transport.Services.ts ===> line 33 ===> transport`, transport)
+      const transport = await Transport.findById(IDBRequest);
       if(transport)
       {
         transport.update(newData)
@@ -51,10 +45,9 @@ export default class TransportServices {
 			return { message: 'An error occured', success: false };
     }
   }
-  public deleteTransport = async (status:string="IS_ACTIVE"): Promise<ReturnData> => {
+  public deleteTransport = async (id:string,status:string="IS_ACTIVE"): Promise<ReturnServices> => {
     try{
-      const transport = await Transport.findById(this._id!);
-      console.log(`LHA:  ===> file: Transport.Services.ts ===> line 33 ===> transport`, transport)
+      const transport = await Transport.findById(id);
       if(transport)
       {
         transport.update({status})
@@ -74,9 +67,9 @@ export default class TransportServices {
 			return { message: 'An error occured', success: false };
     }
   }
-  public readTransport = async (): Promise<ReturnData> => {
+  public getTransport = async (id:string): Promise<ReturnServices> => {
     try{
-      const transport = await Transport.findById(this._id!);
+      const transport = await Transport.findById(id);
       if(transport)
       {
         return {
