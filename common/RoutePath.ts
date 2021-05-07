@@ -8,7 +8,7 @@ export const AuthPath = {
 
 
 export const TransportPath = {
-	CREATE: 'create',
+	CREATE: 'Create',
 	GET_INFO:'getInfo',
 	UPDATE:"update"
 };

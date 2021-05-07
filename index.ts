@@ -10,8 +10,9 @@ import Server from "./common/Server";
 
 import Controller from "./Controllers/Controller";
 import AuthController from "./Controllers/Auth.Controller";
+import TransportController from "./Controllers/Transport.Controller";
 
-const controllers: Array<Controller> = [new AuthController()];
+const controllers: Array<Controller> = [new AuthController(),new TransportController()];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
   urlencoded({ extended: false }),

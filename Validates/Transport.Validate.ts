@@ -1,10 +1,13 @@
 import joi from '@hapi/joi';
 
 const validate = {
-	create: joi.object().keys({
-		email: joi.string().email().required(),
-		password: joi.string().min(6).max(24).required()
-	}),
-	
+	createTransport: joi.object().keys({
+		name: joi.string().required(),
+		description: joi.string().required(),
+		avatar: joi.string().required(),
+		imageVerify: joi.string().required(),
+		phone: joi.string().min(10).max(15).required().regex(/^\d+$/),
+		headquarters: joi.string().required()
+	})
 };
 export default validate;

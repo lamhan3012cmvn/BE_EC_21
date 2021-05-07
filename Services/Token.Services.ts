@@ -11,7 +11,7 @@ export default class Token {
 	): void {
 		const header = req.headers.authorization;
 		if (!header) {
-			res.json({
+			res.status(400).json({
 				data: {
 					tokenVerificationData: { access: false, message: 'No token provided' }
 				}
@@ -19,10 +19,9 @@ export default class Token {
 			return;
 		}
 		const token = header.split(' ')[1];
-		console.log('tokenService token: ' + token);
 		jwt.verify(token, ACCESS_TOKEN_SECRET!, (err:any, decodedFromToken:any) => {
 			if (err) {
-				res.json({
+				res.status(400).json({
 					data: {
 						tokenVerificationData: {
 							access: false,
