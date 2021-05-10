@@ -9,6 +9,13 @@ export const AuthPath = {
 
 export const TransportPath = {
 	CREATE: 'Create',
-	GET_INFO:'getInfo',
-	UPDATE:"update"
+	GET_INFO:'GetInfo',
+	UPDATE:"Update"
 };
+
+
+export const TransportSubPath={
+	CREATE: 'Create',
+	GET_INFO:'GetInfo',
+	UPDATE:"Update"
+}
