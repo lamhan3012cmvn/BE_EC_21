@@ -46,3 +46,9 @@ export const defaultTypeSupport: Array<ITypeSupport> = [
 		available: 'INACTIVE'
 	}
 ];
+
+export const defaultTypeStatus = {
+	active: 'ACTIVE',
+	inActive: 'INACTIVE',
+	deleted: 'DELETED',
+}
