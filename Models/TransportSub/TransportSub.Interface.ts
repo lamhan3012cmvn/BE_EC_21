@@ -1,10 +1,14 @@
 import { Document } from 'mongoose';
-export interface ITransportSub extends Document {
-  name:string,
+
+export interface ITransportSub{
+	name:string,
 	city:string,
 	address:string,
 	phoneNumber:string,
 	mail:string,
 	FK_Transport:string,
-	FK_TransportCity:string,
+	FK_TransportCity?:string,
+}
+export interface ITransportSubDocument extends Document,ITransportSub {
+
 }
