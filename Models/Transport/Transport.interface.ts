@@ -12,7 +12,7 @@ interface IPaymentMethod {
 }
 export interface IPayment {
 	paymentMethod: Array<IPaymentMethod>;
-	defaultGateway: IPaymentMethod;
+	defaultGateway: string;
 }
 
 export interface IPrice{
