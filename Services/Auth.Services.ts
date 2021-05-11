@@ -52,7 +52,7 @@ export default class AuthService {
 			}
 		} catch (e) {
 			console.log(e);
-			return { message: 'An error occured', success: false };
+			return { message: 'An error occurred', success: false };
 		}
 	};
 
@@ -77,7 +77,7 @@ export default class AuthService {
 			}
 		} catch (e) {
 			console.log(e);
-			return { message: 'An error occured', success: false };
+			return { message: 'An error occurred', success: false };
 		}
 	};
 	public register = async (
@@ -114,7 +114,7 @@ export default class AuthService {
 			}
 		} catch (e) {
 			console.log(e);
-			return { message: 'An error occured', success: false };
+			return { message: 'An error occurred', success: false };
 		}
 	};
 	public changePassword = async (oldPassword:string,newPassword: string): Promise<AuthReturnData> => {
@@ -140,7 +140,7 @@ export default class AuthService {
 			}
 		} catch (e) {
 			console.log(e);
-			return { message: 'An error occured', success: false };
+			return { message: 'An error occurred', success: false };
 		}
 	};
 	public verify = async (email:string, otp:string): Promise<AuthReturnData> =>{
@@ -167,7 +167,7 @@ export default class AuthService {
 			}
 		} catch (e) {
 			console.log(e);
-			return { message: 'An error occured Verify', success: false };
+			return { message: 'An error occurred Verify', success: false };
 		}
 	}
 }

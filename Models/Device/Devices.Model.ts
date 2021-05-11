@@ -1,4 +1,4 @@
-import { defaultModel } from "../../common/constants";
+import { defaultModel, defaultTypeStatus } from "../../common/constants";
 
 export default {
   FK_createUser: { ...defaultModel.stringR, match: /^[a-fA-F0-9]{24}$/ },
@@ -6,5 +6,5 @@ export default {
   deviceUUid: defaultModel.stringR,
   deviceModel: defaultModel.stringR,
   appVersion: defaultModel.stringR,
-  status: { ...defaultModel.string, default: "ACTIVE" },
+  status: { ...defaultModel.string, default: defaultTypeStatus.inActive },
 };

@@ -12,7 +12,8 @@
 		"dev": "nodemon dist/index.js",
 		"pm2": "yarn build && yarn pm2:start",
 		"pm2:start": "NODE_ENV=production pm2 start ecosystem.config.js --watch",
-		"dev:test": "nodemon index.ts"
+		"dev:test": "nodemon index.ts",
+		"start:dev": "nodemon index.ts"
 	},
 	"devDependencies": {
 		"nodemon": "^2.0.7",

@@ -54,7 +54,7 @@ export default class TransportServices {
       };
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
   public updateTransport = async (
@@ -81,7 +81,7 @@ export default class TransportServices {
       };
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
   public deleteTransport = async (
@@ -106,7 +106,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
   public getTransport = async (id: string): Promise<ReturnServices> => {
@@ -126,7 +126,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 
@@ -189,7 +189,7 @@ export default class TransportServices {
       };
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 
@@ -224,7 +224,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 
@@ -250,7 +250,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
   public getTransportSub = async (id: string): Promise<ReturnServices> => {
@@ -270,7 +270,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 
@@ -309,7 +309,7 @@ export default class TransportServices {
       };
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
   public updateTransportSubCity = async (
@@ -335,7 +335,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
   public deleteTransportSubCity = async (
@@ -360,7 +360,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
   public getTransportSubCity = async (id: string): Promise<ReturnServices> => {
@@ -380,7 +380,7 @@ export default class TransportServices {
       }
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 }

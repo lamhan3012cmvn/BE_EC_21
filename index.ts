@@ -12,8 +12,9 @@ import Controller from "./Controllers/Controller";
 import AuthController from "./Controllers/Auth.Controller";
 import TransportController from "./Controllers/Transport.Controller";
 import DeviceController from "./Controllers/Device.Controller";
+import MerchantController from "./Controllers/Merchant.Controller";
 
-const controllers: Array<Controller> = [new AuthController(),new TransportController(), new DeviceController()];
+const controllers: Array<Controller> = [new AuthController(),new TransportController(), new DeviceController(), new MerchantController()];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
   urlencoded({ extended: false }),

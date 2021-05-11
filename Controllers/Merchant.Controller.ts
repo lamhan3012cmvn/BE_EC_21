@@ -1,27 +1,27 @@
-import { DevicePath } from "../common/RoutePath";
+import { MerchantPath } from "../common/RoutePath";
 import { Response, NextFunction } from "express";
 import Controller, { Methods } from "./Controller";
 import TokenServices from "../Services/Token.Services";
 import Validate from "../Validates/Validate";
-import schemaDevice from "../Validates/Device.Validate";
+import schemaMerchant from "../Validates/Merchant.Validate";
 import { IValidateRequest } from "../common/DefineRequest";
-import DeviceServices from "../Services/Device.Services";
-export default class DeviceController extends Controller {
-  path = "/Device";
+import MerchantServices from "../Services/Merchant.Service";
+export default class MerchantController extends Controller {
+  path = "/Merchant";
   routes = [
     {
-      path: `/${DevicePath.CREATE}`,
+      path: `/${MerchantPath.CREATE}`,
       method: Methods.POST,
       handler: this.handleCreate,
       localMiddleware: [
         TokenServices.verify,
-        Validate.body(schemaDevice.createDevice),
+        Validate.body(schemaMerchant.createMerchant),
       ],
     },
     {
-      path: `/${DevicePath.DELETE}`,
-      method: Methods.DELETE,
-      handler: this.handleDelete,
+      path: `/${MerchantPath.UPDATE}`,
+      method: Methods.PUT,
+      handler: this.handleUpdate,
       localMiddleware: [TokenServices.verify],
     },
   ];
@@ -38,8 +38,8 @@ export default class DeviceController extends Controller {
       const idUser = req.value.body.token.data;
       let device = req.value.body;
       device.FK_createUser = idUser;
-      const deviceServices: DeviceServices = new DeviceServices();
-      const result = await deviceServices.createDevice(device);
+      const merchantServices: MerchantServices = new MerchantServices();
+      const result = await merchantServices.createMerchant(idUser, device);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
@@ -50,7 +50,7 @@ export default class DeviceController extends Controller {
     }
   }
 
-  async handleDelete(
+  async handleUpdate(
     req: IValidateRequest | any,
     res: Response,
     next: NextFunction
@@ -59,8 +59,8 @@ export default class DeviceController extends Controller {
       const idUser = req.value.body.token.data;
       let device = req.query;
       device.FK_createUser = idUser;
-      const deviceServices: DeviceServices = new DeviceServices();
-      const result = await deviceServices.deleteDevice(device);
+      const merchantServices: MerchantServices = new MerchantServices();
+      const result = await merchantServices.updateMerchant(idUser, device);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {

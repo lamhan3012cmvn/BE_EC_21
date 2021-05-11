@@ -1,4 +1,4 @@
-import { defaultModel } from '../../common/constants';
+import { defaultModel, defaultTypeStatus } from '../../common/constants';
 
 export default {
 	name:defaultModel.stringR,
@@ -7,5 +7,5 @@ export default {
    address:defaultModel.stringR,
    FK_category:defaultModel.stringRef,
    phone:defaultModel.stringPhone,
-   status:{...defaultModel.string,default:''}
+   status:{...defaultModel.string,default: defaultTypeStatus.inActive}
 };
