@@ -1,4 +1,3 @@
-import Address from './Address';
 
 import Cart from './Cart';
 import Category from './Category';
@@ -23,7 +22,6 @@ import User from './User';
 
 export {
 	User,
-	Address,
 	Cart,
 	Category,
 	Coupon,

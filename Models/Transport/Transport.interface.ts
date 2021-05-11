@@ -12,7 +12,7 @@ interface IPaymentMethod {
 }
 export interface IPayment {
 	paymentMethod: Array<IPaymentMethod>;
-	defaultGateway: string;
+	defaultGateway: IPaymentMethod;
 }
 
 export interface IPrice{
@@ -30,5 +30,6 @@ export interface ITransport {
 	headquarters: string;
 	payment?: IPayment;
 	FK_createUser: string;
+	FK_Staffs:Array<string>
 }
 export interface ITransportDocument extends Document, ITransport {}

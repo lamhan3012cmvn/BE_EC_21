@@ -9,51 +9,56 @@ export default class MerchantService {
     body: any
   ): Promise<ReturnServices> => {
     try {
-      const user = await User.findById(idUser);
-      if (user!.FK_merchant == "") {
-        const merchant = await Merchant.create(body);
-        if (!merchant) {
-          return {
-            message: "Create merchant failure",
-            success: false,
-            status: 300,
-          };
-        } else {
-          user!.FK_merchant = merchant._id;
-          await user!.save();
-          return {
-            message: "Successfully create merchant",
-            success: true,
-            data: merchant,
-          };
-        }
-      } else {
-        const oldMerchant = await Merchant.findById(user!.FK_merchant);
-        if (oldMerchant!.status == defaultTypeStatus.deleted) {
-          const newMerchant = await Merchant.create(body);
-          if (!newMerchant) {
-            return {
-              message: "Create merchant failure",
+      // const user = await User.findById(idUser);
+      // if (!user!.FK_merchant == "") {
+      //   const merchant = await Merchant.create(body);
+      //   if (!merchant) {
+      //     return {
+      //       message: "Create merchant failure",
+      //       success: false,
+      //       status: 300,
+      //     };
+      //   } else {
+      //     user!.FK_merchant = merchant._id;
+      //     await user!.save();
+      //     return {
+      //       message: "Successfully create merchant",
+      //       success: true,
+      //       data: merchant,
+      //     };
+      //   }
+      // } else {
+      //   const oldMerchant = await Merchant.findById(user!.FK_merchant);
+      //   if (oldMerchant!.status == defaultTypeStatus.deleted) {
+      //     const newMerchant = await Merchant.create(body);
+      //     if (!newMerchant) {
+      //       return {
+      //         message: "Create merchant failure",
+      //         success: false,
+      //         status: 300,
+      //       };
+      //     } else {
+      //       user!.FK_merchant = newMerchant._id;
+      //       await user!.save();
+      //       return {
+      //         message: "Successfully create merchant",
+      //         success: true,
+      //         data: newMerchant,
+      //       };
+      //     }
+      //   } else {
+      //     return {
+      //       message: "Your merchant already",
+      //       success: false,
+      //       status: 400,
+      //     };
+      //   }
+      // }
+      return {
+              message: "Your merchant already",
               success: false,
-              status: 300,
+              status: 400,
             };
-          } else {
-            user!.FK_merchant = newMerchant._id;
-            await user!.save();
-            return {
-              message: "Successfully create merchant",
-              success: true,
-              data: newMerchant,
-            };
-          }
-        } else {
-          return {
-            message: "Your merchant already",
-            success: false,
-            status: 400,
-          };
-        }
-      }
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };

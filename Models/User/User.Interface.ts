@@ -15,7 +15,7 @@ export interface IUser{
 	typeLogin: string;
 	role: string;
 	otp: string;
-	address: IAddress;
+	address?: IAddress;
 	image: string;
 }
 export interface IUserDocument extends Document,IUser {

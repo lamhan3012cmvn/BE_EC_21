@@ -1,14 +1,14 @@
 import { SendMail } from './SendMail.Services';
 import jwtServices from './Token.Services'
-import { IUser } from '../Models/User/User.Interface';
 import { User } from '../Models/index';
 import bcrypt from 'bcrypt';
 import {getRandString} from '../common/helper'
 interface AuthReturnData {
 	message: string;
 	success: boolean;
-	data?: IUser;
+	data?: any;
 }
+
 export default class AuthService {
 	constructor(public readonly _id?: string) {}
 	public loginServices = async (
@@ -16,7 +16,7 @@ export default class AuthService {
 		password: string
 	): Promise<AuthReturnData> => {
 		try {
-			const resDbUser: IUser | null = await User.findOne({
+			const resDbUser= await User.findOne({
 				email: email
 			});
 			
@@ -24,9 +24,9 @@ export default class AuthService {
 				if(resDbUser.isVerify===false)
 				{
 					const randOtp=getRandString(100000,999999)
-					resDbUser.otp=randOtp+""
+					resDbUser.otp=randOtp
 					const send:SendMail = new SendMail()
-					send.sendMail(resDbUser.email,"Verify",randOtp+"")
+					send.sendMail(resDbUser.email,"Verify",randOtp)
 					await resDbUser.save()
 					return {
 						message: 'Please verify your account',
@@ -92,6 +92,7 @@ export default class AuthService {
 			if (!userFromDb) {
 				const hashedPassword = await bcrypt.hash(password, 10);
 				const rdVerify=getRandString(100000,999999)
+
 				const createdUser = new User({
 					email: email,
 					password: hashedPassword,
@@ -99,7 +100,8 @@ export default class AuthService {
 					fullName: fullName,
 					otp:rdVerify
 				});
-        console.log(`LHA:  ===> file: Auth.Services.ts ===> line 102 ===> createdUser`, createdUser)
+
+
 				const send:SendMail = new SendMail()
 				send.sendMail(email,"Verify",rdVerify)
 				await createdUser.save();

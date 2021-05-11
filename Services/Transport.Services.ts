@@ -36,22 +36,44 @@ export default class TransportServices {
         description,
         avatar,
         imageVerify,
-        typeSupport: typeSupport,
         phone,
         headquarters,
+        typeSupport: typeSupport,
         FK_createUser: user._id,
+        FK_Staffs:[]
       };
+
       const newTransport = new Transport(obj);
       await newTransport.save();
 
-      // user.FK_transport=newTransport._id
       user.role=defaultRoleAccount.TRANSPORT
       await user.save()
+
+
+      const objTransportSubHCM: ITransportSub = {
+        name:`${newTransport.name}_${"HCM"}`,
+        city:"HCM",
+        FK_Transport: newTransport._id,
+      };
+
+
+      const objTransportSubHN: ITransportSub = {
+        name:`${newTransport.name}_${"HN"}`,
+        city:"HN",
+        FK_Transport: newTransport._id,
+      };
+
+      const newTransportSubHCM = new TransportSub(objTransportSubHCM);
+      await newTransportSubHCM.save();
+
+      
+      const newTransportSubHN = new TransportSub(objTransportSubHN);
+      await newTransportSubHN.save();
 
       return {
         message: "Successfully created transport",
         success: true,
-        data: newTransport,
+        data: {},
       };
     } catch (e) {
       console.log(e);

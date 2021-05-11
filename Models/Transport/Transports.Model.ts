@@ -24,5 +24,6 @@ export default {
 		}],
 		defaultGateway: {...defaultModel.stringRef,required:false}
 	},
-	FK_createUser:defaultModel.stringRef
+	FK_createUser:{...defaultModel.stringRef, unique: true },
+	FK_Staffs:[defaultModel.stringRef]
 };
