@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
-import { ICart } from './Cart.Interface';
+import { ICartDocument } from './Cart.Interface';
 import  createSchema  from '../Base.Model';
 import CartSchema from './Cart.Model';
 
-const Cart = mongoose.model<ICart>('Cart', createSchema(CartSchema));
+const Cart = mongoose.model<ICartDocument>('Cart', createSchema(CartSchema));
 export default Cart
