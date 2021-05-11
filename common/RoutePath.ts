@@ -19,3 +19,9 @@ export const TransportSubPath={
 	GET_INFO:'GetInfo',
 	UPDATE:"Update"
 }
+
+export const TransportSubCityPath={
+	CREATE: 'Create',
+	GET_INFO:'GetInfo',
+	UPDATE:"Update"
+}
