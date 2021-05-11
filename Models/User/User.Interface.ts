@@ -11,5 +11,4 @@ export interface IUser extends Document {
 	otp: string;
 	FK_address: string;
 	image: string;
-	FK_transport: string;
 }

@@ -13,5 +13,4 @@ export default {
 
 	FK_address: defaultModel.string,
 	FK_cart: defaultModel.string,
-	FK_transport: defaultModel.string
 };
