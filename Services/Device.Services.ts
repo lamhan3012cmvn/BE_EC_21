@@ -38,7 +38,7 @@ export default class DeviceService {
       return { message: "Successfully create device", success: true };
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 
@@ -55,16 +55,16 @@ export default class DeviceService {
       return { message: "Successfully delete device", success: true };
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 
   public functionInit = async (): Promise<ReturnServices> => {
     try {
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     } catch (e) {
       console.log(e);
-      return { message: "An error occured", success: false };
+      return { message: "An error occurred", success: false };
     }
   };
 }
