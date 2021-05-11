@@ -10,6 +10,24 @@ const validate = {
 		headquarters: joi.string().required()
 	}),
 	updateTransport: joi.object().keys({
+		payment: joi.object().keys({
+			paymentMethod: joi.array().items({
+				title: joi.string().required(),
+				token: joi.string().required(),
+				status: joi.string().required()
+			}),
+			defaultGateway: joi.string().regex(/^[A-Fa-f0-9]{24}$/)
+		}),
+		status: joi.string(),
+		typeSupport: joi.array().items({
+			id:joi.string().required().regex(/^[A-Fa-f0-9]{24}$/),
+			price: joi.object().keys({
+					km: joi.string(),
+					kg: joi.string()
+			}),
+			available: joi.string()
+		}).min(0).max(3),
+	
 		name: joi.string(),
 		description: joi.string(),
 		avatar: joi.string(),
