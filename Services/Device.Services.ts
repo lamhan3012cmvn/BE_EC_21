@@ -52,7 +52,7 @@ export default class DeviceService {
         },
         { status: defaultTypeStatus.deleted }
       );
-      return { message: "Successfully delete device", success: true };
+      return { message: "An error occured", success: false };
     } catch (e) {
       console.log(e);
       return { message: "An error occured", success: false };

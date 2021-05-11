@@ -59,15 +59,15 @@ export default class DeviceController extends Controller {
       const idUser = req.value.body.token.data;
       let device = req.query;
       device.FK_createUser = idUser;
-      const transportServices: DeviceServices = new DeviceServices();
-      const result = await transportServices.deleteDevice(device);
+      const deviceServices: DeviceServices = new DeviceServices();
+      const result = await deviceServices.deleteDevice(device);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
-        super.sendError(res, result.message);
+        super.sendError(res, req, result.message);
       }
     } catch {
-      super.sendError(res);
+      super.sendError(res, req);
     }
   }
 }
