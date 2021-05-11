@@ -10,6 +10,5 @@ export default {
 	role: { ...defaultModel.string, default: defaultRoleAccount.USER },
 	otp: defaultModel.string,
 	image: defaultModel.string,
-
-	FK_address: defaultModel.string,
+	address: defaultModel.object,
 };

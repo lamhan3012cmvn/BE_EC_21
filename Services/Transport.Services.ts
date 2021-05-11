@@ -44,7 +44,7 @@ export default class TransportServices {
       const newTransport = new Transport(obj);
       await newTransport.save();
 
-      user.FK_transport=newTransport._id
+      // user.FK_transport=newTransport._id
       user.role=defaultRoleAccount.TRANSPORT
       await user.save()
 
@@ -186,7 +186,7 @@ export default class TransportServices {
       const newTransportSub = new TransportSub(obj);
       await newTransportSub.save();
 
-      _transport.current.user.FK_transport=newTransportSub._id
+      // _transport.current.user.FK_transport=newTransportSub._id
       await _transport.current.user.save()
 
       return {

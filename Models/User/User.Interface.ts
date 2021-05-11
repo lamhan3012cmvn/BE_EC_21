@@ -1,5 +1,12 @@
 import { Document } from 'mongoose';
-export interface IUser extends Document {
+
+export interface IAddress {
+	district:string,
+  ward: string,
+  coordinates:string,
+  phoneNumber:string,
+}
+export interface IUser{
 	email: string;
 	fullName?: string;
 	phone: string;
@@ -7,8 +14,10 @@ export interface IUser extends Document {
 	isVerify?: boolean;
 	typeLogin: string;
 	role: string;
-	FK_cart?: string;
 	otp: string;
-	FK_address: string;
+	address: IAddress;
 	image: string;
+}
+export interface IUserDocument extends Document,IUser {
+	
 }
