@@ -20,7 +20,7 @@ export default class TransportController extends Controller {
 			path: `/${TransportPath.UPDATE}`,
 			method: Methods.POST,
 			handler: this.handleUpdate,
-			localMiddleware: []
+			localMiddleware: [TokenServices.verify,Validate.body(schemaTransport.updateTransport)]
 		},
 		{
 			path: `/${TransportPath.GET_INFO}`,
@@ -75,9 +75,9 @@ export default class TransportController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			const { id, data } = req.value.body;
+			const  {token,...data} = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.updateTransport(id, data);
+			const result = await transportServices.updateTransport(token.data, data);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {

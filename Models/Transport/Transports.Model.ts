@@ -22,14 +22,7 @@ export default {
 			token: defaultModel.stringR,
 			status:{...defaultModel.string,default:'ACTIVE'}
 		}],
-		defaultGateway:
-		{
-			type:{
-				title: defaultModel.stringR,
-				token: defaultModel.stringR,
-				status:{...defaultModel.string,default:'ACTIVE'}
-			}
-		}
+		defaultGateway: {...defaultModel.stringRef,required:false}
 	},
 	FK_createUser:defaultModel.stringRef
 };

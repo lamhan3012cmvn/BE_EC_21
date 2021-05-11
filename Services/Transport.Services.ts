@@ -56,21 +56,28 @@ export default class TransportServices {
 		newData: any
 	): Promise<ReturnServices> => {
 		try {
-			const transport = await Transport.findById(IDBRequest);
-			if (transport) {
-				transport.update(newData);
-				await transport.save();
-				return {
-					message: 'Successful updated transport',
-					success: true,
-					data: transport
-				};
-			} else {
-				return {
-					message: 'transport  already does not exists',
-					success: false
-				};
-			}
+			const transport = await Transport.findOneAndUpdate({FK_createUser:id},newData);
+      console.log(`LHA:  ===> file: Transport.Services.ts ===> line 60 ===> transport`, transport)
+			return {
+				message: 'Successful updated transport',
+				success: true,
+				data: transport
+			};
+			// if (transport) {
+			// 	await transport.overwrite(newData);
+      //   console.log(`LHA:  ===> file: Transport.Services.ts ===> line 64 ===> transport`, transport)
+			// 	await transport.save();
+			// 	return {
+			// 		message: 'Successful updated transport',
+			// 		success: true,
+			// 		data: transport
+			// 	};
+			// } else {
+			// 	return {
+			// 		message: 'transport  already does not exists',
+			// 		success: false
+			// 	};
+			// }
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occured', success: false };
