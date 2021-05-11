@@ -175,6 +175,7 @@ export default class TransportServices {
         phoneNumber,
         mail,
         FK_Transport: _transport.current._id,
+        FK_CreateUser:idUser
       };
 
       const newTransportSub = new TransportSub(obj);
