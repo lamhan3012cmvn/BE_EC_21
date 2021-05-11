@@ -5,7 +5,7 @@ import TokenServices from "../Services/Token.Services";
 import Validate from "../Validates/Validate";
 import schemaMerchant from "../Validates/Merchant.Validate";
 import { IValidateRequest } from "../common/DefineRequest";
-import MerchantServices from "../Services/Merchant.Service";
+import MerchantServices from "../Services/Merchant.Services";
 export default class MerchantController extends Controller {
   path = "/Merchant";
   routes = [

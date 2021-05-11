@@ -52,3 +52,12 @@ export const defaultTypeStatus = {
   inActive: "INACTIVE",
   deleted: "DELETED",
 };
+
+export const defaultRoleAccount={
+  USER:"USER",
+  ADMIN:"ADMIN",
+  TRANSPORT:"TRANSPORT",
+  TRANSPORT_SUB:"TRANSPORT_SUB",
+  TRANSPORT_SUB_CITY:"TRANSPORT_SUB_CITY",
+  MERCHANT:"MERCHANT"
+}
