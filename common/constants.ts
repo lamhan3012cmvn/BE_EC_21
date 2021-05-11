@@ -61,3 +61,9 @@ export const defaultRoleAccount={
   TRANSPORT_SUB_CITY:"TRANSPORT_SUB_CITY",
   MERCHANT:"MERCHANT"
 }
+
+export const defaultTypeLogin={
+  EMAIL : 'EMAIL',
+	GOOGLE : 'GOOGLE',
+	FACEBOOK : 'FACEBOOK'
+}

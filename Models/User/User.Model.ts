@@ -1,4 +1,4 @@
-import { defaultModel } from './../../common/constants';
+import { defaultModel,defaultRoleAccount, defaultTypeLogin } from './../../common/constants';
 
 export default {
 	email: defaultModel.stringUnique,
@@ -6,11 +6,12 @@ export default {
 	phone: defaultModel.stringR,
 	password: defaultModel.string,
 	isVerify: defaultModel.booleanFalse,
-	typeLogin: { ...defaultModel.string, required: true },
-	role: { ...defaultModel.string, default: 'USER' },
-	FK_cart: defaultModel.string,
+	typeLogin: { ...defaultModel.string, default: defaultTypeLogin.EMAIL },
+	role: { ...defaultModel.string, default: defaultRoleAccount.USER },
 	otp: defaultModel.string,
-	FK_address: defaultModel.string,
 	image: defaultModel.string,
-	FK_merchant: defaultModel.string
+
+	FK_address: defaultModel.string,
+	FK_cart: defaultModel.string,
+	FK_transport: defaultModel.string
 };

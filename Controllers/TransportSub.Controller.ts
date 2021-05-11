@@ -14,13 +14,13 @@ export default class TransportSubController extends Controller {
 			path: `/${TransportSubPath.CREATE}`,
 			method: Methods.POST,
 			handler: this.handleCreate,
-			localMiddleware: []
+			localMiddleware: [TokenServices.verify,Validate.body(schemaTransport.createTransportSub)]
 		},
 		{
 			path: `/${TransportSubPath.UPDATE}`,
 			method: Methods.POST,
 			handler: this.handleUpdate,
-			localMiddleware: []
+			localMiddleware: [TokenServices.verify,Validate.body(schemaTransport.updateTransportSub)]
 		},
 		{
 			path: `/${TransportSubPath.GET_INFO}`,
@@ -40,26 +40,15 @@ export default class TransportSubController extends Controller {
 	): Promise<void> {
 		try {
 			const idUser = req.value.body.token.data;
-			const {
-				name,
-				description,
-				avatar,
-				imageVerify,
-				phone,
-				headquarters
-			} = req.value.body;
+			const { city, address, phoneNumber, mail } = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.createTransportSub(
+			const result = await transportServices.createTransportSub(idUser, {
 				idUser,
-				{
-					name,
-					description,
-					avatar,
-					imageVerify,
-					phone,
-					headquarters
-				}
-			);
+				address,
+				phoneNumber,
+				mail,
+				city,
+			});
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
@@ -69,13 +58,14 @@ export default class TransportSubController extends Controller {
 			super.sendError(res);
 		}
 	}
+
 	async handleUpdate(
 		req: IValidateRequest | any,
 		res: Response,
 		next: NextFunction
 	): Promise<void> {
 		try {
-			const { id, data } = req.value.body;
+			const { id, ...data } = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
 			const result = await transportServices.updateTransportSub(id, data);
 			if (result.success) {
@@ -87,6 +77,7 @@ export default class TransportSubController extends Controller {
 			super.sendError(res);
 		}
 	}
+
 	async handleGetTransportSub(
 		req: IValidateRequest | any,
 		res: Response,

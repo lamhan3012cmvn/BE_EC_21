@@ -1,8 +1,7 @@
 import { ITransportSubCity } from "./../Models/TransportSubCity/TransportSubCity.Interface";
 import { ITransportSub } from "./../Models/TransportSub/TransportSub.Interface";
-import { defaultTypeSupport } from "./../common/constants";
+import { defaultRoleAccount ,defaultTypeSupport} from "./../common/constants";
 import { ITransport } from "../Models/Transport/Transport.interface";
-import { Request, Response, NextFunction } from "express";
 import {
   Transport,
   TransportSub,
@@ -29,7 +28,6 @@ export default class TransportServices {
       }
 
       const typeSupport = defaultTypeSupport;
-
       const { name, description, avatar, imageVerify, phone, headquarters } =
         data;
 
@@ -45,6 +43,11 @@ export default class TransportServices {
       };
       const newTransport = new Transport(obj);
       await newTransport.save();
+
+      user.FK_transport=newTransport._id
+      user.role=defaultRoleAccount.TRANSPORT
+      await user.save()
+
       return {
         message: "Successfully created transport",
         success: true,
@@ -55,6 +58,7 @@ export default class TransportServices {
       return { message: "An error occurred", success: false };
     }
   };
+
   public updateTransport = async (
     id: string,
     body: any
@@ -82,6 +86,7 @@ export default class TransportServices {
       return { message: "An error occurred", success: false };
     }
   };
+
   public deleteTransport = async (
     id: string,
     status: string = "IS_ACTIVE"
@@ -107,6 +112,7 @@ export default class TransportServices {
       return { message: "An error occurred", success: false };
     }
   };
+
   public getTransport = async (id: string): Promise<ReturnServices> => {
     try {
       const transport = await Transport.findOne({FK_createUser: id });
@@ -129,7 +135,6 @@ export default class TransportServices {
   };
 
   //Transport Sub
-
   private findTransportByUser = async (id: string, option = {}) => {
     const user = await User.findById(id);
     if (!user) {
@@ -149,7 +154,7 @@ export default class TransportServices {
       };
     }
     return {
-      current: idTransport,
+      current: {transport:idTransport,user:user},
     };
   };
 
@@ -166,20 +171,23 @@ export default class TransportServices {
         };
       }
 
-      const { name, city, address, phoneNumber, mail } = data;
+      const { city, address, phoneNumber, mail } = data;
 
       const obj: ITransportSub = {
-        name,
+        name:`${_transport.current.transport.name}_${city}`,
         city,
         address,
         phoneNumber,
         mail,
-        FK_Transport: _transport.current._id,
-        FK_CreateUser:idUser
+        FK_Transport: _transport.current.transport._id,
+        FK_CreateUser:_transport.current.user._id
       };
 
       const newTransportSub = new TransportSub(obj);
       await newTransportSub.save();
+
+      _transport.current.user.FK_transport=newTransportSub._id
+      await _transport.current.user.save()
 
       return {
         message: "Successfully created transportSub",

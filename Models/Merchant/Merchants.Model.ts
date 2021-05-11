@@ -5,7 +5,8 @@ export default {
    description:defaultModel.string,
    image:defaultModel.string,
    address:defaultModel.stringR,
-   FK_category:defaultModel.stringRef,
    phone:defaultModel.stringPhone,
-   status:{...defaultModel.string,default: defaultTypeStatus.inActive}
+   status:{...defaultModel.string,default: defaultTypeStatus.inActive},
+   FK_category:defaultModel.stringRef,
+   FK_CreateUser:defaultModel.stringRef,
 };

@@ -40,12 +40,10 @@ const validate = {
 	}),
 
 	createTransportSub: joi.object().keys({
-		name: joi.string().required(),
 		city: joi.string().required(),
 		address: joi.string().required(),
 		phoneNumber: joi.string().min(10).max(15).required().regex(/^\d+$/),
 		mail: joi.string().email().required(),
-		FK_Transport: joi.string().required()
 	}),
 	updateTransportSub: joi.object().keys({
 		name: joi.string(),

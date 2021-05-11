@@ -48,6 +48,7 @@ export default class TransportController extends Controller {
 				phone,
 				headquarters
 			} = req.value.body;
+			
 			const transportServices: TransportServices = new TransportServices();
 			const result = await transportServices.createTransport(
 				idUser,
@@ -69,6 +70,7 @@ export default class TransportController extends Controller {
 			super.sendError(res);
 		}
 	}
+
 	async handleUpdate(
 		req: IValidateRequest | any,
 		res: Response,
@@ -87,6 +89,7 @@ export default class TransportController extends Controller {
 			super.sendError(res);
 		}
 	}
+
 	async handleGetTransport(
 		req: IValidateRequest | any,
 		res: Response,

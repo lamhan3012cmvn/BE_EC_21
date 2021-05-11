@@ -1,10 +1,9 @@
 import { SendMail } from './SendMail.Services';
 import jwtServices from './Token.Services'
-import { Request, Response, NextFunction } from 'express';
-import { IUser, ETypeLogin } from '../Models/User/User.Interface';
+import { IUser } from '../Models/User/User.Interface';
 import { User } from '../Models/index';
 import bcrypt from 'bcrypt';
-
+import {getRandString} from '../common/helper'
 interface AuthReturnData {
 	message: string;
 	success: boolean;
@@ -24,7 +23,7 @@ export default class AuthService {
 			if (resDbUser) {
 				if(resDbUser.isVerify===false)
 				{
-					const randOtp=Math.floor(Math.random()*1000000)
+					const randOtp=getRandString(100000,999999)
 					resDbUser.otp=randOtp+""
 					const send:SendMail = new SendMail()
 					send.sendMail(resDbUser.email,"Verify",randOtp+"")
@@ -63,10 +62,10 @@ export default class AuthService {
 			const resUser=await User.findOne({email})
 			if(resUser)
 			{
-				const randOtp=Math.floor(Math.random()*1000000)
-				resUser.otp=randOtp+""
+				const randOtp=getRandString(100000,999999)
+				resUser.otp=randOtp
 				const send:SendMail = new SendMail()
-				send.sendMail(resUser.email,"Verify",randOtp+"")
+				send.sendMail(resUser.email,"Verify",randOtp)
 				await resUser.save()
 				return {
 					message: 'Successfully find a user to forgotPassword', success: true 
@@ -92,17 +91,17 @@ export default class AuthService {
 			});
 			if (!userFromDb) {
 				const hashedPassword = await bcrypt.hash(password, 10);
-				const rdVerify=Math.floor(Math.random()*1000000)
+				const rdVerify=getRandString(100000,999999)
 				const createdUser = new User({
 					email: email,
 					password: hashedPassword,
 					phone: phone,
 					fullName: fullName,
-					typeLogin: ETypeLogin.EMAIL,
 					otp:rdVerify
 				});
+        console.log(`LHA:  ===> file: Auth.Services.ts ===> line 102 ===> createdUser`, createdUser)
 				const send:SendMail = new SendMail()
-				send.sendMail(email,"Verify",rdVerify+"")
+				send.sendMail(email,"Verify",rdVerify)
 				await createdUser.save();
 
 				return {
