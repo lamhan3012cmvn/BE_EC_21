@@ -21,7 +21,6 @@
 	},
 	"dependencies": {
 		"@hapi/joi": "^17.1.1",
-		"@slack/webhook": "^6.0.0",
 		"@types/bcrypt": "^3.0.0",
 		"@types/cors": "^2.8.10",
 		"@types/dotenv": "^8.2.0",
