@@ -109,7 +109,6 @@ export default class TransportServices {
   };
   public getTransport = async (id: string): Promise<ReturnServices> => {
     try {
-      console.log(`LHA:  ===> file: Transport.Services.ts ===> line 111 ===> id`, id)
       const transport = await Transport.findOne({FK_createUser: id });
       if (transport) {
         return {

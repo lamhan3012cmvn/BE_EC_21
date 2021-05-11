@@ -7,6 +7,7 @@ export interface ITransportSub{
 	phoneNumber:string,
 	mail:string,
 	FK_Transport:string,
+	FK_CreateUser:string,
 	FK_TransportCity?:string,
 }
 export interface ITransportSubDocument extends Document,ITransportSub {

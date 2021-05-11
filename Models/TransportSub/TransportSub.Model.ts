@@ -1,4 +1,4 @@
-import { defaultModel } from '../../common/constants';
+import { defaultModel } from './../../common/constants';
 
 export default {
 	name:defaultModel.stringR,
@@ -7,5 +7,6 @@ export default {
   phoneNumber:defaultModel.stringR,
   mail:defaultModel.stringR,
   FK_Transport:defaultModel.stringRef,
-  FK_TransportCity:defaultModel.array
+  FK_TransportCity:defaultModel.array,
+  FK_CreateUser:defaultModel.stringRef
 };
