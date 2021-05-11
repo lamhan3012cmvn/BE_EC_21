@@ -22,6 +22,15 @@ export default class MerchantController extends Controller {
       path: `/${MerchantPath.UPDATE}`,
       method: Methods.PUT,
       handler: this.handleUpdate,
+      localMiddleware: [
+        TokenServices.verify,
+        Validate.body(schemaMerchant.updateMerchant),
+      ],
+    },
+    {
+      path: `/${MerchantPath.GET_INFO}`,
+      method: Methods.GET,
+      handler: this.handleGet,
       localMiddleware: [TokenServices.verify],
     },
   ];
@@ -57,10 +66,29 @@ export default class MerchantController extends Controller {
   ): Promise<void> {
     try {
       const idUser = req.value.body.token.data;
-      let device = req.query;
-      device.FK_createUser = idUser;
+      const merchant = req.value.body;
+      console.log(merchant);
       const merchantServices: MerchantServices = new MerchantServices();
-      const result = await merchantServices.updateMerchant(idUser, device);
+      const result = await merchantServices.updateMerchant(idUser, merchant);
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleGet(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const idUser = req.value.body.token.data;
+      const merchantServices: MerchantServices = new MerchantServices();
+      const result = await merchantServices.getMerchant(idUser);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {

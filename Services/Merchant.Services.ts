@@ -66,23 +66,88 @@ export default class MerchantService {
   };
 
   public updateMerchant = async (
-    idMerchant: string,
+    idUser: string,
     body: any
   ): Promise<ReturnServices> => {
     try {
-      const device = await Merchant.findOneAndUpdate(
-        {
-          _id: idMerchant,
-        },
-        body
-      );
-      if (!device) {
-        return {
-          message: "Merchant already does not exists",
-          success: false,
-        };
-      }
-      return { message: "Successfully update merchant", success: true };
+      // const user = await User.findById(idUser);
+      // if (!!user) {
+      //   if (user.FK_merchant == "") {
+      //     return {
+      //       message: "You don't have a store",
+      //       success: false,
+      //       status: 300,
+      //     };
+      //   } else {
+      //     const merchant = await Merchant.findOneAndUpdate(
+      //       { _id: user.FK_merchant },
+      //       body,
+      //       { new: true }
+      //     );
+      //     if (!merchant) {
+      //       return {
+      //         message: "You don't have a store",
+      //         success: false,
+      //         status: 300,
+      //       };
+      //     } else {
+      //       if (merchant.status == defaultTypeStatus.deleted) {
+      //         return {
+      //           message: "You don't have a store",
+      //           success: false,
+      //           status: 300,
+      //         };
+      //       } else {
+      //         return {
+      //           message: "Successfully update merchant",
+      //           success: true,
+      //           status: 400,
+      //           data: merchant,
+      //         };
+      //       }
+      //     }
+      //   }
+      // }
+      return {
+        message: "User not exists",
+        success: false,
+        status: 400,
+      };
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
+  public getMerchant = async (idUser: string): Promise<ReturnServices> => {
+    try {
+      // const user = await User.findById(idUser);
+      // if (!!user) {
+      //   const merchant = await Merchant.findById(user.FK_merchant);
+      //   if (!merchant) {
+      //     return {
+      //       message: "Merchant already does not exists",
+      //       success: false,
+      //     };
+      //   } else {
+      //     if (merchant!.status == defaultTypeStatus.deleted) {
+      //       return {
+      //         message: "Merchant already does not exists",
+      //         success: false,
+      //       };
+      //     }
+      //     return {
+      //       message: "Successfully get merchant",
+      //       success: true,
+      //       data: merchant,
+      //     };
+      //   }
+      // }
+      return {
+        message: "User not exists",
+        success: false,
+        status: 400,
+      };
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };

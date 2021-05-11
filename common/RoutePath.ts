@@ -31,4 +31,5 @@ export const DevicePath = {
 export const MerchantPath = {
   CREATE: "Create",
   UPDATE: "Update",
+  GET_INFO: "GetInfo",
 };
