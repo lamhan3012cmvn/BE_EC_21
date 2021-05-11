@@ -12,5 +12,4 @@ export default {
 	image: defaultModel.string,
 
 	FK_address: defaultModel.string,
-	FK_cart: defaultModel.string,
 };
