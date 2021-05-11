@@ -1,8 +1,5 @@
 import { Response, NextFunction, Router, RequestHandler } from "express";
 import { IValidateRequest } from "../common/DefineRequest";
-import { IncomingWebhook } from "@slack/webhook";
-const url = process.env.SLACK_WEBHOOK_URL;
-const webhook = new IncomingWebhook(`${url}`);
 
 export enum Methods {
   GET = "GET",
@@ -69,19 +66,10 @@ export default abstract class Controller {
     });
   }
 
-  protected async sendError(
+  protected sendError(
     res: Response,
-	req?: any,
     message?: string,
-  ): Promise<Response<any, Record<any, any>>> {
-    await webhook.send({
-      text:
-        "```Message: " +
-        message +
-        "\n\nRoute: " +
-        req.originalUrl +
-        "\n```",
-    });
+  ): Response {
     return res.status(500).json({
       message: message || "internal server error",
     });

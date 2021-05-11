@@ -1,12 +1,12 @@
-import { Services, TypeService } from './../Services/Services';
-import { TransportPath } from './../common/RoutePath';
-import { Response, NextFunction } from 'express';
-import Controller, { Methods } from './Controller';
-import TokenServices from '../Services/Token.Services';
-import Validate from '../Validates/Validate';
-import schemaTransport from '../Validates/Transport.Validate';
-import { IValidateRequest } from '../common/DefineRequest';
-import TransportServices from '../Services/Transport.Services';
+import { Services, TypeService } from "./../Services/Services";
+import { TransportPath } from "./../common/RoutePath";
+import { Response, NextFunction } from "express";
+import Controller, { Methods } from "./Controller";
+import TokenServices from "../Services/Token.Services";
+import Validate from "../Validates/Validate";
+import schemaTransport from "../Validates/Transport.Validate";
+import { IValidateRequest } from "../common/DefineRequest";
+import TransportServices from "../Services/Transport.Services";
 export default class TransportController extends Controller {
 	path = '/Transport';
 	routes = [
