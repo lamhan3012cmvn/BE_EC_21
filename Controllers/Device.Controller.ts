@@ -64,7 +64,7 @@ export default class DeviceController extends Controller {
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
-        super.sendError(res, req, result.message);
+        super.sendError(res, result.message);
       }
     } catch {
       super.sendError(res, req);

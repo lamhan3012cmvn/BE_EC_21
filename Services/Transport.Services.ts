@@ -9,9 +9,7 @@ import {
   TransportSubCity,
   User,
 } from "../Models/index";
-import bcrypt from "bcrypt";
 import { ReturnServices } from "../Interfaces/Services";
-import e from "cors";
 
 export default class TransportServices {
   constructor() {}
@@ -111,7 +109,8 @@ export default class TransportServices {
   };
   public getTransport = async (id: string): Promise<ReturnServices> => {
     try {
-      const transport = await Transport.findById(id);
+      console.log(`LHA:  ===> file: Transport.Services.ts ===> line 111 ===> id`, id)
+      const transport = await Transport.findOne({FK_createUser: id });
       if (transport) {
         return {
           message: "Successful data retrieval",

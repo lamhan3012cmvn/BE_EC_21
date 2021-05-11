@@ -93,7 +93,7 @@ export default class TransportController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			const { id } = req.value.body;
+			const id = req.value.body.token.data;
 			const transportServices: TransportServices = new TransportServices();
 			const result = await transportServices.getTransport(id);
 			if (result.success) {
