@@ -49,7 +49,7 @@ export default class TransportSubCityController extends Controller {
 				headquarters
 			} = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.createTransport(
+			const result = await transportServices.createTransportSubCity(
 				idUser,
 				{
 					name,
@@ -77,7 +77,7 @@ export default class TransportSubCityController extends Controller {
 		try {
 			const { id, data } = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.updateTransport(id, data);
+			const result = await transportServices.updateTransportSubCity(id, data);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
@@ -95,7 +95,7 @@ export default class TransportSubCityController extends Controller {
 		try {
 			const { id } = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.getTransport(id);
+			const result = await transportServices.getTransportSubCity(id);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {

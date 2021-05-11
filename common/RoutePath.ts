@@ -25,3 +25,7 @@ export const TransportSubCityPath={
 	GET_INFO:'GetInfo',
 	UPDATE:"Update"
 }
+export const DevicePath = {
+	CREATE: 'Create',
+	DELETE: 'Delete',
+}
