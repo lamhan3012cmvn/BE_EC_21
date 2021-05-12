@@ -16,6 +16,7 @@ const validate = {
     address: joi.string(),
     FK_category: joi.string(),
     phone: joi.string(),
+    id: joi.string().required(),
   }),
 };
 export default validate;

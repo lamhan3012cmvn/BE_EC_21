@@ -45,10 +45,10 @@ export default class MerchantController extends Controller {
   ): Promise<void> {
     try {
       const idUser = req.value.body.token.data;
-      let device = req.value.body;
-      device.FK_createUser = idUser;
+      let merchant = req.value.body;
+      merchant.FK_createUser = idUser;
       const merchantServices: MerchantServices = new MerchantServices();
-      const result = await merchantServices.createMerchant(idUser, device);
+      const result = await merchantServices.createMerchant(merchant);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
@@ -66,10 +66,10 @@ export default class MerchantController extends Controller {
   ): Promise<void> {
     try {
       const idUser = req.value.body.token.data;
-      const merchant = req.value.body;
-      console.log(merchant);
+      let merchant = req.value.body;
+      merchant.FK_createUser = idUser;
       const merchantServices: MerchantServices = new MerchantServices();
-      const result = await merchantServices.updateMerchant(idUser, merchant);
+      const result = await merchantServices.updateMerchant(merchant);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
