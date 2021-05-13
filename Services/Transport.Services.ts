@@ -49,13 +49,11 @@ export default class TransportServices {
       user.role=defaultRoleAccount.TRANSPORT
       await user.save()
 
-
       const objTransportSubHCM: ITransportSub = {
         name:`${newTransport.name}_${"HCM"}`,
         city:"HCM",
         FK_Transport: newTransport._id,
       };
-
 
       const objTransportSubHN: ITransportSub = {
         name:`${newTransport.name}_${"HN"}`,
@@ -65,10 +63,27 @@ export default class TransportServices {
 
       const newTransportSubHCM = new TransportSub(objTransportSubHCM);
       await newTransportSubHCM.save();
-
       
       const newTransportSubHN = new TransportSub(objTransportSubHN);
       await newTransportSubHN.save();
+
+      const objSubHCMQ1: ITransportSubCity = {
+        name:`${newTransport.name}_${"HCM"}_${"Q1"}`,
+	      district:"HO_CHI_MINH",
+        FK_Transport_Sub: newTransportSubHCM._id,
+      };
+
+      const objSubHNHHK: ITransportSubCity = {
+        name:`${newTransport.name}_${"HCM"}_${"Q1"}`,
+	      district:"HO_HOAN_KIEM",
+        FK_Transport_Sub: newTransportSubHN._id,
+      };
+
+      const subHCMQ1 = new TransportSubCity(objSubHCMQ1);
+      await subHCMQ1.save();
+
+      const subHNHHK = new TransportSubCity(objSubHNHHK);
+      await subHNHHK.save();
 
       return {
         message: "Successfully created transport",
@@ -328,6 +343,7 @@ export default class TransportServices {
         coordinates,
         phoneNumber,
         mail,
+        FK_Transport_Sub:""
       };
       const newTransportSubCity = new TransportSubCity(obj);
       await newTransportSubCity.save();

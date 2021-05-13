@@ -6,6 +6,7 @@ export interface ITransportSub{
 	address?:string,
 	phoneNumber?:string,
 	mail?:string,
+	status?:string,
 	FK_Transport:string,
 	FK_CreateUser?:string,
 }

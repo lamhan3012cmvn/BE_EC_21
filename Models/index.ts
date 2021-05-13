@@ -17,7 +17,6 @@ import ProductInfo from './ProductInfo';
 import Transport from './Transport';
 import TransportSub from './TransportSub';
 import TransportSubCity from './TransportSubCity';
-import TransportSubStaff from './TransportSubStaff';
 import User from './User';
 
 export {
@@ -34,5 +33,4 @@ export {
 	ProductInfo,
 	TransportSub,
 	TransportSubCity,
-	TransportSubStaff
 };
