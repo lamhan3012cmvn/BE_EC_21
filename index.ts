@@ -15,6 +15,7 @@ import DeviceController from "./Controllers/Device.Controller";
 import MerchantController from "./Controllers/Merchant.Controller";
 import TransportSubController from "./Controllers/TransportSub.Controller";
 import CategoryController from "./Controllers/Category.Controller";
+import GroupProductController from "./Controllers/GroupProduct.Controller";
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -23,6 +24,7 @@ const controllers: Array<Controller> = [
   new DeviceController(),
   new MerchantController(),
   new CategoryController(),
+  new GroupProductController(),
 ];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),

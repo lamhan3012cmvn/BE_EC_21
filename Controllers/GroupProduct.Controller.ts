@@ -1,40 +1,40 @@
-import { CategoryPath } from "../common/RoutePath";
+import { GroupProductPath } from "../common/RoutePath";
 import { Response, NextFunction } from "express";
 import Controller, { Methods } from "./Controller";
 import TokenServices from "../Services/Token.Services";
 import Validate from "../Validates/Validate";
-import schemaCategory from "../Validates/Category.Validate";
+import schemaGroupProduct from "../Validates/GroupProduct.Validate";
 import { IValidateRequest } from "../common/DefineRequest";
-import CategoryServices from "../Services/Category.Services";
+import GroupProductServices from "../Services/GroupProduct.Services";
 export default class CategoryController extends Controller {
-  path = "/Category";
+  path = "/GroupProduct";
   routes = [
     {
-      path: `/${CategoryPath.CREATE}`,
+      path: `/${GroupProductPath.CREATE}`,
       method: Methods.POST,
       handler: this.handleCreate,
       localMiddleware: [
         TokenServices.verify,
-        Validate.body(schemaCategory.createCategory),
+        Validate.body(schemaGroupProduct.createCategory),
       ],
     },
     {
-      path: `/${CategoryPath.UPDATE}`,
+      path: `/${GroupProductPath.UPDATE}`,
       method: Methods.PUT,
       handler: this.handleUpdate,
       localMiddleware: [
         TokenServices.verify,
-        Validate.body(schemaCategory.updateCategory),
+        Validate.body(schemaGroupProduct.updateCategory),
       ],
     },
     {
-      path: `/${CategoryPath.GET_INFO}`,
+      path: `/${GroupProductPath.GET_INFO}`,
       method: Methods.GET,
       handler: this.handleGetAll,
       localMiddleware: [],
     },
     {
-      path: `/${CategoryPath.DELETE}`,
+      path: `/${GroupProductPath.DELETE}`,
       method: Methods.DELETE,
       handler: this.handleDelete,
       localMiddleware: [TokenServices.verify],
@@ -51,9 +51,10 @@ export default class CategoryController extends Controller {
   ): Promise<void> {
     try {
       const idUser = req.value.body.token.data;
-      let category = req.value.body;
-      const categoryServices: CategoryServices = new CategoryServices();
-      const result = await categoryServices.createCategory(idUser, category);
+      let groupProduct = req.value.body;
+      groupProduct.FK_createUser = idUser;
+      const categoryServices: GroupProductServices = new GroupProductServices();
+      const result = await categoryServices.createGroupProduct(groupProduct);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
@@ -70,9 +71,10 @@ export default class CategoryController extends Controller {
   ): Promise<void> {
     try {
       const idUser = req.value.body.token.data;
-      let idCategory = req.value.body;
-      const categoryServices: CategoryServices = new CategoryServices();
-      const result = await categoryServices.updateCategory(idUser, idCategory);
+      let groupProduct = req.value.body;
+      groupProduct.FK_createUser = idUser;
+      const categoryServices: GroupProductServices = new GroupProductServices();
+      const result = await categoryServices.updateGroupProduct(groupProduct);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
@@ -88,8 +90,9 @@ export default class CategoryController extends Controller {
     next: NextFunction
   ): Promise<void> {
     try {
-      const categoryServices: CategoryServices = new CategoryServices();
-      const result = await categoryServices.getAllCategory();
+      const { idMerchant } = req.query;
+      const categoryServices: GroupProductServices = new GroupProductServices();
+      const result = await categoryServices.getAllGroupProduct(idMerchant);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
@@ -108,8 +111,8 @@ export default class CategoryController extends Controller {
     try {
       const idUser = req.value.body.token.data;
       let { id } = req.query;
-      const categoryServices: CategoryServices = new CategoryServices();
-      const result = await categoryServices.deleteCategory(idUser, id);
+      const categoryServices: GroupProductServices = new GroupProductServices();
+      const result = await categoryServices.deleteGroupProduct(idUser, id);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {

@@ -1,38 +1,35 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { Category, User } from "../Models";
+import { GroupProduct, User } from "../Models";
 import { defaultTypeStatus, defaultRoleAccount } from "../common/constants";
 
-export default class CategoryService {
+export default class GroupProductService {
   constructor() {}
-  public createCategory = async (
-    idUser: string,
-    body: any
-  ): Promise<ReturnServices> => {
+  public createGroupProduct = async (body: any): Promise<ReturnServices> => {
     try {
-      const user = await User.findById(idUser);
+      const user = await User.findById(body.FK_createUser);
       if (!user) {
         return {
           message: "Cannot found user info",
           success: false,
         };
       } else {
-        if (user.role != defaultRoleAccount.ADMIN) {
+        if (user.role != defaultRoleAccount.MERCHANT) {
           return {
-            message: "Your role not ADMIN",
+            message: "Your role not Merchant",
             success: false,
           };
         } else {
-          const category = await Category.create(body);
-          if (!category) {
+          const groupProduct = await GroupProduct.create(body);
+          if (!groupProduct) {
             return {
-              message: "Create category failure",
+              message: "Create group product failure",
               success: false,
             };
           }
           return {
-            message: "Successfully create category",
+            message: "Successfully create group product",
             success: true,
-            data: category,
+            data: groupProduct,
           };
         }
       }
@@ -42,39 +39,38 @@ export default class CategoryService {
     }
   };
 
-  public updateCategory = async (
-    idUser: string,
+  public updateGroupProduct = async (
     body: any
   ): Promise<ReturnServices> => {
     try {
-      const user = await User.findById(idUser);
+      const user = await User.findById(body.FK_createUser);
       if (!user) {
         return {
           message: "Cannot found user info",
           success: false,
         };
       } else {
-        if (user.role != defaultRoleAccount.ADMIN) {
+        if (user.role != defaultRoleAccount.MERCHANT) {
           return {
-            message: "Your role not ADMIN",
+            message: "Your role not Merchant",
             success: false,
           };
         } else {
-          const category = await Category.findOneAndUpdate(
+          const groupProduct = await GroupProduct.findOneAndUpdate(
             { _id: body._id },
             body,
             { new: true }
           );
-          if (!category) {
+          if (!groupProduct) {
             return {
-              message: "Update category failure",
+              message: "Update group product failure",
               success: false,
             };
           }
           return {
-            message: "Successfully update category",
+            message: "Successfully update group product",
             success: true,
-            data: category,
+            data: groupProduct,
           };
         }
       }
@@ -84,13 +80,15 @@ export default class CategoryService {
     }
   };
 
-  public getAllCategory = async (): Promise<ReturnServices> => {
+  public getAllGroupProduct = async (idMerchant: string): Promise<ReturnServices> => {
     try {
-      const categories = await Category.find({status: defaultTypeStatus.active});
+      const groupProducts = await GroupProduct.find(
+        { FK_merchant: idMerchant, status: {$ne: defaultTypeStatus.deleted} }
+      );
       return {
-        message: "Successfully get category",
+        message: "Successfully get group product",
         success: true,
-        data: categories,
+        data: groupProducts,
       };
     } catch (e) {
       console.log(e);
@@ -98,9 +96,9 @@ export default class CategoryService {
     }
   };
 
-  public deleteCategory = async (
+  public deleteGroupProduct = async (
     idUser: string,
-    idCategory: string
+    idGroupProduct: string
   ): Promise<ReturnServices> => {
     try {
       const user = await User.findById(idUser);
@@ -110,26 +108,26 @@ export default class CategoryService {
           success: false,
         };
       } else {
-        if (user.role != defaultRoleAccount.ADMIN) {
+        if (user.role != defaultRoleAccount.MERCHANT) {
           return {
-            message: "Your role not ADMIN",
+            message: "Your role not Merchant",
             success: false,
           };
         } else {
-          const category = await Category.findByIdAndUpdate(
-            { _id: idCategory },
+          const groupProduct = await GroupProduct.findByIdAndUpdate(
+            { _id: idGroupProduct },
             { status: defaultTypeStatus.deleted }
           );
-          if (!category) {
+          if (!groupProduct) {
             return {
-              message: "Delete category failure",
+              message: "Delete group product failure",
               success: false,
             };
           }
           return {
-            message: "Successfully delete category",
+            message: "Successfully delete group product",
             success: true,
-            data: category,
+            data: groupProduct,
           };
         }
       }
