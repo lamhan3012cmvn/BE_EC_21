@@ -33,3 +33,10 @@ export const MerchantPath = {
   UPDATE: "Update",
   GET_INFO: "GetInfo",
 };
+
+export const CategoryPath = {
+  CREATE: "Create",
+  UPDATE: "Update",
+  GET_INFO: "GetInfo",
+  DELETE: "Delete",
+};

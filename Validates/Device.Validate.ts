@@ -7,8 +7,5 @@ const validate = {
     deviceModel: joi.string().required(),
     appVersion: joi.string().required(),
   }),
-  deleteDevice: joi.object().keys({
-    status: joi.string().required(),
-  }),
 };
 export default validate;
