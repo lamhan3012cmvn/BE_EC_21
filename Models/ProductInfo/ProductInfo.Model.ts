@@ -1,10 +1,12 @@
-import { defaultModel } from '../../common/constants';
+import { defaultModel, defaultTypeStatus } from '../../common/constants';
 
 export default {
-  FK_product:defaultModel.stringRef,
   name:defaultModel.stringR,
   description:defaultModel.string,
   price:defaultModel.stringR,
   total:defaultModel.number,
-  image:defaultModel.string
+  image:defaultModel.string,
+  status: { ...defaultModel.string, default: defaultTypeStatus.active },
+  FK_groupProduct: defaultModel.stringRef,
+  FK_merchant: defaultModel.stringRef,
 }

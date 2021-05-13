@@ -47,3 +47,11 @@ export const GroupProductPath = {
   GET_INFO: "GetAll",
   DELETE: "Delete",
 };
+
+export const ProductPath = {
+  CREATE: "Create",
+  UPDATE: "Update",
+  GET_BY_MERCHANT: "GetProductByMerchant",
+  GET_BY_GROUP_PRODUCT: "GetProductByGroup",
+  DELETE: "Delete",
+};
