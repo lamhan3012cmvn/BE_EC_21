@@ -174,6 +174,7 @@ export default class TransportServices {
   //Transport Sub
   private findTransportByUser = async (id: string, option = {}) => {
     const user = await User.findById(id);
+    console.log(`LHA:  ===> file: Transport.Services.ts ===> line 177 ===> user`, user)
     if (!user) {
       return {
         current: null,
@@ -216,7 +217,7 @@ export default class TransportServices {
         address,
         phoneNumber,
         mail,
-        FK_Transport: _transport.current.transport._id,
+        FK_Transport: '',
         FK_CreateUser:_transport.current.user._id
       };
 
@@ -229,7 +230,7 @@ export default class TransportServices {
       return {
         message: "Successfully created transportSub",
         success: true,
-        data: newTransportSub,
+        data: {},
       };
     } catch (e) {
       console.log(e);
