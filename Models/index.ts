@@ -3,6 +3,8 @@ import Cart from './Cart';
 import Category from './Category';
 import Coupon from './Coupon';
 
+import Package from './Package'
+
 import Device from './Device';
 
 import GroupProduct from './GroupProduct';
@@ -27,6 +29,7 @@ export {
 	Device,
 	GroupProduct,
 	Merchant,
+	Package,
 	Order,
 	Product,
 	Transport,

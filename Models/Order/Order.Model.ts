@@ -7,5 +7,4 @@ export default {
   status:{...defaultModel.string,default:''},
   checkIn:defaultModel.array,
   phone:defaultModel.stringPhone
-  
 };
