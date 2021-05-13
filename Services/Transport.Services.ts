@@ -348,6 +348,7 @@ export default class TransportServices {
       };
       const newTransportSubCity = new TransportSubCity(obj);
       await newTransportSubCity.save();
+      
       return {
         message: "Successfully created transportSubCity",
         success: true,
