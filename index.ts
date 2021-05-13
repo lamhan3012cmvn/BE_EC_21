@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import morgan from "morgan";
-import {urlencoded} from "body-parser";
+import { urlencoded } from "body-parser";
 import cors from "cors";
 // express
 import express, { Application, RequestHandler } from "express";
@@ -14,13 +14,25 @@ import TransportController from "./Controllers/Transport.Controller";
 import DeviceController from "./Controllers/Device.Controller";
 import MerchantController from "./Controllers/Merchant.Controller";
 import TransportSubController from "./Controllers/TransportSub.Controller";
+import CategoryController from "./Controllers/Category.Controller";
+import GroupProductController from "./Controllers/GroupProduct.Controller";
+import ProductController from "./Controllers/Product.Controller";
 
-const controllers: Array<Controller> = [new AuthController(),new TransportController(), new TransportSubController(),new DeviceController(), new MerchantController()];
+const controllers: Array<Controller> = [
+  new AuthController(),
+  new TransportController(),
+  new TransportSubController(),
+  new DeviceController(),
+  new MerchantController(),
+  new CategoryController(),
+  new GroupProductController(),
+  new ProductController(),
+];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
   urlencoded({ extended: false }),
-	cors({ origin: true }),
-	morgan("combined"),
+  cors({ origin: true }),
+  morgan("combined"),
 ];
 
 const PORT: number = Number(process.env.PORT!);

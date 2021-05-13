@@ -8,5 +8,5 @@ export default {
    phone:defaultModel.stringPhone,
    status:{...defaultModel.string,default: defaultTypeStatus.inActive},
    FK_category:defaultModel.stringRef,
-   FK_CreateUser:defaultModel.stringRef,
+   FK_createUser:defaultModel.stringRef,
 };

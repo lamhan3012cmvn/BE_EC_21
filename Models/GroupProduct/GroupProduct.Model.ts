@@ -1,6 +1,7 @@
-import { defaultModel } from '../../common/constants';
+import { defaultModel, defaultTypeStatus } from '../../common/constants';
 
 export default {
 	name:defaultModel.stringR,
-  status:{...defaultModel.string,default:''}
+  FK_merchant: defaultModel.stringR,
+  status:{...defaultModel.string,default: defaultTypeStatus.active},
 };
