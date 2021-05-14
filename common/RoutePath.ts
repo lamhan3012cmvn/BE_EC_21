@@ -56,12 +56,15 @@ export const ProductPath = {
   DELETE: "Delete",
 };
 
-
-
 export const PackagePath = {
   CREATE: "Create",
   UPDATE: "Update",
   GET_BY_MERCHANT: "GetProductByMerchant",
   GET_BY_GROUP_PRODUCT: "GetProductByGroup",
   DELETE: "Delete",
+};
+
+export const UserPath = {
+  UPDATE: "Update",
+  GET_INFO: "GetInfo",
 };
