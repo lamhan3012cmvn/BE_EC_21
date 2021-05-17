@@ -17,7 +17,8 @@ import TransportSubController from "./Controllers/TransportSub.Controller";
 import CategoryController from "./Controllers/Category.Controller";
 import GroupProductController from "./Controllers/GroupProduct.Controller";
 import ProductController from "./Controllers/Product.Controller";
-import PackageController from "./Controllers/Package.Controller"
+import PackageController from "./Controllers/Package.Controller";
+import UserController from "./Controllers/User.Controller";
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -28,7 +29,8 @@ const controllers: Array<Controller> = [
   new CategoryController(),
   new GroupProductController(),
   new ProductController(),
-  new PackageController()
+  new PackageController(),
+  new UserController(),
 ];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
