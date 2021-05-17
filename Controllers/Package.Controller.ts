@@ -1,4 +1,4 @@
-import {  Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import Controller, { Methods } from './Controller';
 import TokenServices from '../Services/Token.Services';
 import { PackagePath } from '../common/RoutePath';
@@ -14,29 +14,31 @@ export default class PackageController extends Controller {
 			path: `/${PackagePath.CREATE}`,
 			method: Methods.POST,
 			handler: this.handleCreate,
-			localMiddleware: [TokenServices.verify,Validate.body(schemaPackage.createPackage)]
-		},
+			localMiddleware: [
+				TokenServices.verify,
+				Validate.body(schemaPackage.createPackage)
+			]
+		}
 	];
 	constructor() {
 		super();
 	}
-  async handleCreate(
-    req: IValidateRequest | any,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      
-      const packageService: PackageService = new PackageService();
-      const result = await packageService.createPackage(req.value.body);
+	async handleCreate(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const packageService: PackageService = new PackageService();
+			const result = await packageService.createPackage(req.value.body);
 
-      if (result.success) {
-        super.sendSuccess(res, result.data, result.message);
-      } else {
-        super.sendError(res, result.message);
-      }
-    } catch {
-      super.sendError(res);
-    }
-  }
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
 }
