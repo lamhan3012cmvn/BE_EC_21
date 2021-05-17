@@ -3,22 +3,37 @@ import { defaultModel } from '../../common/constants';
 export default {
   title:defaultModel.stringR,
 	description:defaultModel.stringR,
-  recipientName:defaultModel.stringR,
-  senderName:defaultModel.stringR,
-  recipientPhone:defaultModel.stringR,
-  senderPhone:defaultModel.stringR,
-  to:{
-    city:defaultModel.stringR,
-    county:defaultModel.stringR,
-    ward: defaultModel.stringR,
-    address:defaultModel.stringR,
-    coordinate:defaultModel.stringR
+  
+
+  FK_ProductId:defaultModel.stringRef,
+  FK_ProductType:defaultModel.stringR,
+
+  recipient:{
+    name:defaultModel.stringR,
+    phone:defaultModel.stringR,
+    location:{
+      city:defaultModel.stringR,
+      county:defaultModel.stringR,
+      ward: defaultModel.stringR,
+      address:defaultModel.stringR,
+      coordinate:{
+        lat: defaultModel.stringR,
+        lng: defaultModel.stringR 
+      }
+    }
   },
-  from:{
-    city:defaultModel.stringR,
-    county:defaultModel.stringR,
-    ward: defaultModel.stringR,
-    address:defaultModel.stringR,
-    coordinate:defaultModel.stringR
+  sender:{
+    name:defaultModel.stringR,
+    phone:defaultModel.stringR,
+    location:{
+      city:defaultModel.stringR,
+      county:defaultModel.stringR,
+      ward: defaultModel.stringR,
+      address:defaultModel.stringR,
+      coordinate:{
+        lat: defaultModel.stringR,
+        lng: defaultModel.stringR 
+      }
+    }
   }
 };

@@ -1,20 +1,23 @@
 import { Document } from 'mongoose';
-interface ICoordinate {
+
+export interface ILocation {
 	city: string;
 	county: string;
 	ward: string;
 	address: string;
-	coordinate: string;
+	coordinate: { lat: string; lng: string };
 }
-
+export interface IInfoUser {
+	name: string;
+	phone: string;
+	location: ILocation;
+}
 export interface IPackage {
 	title: string;
 	description: string;
-	recipientName: string;
-	senderName: string;
-	recipientPhone: string;
-	senderPhone: string;
-	to: ICoordinate;
-	from: ICoordinate;
+	FK_ProductId: string;
+	FK_ProductType: string;
+	recipient: IInfoUser;
+	sender: IInfoUser;
 }
 export interface IPackageDocument extends Document {}
