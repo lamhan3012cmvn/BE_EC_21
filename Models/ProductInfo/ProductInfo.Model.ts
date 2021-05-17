@@ -4,7 +4,7 @@ export default {
   name:defaultModel.stringR,
   description:defaultModel.string,
   price:defaultModel.stringR,
-  total:defaultModel.number,
+  total:defaultModel.stringR,
   image:defaultModel.string,
   status: { ...defaultModel.string, default: defaultTypeStatus.active },
   FK_groupProduct: defaultModel.stringRef,
