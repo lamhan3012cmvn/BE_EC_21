@@ -13,6 +13,13 @@ import { ReturnServices } from "../Interfaces/Services";
 export default class TransportServices {
   constructor() {}
 
+  public getPrice=async ():Promise<ReturnServices> =>{
+    return {
+      message: "Can not find a user to create transport",
+      success: false,
+      status: 400,
+    };
+  }
   public createTransport = async (
     idUser: string,
     data: any

@@ -18,10 +18,63 @@ export default class PackageController extends Controller {
 				TokenServices.verify,
 				Validate.body(schemaPackage.createPackage)
 			]
+		},
+		{
+			path: `/${PackagePath.GET_PACKAGE_BY_STATUS}`,
+			method: Methods.GET,
+			handler: this.handleGetPackageByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				Validate.body(schemaPackage.getPackageByStatus)
+			]
+		},
+		{
+			path: `/${PackagePath.GET_PACKAGE_DETAIL_BY_STATUS}`,
+			method: Methods.GET,
+			handler: this.handleGetPackageDetailByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				Validate.body(schemaPackage.getPackageDetailByStatus)
+			]
 		}
 	];
 	constructor() {
 		super();
+	}
+
+	async handleGetPackageDetailByStatus(req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction){
+		try{
+			const packageService: PackageService = new PackageService();
+			const result = await packageService.getPackageDetailByStatus(req.value.body);
+
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		}
+		catch(err){
+			super.sendError(res);
+		}
+	}
+	async handleGetPackageByStatus(req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction){
+		try{
+			const packageService: PackageService = new PackageService();
+			const result = await packageService.getPackageByStatus(req.value.body);
+
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		}
+		catch(err){
+			super.sendError(res);
+		}
 	}
 	async handleCreate(
 		req: IValidateRequest | any,

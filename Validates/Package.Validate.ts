@@ -30,6 +30,12 @@ const validate = {
 		distance: joi.string().empty().required(),
 		prices: joi.string().empty().required(),
 		weight: joi.string().empty().required()
+	}),
+	getPackageByStatus:joi.object().keys({
+		name:joi.string().empty().required()
+	}),
+	getPackageDetailByStatus:joi.object().keys({
+		id:joi.string().empty().required()
 	})
 };
 
