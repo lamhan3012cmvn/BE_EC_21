@@ -4,8 +4,7 @@ import {
 	IInfoUser
 } from './../Models/Package/Package.Interface';
 import { ReturnServices } from '../Interfaces/Services';
-import { Package } from '../Models';
-import { defaultTypeStatus } from '../common/constants';
+import { Package, Transport } from '../Models';
 
 export default class PackageService {
 	constructor() {}
@@ -15,16 +14,20 @@ export default class PackageService {
 			const {
 				title,
 				description,
-
 				FK_ProductId,
 				FK_ProductType,
-
+  			estimatedDate,
+  			FK_Transport,
+				distance,
+				prices,
+				weight,
 				recipientName,
 				recipientPhone,
 				recipientCity,
 				recipientCounty,
 				recipientWard,
 				recipientAddress,
+
 				recipientCoordinateLat,
 				recipientCoordinateLng,
 
@@ -39,6 +42,8 @@ export default class PackageService {
 			} = body;
       console.log(`LHA:  ===> file: Package.Services.ts ===> line 40 ===> body`, body)
 
+			const currentTransport=await Transport.findById(FK_Transport)
+			if(!currentTransport) 	return { message: "Don't find transport", success: false };
 			const recipientLocation: ILocation = {
 				city: recipientCity,
 				county: recipientCounty,
@@ -83,8 +88,15 @@ export default class PackageService {
 				sender: currentSender,
 				FK_ProductId,
 				FK_ProductType,
-				description
+				FK_Transport,
+				estimatedDate:`${estimatedDate+172800}`,
+				codeBill:`${currentTransport.name.slice(0,3).toLocaleUpperCase()}${(new Date).getTime()}`,
+				description,
+				prices,
+				weight,
+				distance,
 			};
+			
 			console.log(`LHA:  ===> file: Package.Services.ts ===> line 81 ===> obj`, obj)
 
 			const newPackage = new Package(obj);
@@ -97,6 +109,37 @@ export default class PackageService {
 			return { message: 'An error occurred', success: false };
 		}
 	};
+
+
+	public getPackageDetailByStatus = async (body:any):Promise<ReturnServices> => {
+		try {
+			const {id}=body
+			const resPackage= await Package.findById(id)
+			if(!resPackage) return { message: 'get package detail successfully', success: true,data:{}}
+			return { message: 'get packages successfully', success: true,data:resPackage };
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	}
+
+
+	public getPackageByStatus = async (body:any):Promise<ReturnServices> => {
+		try {
+			const {name}=body
+			const packages= await Package.find({status:name},{_id:1,codeBill:1,estimatedDate:1,FK_Transport:1})
+			const clonePackage=await Promise.all(packages.map(async (elm)=>{
+				const {FK_Transport,...cloneObj}=elm.toObject()
+				const res=await Transport.findById(elm.FK_Transport,{_id:1,name:1})
+				cloneObj.Transport=res
+				return cloneObj
+			}))
+			return { message: 'get packages successfully', success: true,data:clonePackage };
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	}
 
 	public functionInit = async (): Promise<ReturnServices> => {
 		try {

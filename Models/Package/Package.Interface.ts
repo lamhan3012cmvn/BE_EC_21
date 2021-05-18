@@ -15,9 +15,21 @@ export interface IInfoUser {
 export interface IPackage {
 	title: string;
 	description: string;
+	codeBill:string,
+
+  estimatedDate:string,
+
+  FK_Transport:string,
+
+  status?:string,
+	prices?:string,
+	distance:string,
+	weight:string,
+	
 	FK_ProductId: string;
+
 	FK_ProductType: string;
 	recipient: IInfoUser;
 	sender: IInfoUser;
 }
-export interface IPackageDocument extends Document {}
+export interface IPackageDocument extends Document,IPackage {}

@@ -59,9 +59,8 @@ export const ProductPath = {
 export const PackagePath = {
   CREATE: "Create",
   UPDATE: "Update",
-  GET_BY_MERCHANT: "GetProductByMerchant",
-  GET_BY_GROUP_PRODUCT: "GetProductByGroup",
-  DELETE: "Delete",
+  GET_PACKAGE_BY_STATUS:"GetPackageByStatus",
+  GET_PACKAGE_DETAIL_BY_STATUS: "GetPackageDetailByStatus",
 };
 
 export const UserPath = {

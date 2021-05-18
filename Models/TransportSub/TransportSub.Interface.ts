@@ -8,7 +8,7 @@ export interface ITransportSub{
 	mail?:string,
 	status?:string,
 	FK_Transport:string,
-	FK_CreateUser?:string,
+	FK_CreateUser?:string,                               
 }
 export interface ITransportSubDocument extends Document,ITransportSub {
 
