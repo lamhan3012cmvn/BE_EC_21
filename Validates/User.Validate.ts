@@ -7,5 +7,16 @@ const validate = {
 	image: joi.string(),
 	address: joi.string(),
   }),
+  favorite: joi.object().keys({
+	id: joi.string().required(),
+  }),
+  addAddress: joi.object().keys({
+  	fullAddress: joi.string().required(),
+  	lat: joi.string().required(),
+  	lng: joi.string().required(),
+  }),
+  deleteAddress: joi.object().keys({
+	id: joi.string().required(),
+  }),
 };
 export default validate;

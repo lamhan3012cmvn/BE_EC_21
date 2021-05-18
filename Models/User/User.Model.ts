@@ -10,5 +10,6 @@ export default {
 	role: { ...defaultModel.string, default: defaultRoleAccount.USER },
 	otp: defaultModel.string,
 	image: defaultModel.string,
-	address: defaultModel.object,
+	address: defaultModel.array,
+	favorites: defaultModel.array,
 };

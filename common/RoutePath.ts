@@ -67,4 +67,7 @@ export const PackagePath = {
 export const UserPath = {
   UPDATE: "Update",
   GET_INFO: "GetInfo",
+  FAVORITE: "Favorite",
+  ADD_ADDRESS: "AddAddress",
+  DELETE_ADDRESS: "DeleteAddress",
 };

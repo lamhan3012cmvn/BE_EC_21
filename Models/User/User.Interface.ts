@@ -1,23 +1,27 @@
-import { Document } from 'mongoose';
+import { Document } from "mongoose";
+
+export interface ICoordinates {
+  lat: string;
+  lng: string;
+}
 
 export interface IAddress {
-	district:string,
-  ward: string,
-  coordinates:string,
-  phoneNumber:string,
+  id: string;
+  fullAddress: string;
+  coordinates: ICoordinates;
+  phoneNumber: string;
 }
-export interface IUser{
-	email: string;
-	fullName?: string;
-	phone: string;
-	password: string;
-	isVerify?: boolean;
-	typeLogin: string;
-	role: string;
-	otp: string;
-	address?: IAddress;
-	image: string;
+export interface IUser {
+  email: string;
+  fullName?: string;
+  phone: string;
+  password: string;
+  isVerify?: boolean;
+  typeLogin: string;
+  role: string;
+  otp: string;
+  address?: Array<IAddress>;
+  image: string;
+  favorites: Array<string>;
 }
-export interface IUserDocument extends Document,IUser {
-	
-}
+export interface IUserDocument extends Document, IUser {}
