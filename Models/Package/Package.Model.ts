@@ -1,4 +1,4 @@
-import { defaultModel } from '../../common/constants';
+import { defaultModel } from './../../common/constants';
 
 export default {
   title:defaultModel.stringR,
@@ -7,6 +7,17 @@ export default {
 
   FK_ProductId:defaultModel.stringRef,
   FK_ProductType:defaultModel.stringR,
+
+  codeBill:defaultModel.stringR,
+
+  estimatedDate:defaultModel.stringR,
+
+  FK_Transport:defaultModel.stringRef,
+
+  status:{...defaultModel.string,default:'INACTIVE'},
+
+  prices:defaultModel.string,
+  weight:defaultModel.string,
 
   recipient:{
     name:defaultModel.stringR,
