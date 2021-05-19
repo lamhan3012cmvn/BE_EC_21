@@ -67,6 +67,7 @@ export const UserPath = {
   UPDATE: "Update",
   GET_INFO: "GetInfo",
   FAVORITE: "Favorite",
+  GET_FAVORITES: "GetFavorites",
   ADD_ADDRESS: "AddAddress",
   DELETE_ADDRESS: "DeleteAddress",
 };
