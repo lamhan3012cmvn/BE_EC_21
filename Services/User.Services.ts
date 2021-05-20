@@ -1,5 +1,6 @@
 import { ReturnServices } from "../Interfaces/Services";
 import { User, Product, ProductInfo } from "../Models";
+import PaypalServices from "./Paypal.Services";
 
 export default class UserService {
   constructor() {}
@@ -152,7 +153,7 @@ export default class UserService {
               lat: body.lat,
               lng: body.lng,
             },
-            phoneNumber: user.phone,
+            phoneNumber: body.phone,
           });
           user.update(
             {
@@ -209,6 +210,26 @@ export default class UserService {
           data: user,
         };
       }
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
+  public buyPoint = async (
+    idUser: string,
+    body: any,
+    next: any
+  ) => {
+    try {
+      const paypalServices: PaypalServices = new PaypalServices();
+      const transactionsInfo = {
+        idUser: idUser,
+        point: body.point,
+        typeOrder: body.typeOrders,
+      };
+      const transactions = ~~body.point * 100; 
+      paypalServices.payment(transactions, transactionsInfo, next);
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };

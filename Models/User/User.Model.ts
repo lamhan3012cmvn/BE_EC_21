@@ -11,5 +11,6 @@ export default {
 	otp: defaultModel.string,
 	image: defaultModel.string,
 	address: defaultModel.array,
+	point: {...defaultModel.number, default: 0},
 	favorites: defaultModel.array,
 };

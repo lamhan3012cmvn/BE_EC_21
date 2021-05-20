@@ -18,5 +18,9 @@ const validate = {
   deleteAddress: joi.object().keys({
 	id: joi.string().required(),
   }),
+  buyPoint: joi.object().keys({
+	point: joi.string().required(),
+	typeOrders: joi.string().required(),
+  }),
 };
 export default validate;

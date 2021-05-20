@@ -19,6 +19,7 @@ import GroupProductController from "./Controllers/GroupProduct.Controller";
 import ProductController from "./Controllers/Product.Controller";
 import PackageController from "./Controllers/Package.Controller";
 import UserController from "./Controllers/User.Controller";
+import PaymentController from "./Controllers/Payment.Controller";
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -31,6 +32,7 @@ const controllers: Array<Controller> = [
   new ProductController(),
   new PackageController(),
   new UserController(),
+  new PaymentController(),
 ];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),

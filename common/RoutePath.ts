@@ -72,4 +72,10 @@ export const UserPath = {
   GET_FAVORITES: "GetFavorites",
   ADD_ADDRESS: "AddAddress",
   DELETE_ADDRESS: "DeleteAddress",
+  BUY_POINT: "BuyPoint",
+};
+
+export const PaymentPath = {
+  PAYPAL_SUCCESS: "Paypal/Success",
+  PAYPAL_CANCEL: "Paypal/Cancel", 
 };

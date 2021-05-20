@@ -23,5 +23,6 @@ export interface IUser {
   address?: Array<IAddress>;
   image: string;
   favorites: Array<string>;
+  point: number;
 }
 export interface IUserDocument extends Document, IUser {}

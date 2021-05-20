@@ -67,3 +67,8 @@ export const defaultTypeLogin={
 	GOOGLE : 'GOOGLE',
 	FACEBOOK : 'FACEBOOK'
 }
+
+export const defaultTypeOder={
+  POINT: "POINT",
+  ORDER: "ORDER",
+}

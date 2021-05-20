@@ -54,6 +54,15 @@ export default class UserController extends Controller {
       handler: this.handleDeleteAddress,
       localMiddleware: [TokenServices.verify],
     },
+    {
+      path: `/${UserPath.BUY_POINT}`,
+      method: Methods.POST,
+      handler: this.handleBuyPoint,
+      localMiddleware: [
+        TokenServices.verify,
+        Validate.body(schemaUser.buyPoint),
+      ],
+    },
   ];
   constructor() {
     super();
@@ -175,6 +184,37 @@ export default class UserController extends Controller {
       } else {
         super.sendError(res, result.message);
       }
+    } catch (e) {
+      console.log(e);
+      super.sendError(res);
+    }
+  }
+
+  async handleBuyPoint(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const idUser = req.value.body.token.data;
+      const body = req.value.body;
+      const userServices: UserServices = new UserServices();
+      await userServices.buyPoint(idUser, body, (error: any, payment: any) => {
+        if (error) {
+          console.log(error);
+          super.sendError(res, "Payment failure!");
+        } else {
+          for (let i = 0; i < payment.links.length; i++) {
+            if (payment.links[i].rel === "approval_url") {
+              super.sendSuccess(
+                res,
+                payment.links[i].href,
+                "Successfully create order"
+              );
+            }
+          }
+        }
+      });
     } catch (e) {
       console.log(e);
       super.sendError(res);
