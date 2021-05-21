@@ -1,5 +1,5 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultTypeOder } from "../common/constants";
+import { defaultTypeOrders } from "../common/constants";
 import { User } from "../Models";
 import dateFormat from "dateformat";
 
@@ -20,7 +20,7 @@ export default class VNPayService {
         connection.socket.remoteAddress;
       const transactions = body.amount * 100;
       const external_return_url =
-        body.typeOrders == defaultTypeOder.POINT
+        body.typeOrders == defaultTypeOrders.POINT
           ? `?price=${transactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
           : `?price=${transactions}&idUser=${body.idUser}`;
 
@@ -121,7 +121,7 @@ export default class VNPayService {
       var checkSum = sha256(signData);
 
       if (secureHash === checkSum) {
-        if (body.typeOrders === defaultTypeOder.POINT) {
+        if (body.typeOrders === defaultTypeOrders.POINT) {
           await User.findOneAndUpdate(
             { _id: body.idUser },
             { $inc: { point: ~~body.point } },

@@ -1,5 +1,5 @@
 import { defaultTypePayment } from "../common/constants";
-import { defaultTypeOder } from "../dist/common/constants";
+import { defaultTypeOrders } from "../common/constants";
 import { ReturnServices } from "../Interfaces/Services";
 import { User, Product, ProductInfo } from "../Models";
 import PaypalServices from "./Paypal.Services";
@@ -226,7 +226,7 @@ export default class UserService {
         const transactionsInfo = {
           idUser: idUser,
           point: body.point,
-          typeOrders: defaultTypeOder.POINT,
+          typeOrders: defaultTypeOrders.POINT,
         };
         const transactions = ~~body.point * 100;
         paypalServices.payment(transactions, transactionsInfo, next);
@@ -235,7 +235,7 @@ export default class UserService {
         const transactionsInfo = {
           idUser: idUser,
           point: body.point,
-          typeOrders: defaultTypeOder.POINT,
+          typeOrders: defaultTypeOrders.POINT,
           amount: `${~~body.point * 100}`,
           bankCode: "NCB",
           orderDescription: "Thanh toan hoa don mua point Van Transport",

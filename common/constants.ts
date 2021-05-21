@@ -68,7 +68,7 @@ export const defaultTypeLogin={
 	FACEBOOK : 'FACEBOOK'
 }
 
-export const defaultTypeOder={
+export const defaultTypeOrders={
   POINT: "POINT",
   ORDER: "ORDER",
 }

@@ -1,5 +1,5 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultTypeOder } from "../common/constants";
+import { defaultTypeOrders } from "../common/constants";
 import paypal from "paypal-rest-sdk";
 import { User } from "../Models";
 
@@ -17,7 +17,7 @@ export default class PaypalService {
         ? dollar2f
         : dollar3f + 0.01;
     const return_url =
-      body.typeOrder == defaultTypeOder.POINT
+      body.typeOrder == defaultTypeOrders.POINT
         ? `http:///localhost:3000/Payment/Paypal/success?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
         : `http:///localhost:3000/Payment/Paypal/success?price=${formatTransactions}&idUser=${body.idUser}`;
     const create_payment_json = {
@@ -80,7 +80,7 @@ export default class PaypalService {
       execute_payment_json,
       async function (error, payment) {
         if (error == null) {
-          if (body.typeOrders === defaultTypeOder.POINT) {
+          if (body.typeOrders === defaultTypeOrders.POINT) {
             await User.findOneAndUpdate(
               { _id: body.idUser },
               { $inc: { point: ~~body.point } },
