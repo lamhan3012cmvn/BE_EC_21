@@ -1,3 +1,4 @@
+import { defaultStatusPackage } from './../common/constants';
 import {
 	IPackage,
 	ILocation,
@@ -16,8 +17,8 @@ export default class PackageService {
 				description,
 				FK_ProductId,
 				FK_ProductType,
-  			estimatedDate,
-  			FK_Transport,
+				estimatedDate,
+				FK_Transport,
 				distance,
 				prices,
 				weight,
@@ -40,48 +41,64 @@ export default class PackageService {
 				senderCoordinateLat,
 				senderCoordinateLng
 			} = body;
-      console.log(`LHA:  ===> file: Package.Services.ts ===> line 40 ===> body`, body)
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 40 ===> body`,
+				body
+			);
 
-			const currentTransport=await Transport.findById(FK_Transport)
-			if(!currentTransport) 	return { message: "Don't find transport", success: false };
+			const currentTransport = await Transport.findById(FK_Transport);
+			if (!currentTransport)
+				return { message: "Don't find transport", success: false };
 			const recipientLocation: ILocation = {
 				city: recipientCity,
 				county: recipientCounty,
 				ward: recipientWard,
 				address: recipientAddress,
 				coordinate: {
-					lat:recipientCoordinateLat,
-					lng: recipientCoordinateLng,
+					lat: recipientCoordinateLat,
+					lng: recipientCoordinateLng
 				}
 			};
-			console.log(`LHA:  ===> file: Package.Services.ts ===> line 43 ===> recipientLocation`, recipientLocation)
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 43 ===> recipientLocation`,
+				recipientLocation
+			);
 
 			const currentRecipient: IInfoUser = {
 				name: recipientName,
 				phone: recipientPhone,
 				location: recipientLocation
 			};
-			console.log(`LHA:  ===> file: Package.Services.ts ===> line 55 ===> currentRecipient`, currentRecipient)
-			
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 55 ===> currentRecipient`,
+				currentRecipient
+			);
+
 			const senderLocation: ILocation = {
 				city: senderCity,
 				county: senderCounty,
 				ward: senderWard,
 				address: senderAddress,
 				coordinate: {
-					lat:senderCoordinateLat,
-					lng: senderCoordinateLng,
+					lat: senderCoordinateLat,
+					lng: senderCoordinateLng
 				}
 			};
-			console.log(`LHA:  ===> file: Package.Services.ts ===> line 62 ===> senderLocation`, senderLocation)
-			const currentSender:IInfoUser = {
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 62 ===> senderLocation`,
+				senderLocation
+			);
+			const currentSender: IInfoUser = {
 				name: senderName,
 				phone: senderPhone,
 				location: senderLocation
 			};
-			
-			console.log(`LHA:  ===> file: Package.Services.ts ===> line 73 ===> currentSender`, currentSender)
-			
+
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 73 ===> currentSender`,
+				currentSender
+			);
+
 			const obj: IPackage = {
 				title,
 				recipient: currentRecipient,
@@ -89,19 +106,27 @@ export default class PackageService {
 				FK_ProductId,
 				FK_ProductType,
 				FK_Transport,
-				estimatedDate:`${estimatedDate+172800}`,
-				codeBill:`${currentTransport.name.slice(0,3).toLocaleUpperCase()}${(new Date).getTime()}`,
+				estimatedDate: `${estimatedDate + 172800}`,
+				codeBill: `${currentTransport.name
+					.slice(0, 3)
+					.toLocaleUpperCase()}${new Date().getTime()}`,
 				description,
 				prices,
 				weight,
-				distance,
+				distance
 			};
-			
-			console.log(`LHA:  ===> file: Package.Services.ts ===> line 81 ===> obj`, obj)
+
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 81 ===> obj`,
+				obj
+			);
 
 			const newPackage = new Package(obj);
 			//await newPackage.save();
-      console.log(`LHA:  ===> file: Package.Services.ts ===> line 85 ===> newPackage`, newPackage)
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 85 ===> newPackage`,
+				newPackage
+			);
 
 			return { message: 'Create Successfully', success: true };
 		} catch (e) {
@@ -110,36 +135,57 @@ export default class PackageService {
 		}
 	};
 
-
-	public getPackageDetailByStatus = async (body:any):Promise<ReturnServices> => {
+	public getPackageDetailByStatus = async (
+		body: any
+	): Promise<ReturnServices> => {
 		try {
-			const {id}=body
-			const resPackage= await Package.findById(id)
-			if(!resPackage) return { message: 'get package detail successfully', success: true,data:{}}
-			return { message: 'get packages successfully', success: true,data:resPackage };
+			const { id } = body;
+			const resPackage = await Package.findById(id);
+			if (!resPackage)
+				return {
+					message: 'get package detail successfully',
+					success: true,
+					data: {}
+				};
+			return {
+				message: 'get packages successfully',
+				success: true,
+				data: resPackage
+			};
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
 		}
-	}
+	};
 
-
-	public getPackageByStatus = async (body:any):Promise<ReturnServices> => {
+	public getPackageByStatus = async (body: any): Promise<ReturnServices> => {
 		try {
-			const {name}=body
-			const packages= await Package.find({status:name},{_id:1,codeBill:1,estimatedDate:1,FK_Transport:1})
-			const clonePackage=await Promise.all(packages.map(async (elm)=>{
-				const {FK_Transport,...cloneObj}=elm.toObject()
-				const res=await Transport.findById(elm.FK_Transport,{_id:1,name:1})
-				cloneObj.Transport=res
-				return cloneObj
-			}))
-			return { message: 'get packages successfully', success: true,data:clonePackage };
+			const { name } = body;
+			const packages = await Package.find(
+				{ status: name },
+				{ _id: 1, codeBill: 1, estimatedDate: 1, FK_Transport: 1 }
+			);
+			const clonePackage = await Promise.all(
+				packages.map(async elm => {
+					const { FK_Transport, ...cloneObj } = elm.toObject();
+					const res = await Transport.findById(elm.FK_Transport, {
+						_id: 1,
+						name: 1
+					});
+					cloneObj.Transport = res;
+					return cloneObj;
+				})
+			);
+			return {
+				message: 'get packages successfully',
+				success: true,
+				data: clonePackage
+			};
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
 		}
-	}
+	};
 
 	public automaticPackageToSub = async (): Promise<ReturnServices> => {
 		try {
@@ -159,10 +205,42 @@ export default class PackageService {
 		}
 	};
 
-	public updatePackage= async (body:any): Promise<ReturnServices> => {
+	public confirmPackage = async (body: any): Promise<ReturnServices> => {
 		try {
+			const { idPackage } = body;
+			const resPackage = await Package.findById(idPackage);
 
+			if (!resPackage)
+				return { message: 'No package found to confirm', success: false };
+
+			resPackage.status = defaultStatusPackage.onGoing;
+			await resPackage.save();
+
+			//Create await package
+
+			return { message: 'Change the package to in-delivery', success: true };
+		} catch (e) {
+			console.log(e);
 			return { message: 'An error occurred', success: false };
+		}
+	};
+
+	public confirmPackages = async (body: any): Promise<ReturnServices> => {
+		try {
+			const { idPackages } = body;
+			idPackages.forEach(async (id:string) => {
+				const resPackage = await Package.findById(id);
+				if (resPackage) {
+					resPackage.status = defaultStatusPackage.onGoing;
+					await resPackage.save();
+				}
+			});
+
+			// if(!resPackage) return { message: 'No package found to confirm', success: false };
+
+			//Create await package
+
+			return { message: 'Change the package to in-delivery', success: true };
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };

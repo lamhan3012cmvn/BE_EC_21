@@ -1,4 +1,4 @@
-import { defaultModel } from './../../common/constants';
+import { defaultModel, defaultStatusPackage } from './../../common/constants';
 
 export default {
   title:defaultModel.stringR,
@@ -14,7 +14,7 @@ export default {
 
   FK_Transport:defaultModel.stringRef,
 
-  status:{...defaultModel.string,default:'INACTIVE'},
+  status:{...defaultModel.string,default:defaultStatusPackage.waitForConfirmation},
 
   isAwait:defaultModel.booleanFalse,
 

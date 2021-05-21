@@ -63,6 +63,8 @@ export const PackagePath = {
   UPDATE: "Update",
   GET_PACKAGE_BY_STATUS:"GetPackageByStatus",
   GET_PACKAGE_DETAIL_BY_STATUS: "GetPackageDetailByStatus",
+  CONFIRM_PACKAGE:"ConfirmPackage",
+  CONFIRM_PACKAGES:"ConfirmPackages"
 };
 
 export const UserPath = {

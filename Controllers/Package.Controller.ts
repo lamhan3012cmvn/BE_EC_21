@@ -39,13 +39,23 @@ export default class PackageController extends Controller {
 			]
 		},
 		{
-			path: `/${PackagePath.UPDATE}`,
+			path: `/${PackagePath.CONFIRM_PACKAGE}`,
 			method: Methods.POST,
-			handler: this.handleUpdatePackage,
+			handler: this.handleConfirmPackage,
 			localMiddleware: [
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole("SingleTon NEk"),
-				// Validate.body(schemaPackage.getPackageDetailByStatus)
+				Validate.body(schemaPackage.getPackageDetailByStatus)
+			]
+		},
+		{
+			path: `/${PackagePath.CONFIRM_PACKAGES}`,
+			method: Methods.POST,
+			handler: this.handleConfirmPackages,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole("SingleTon NEk"),
+				Validate.body(schemaPackage.getPackageDetailByStatus)
 			]
 		}
 	];
@@ -53,18 +63,41 @@ export default class PackageController extends Controller {
 		super();
 	}
 
-	async handleUpdatePackage(req: IValidateRequest | any,
+	async handleConfirmPackage(req: IValidateRequest | any,
 		res: Response,
 		next: NextFunction){
 			try{
-				console.log("package update")
-				super.sendError(res);
+				const packageService: PackageService = new PackageService();
+				const result = await packageService.confirmPackage(req.value.body);
+	
+				if (result.success) {
+					super.sendSuccess(res, {}, result.message);
+				} else {
+					super.sendError(res, result.message);
+				}
 			}
 			catch(err){
 				super.sendError(res);
 			}
 		}
-
+		async handleConfirmPackages(req: IValidateRequest | any,
+			res: Response,
+			next: NextFunction){
+				try{
+					const packageService: PackageService = new PackageService();
+					const result = await packageService.confirmPackages(req.value.body);
+		
+					if (result.success) {
+						super.sendSuccess(res, {}, result.message);
+					} else {
+						super.sendError(res, result.message);
+					}
+				}
+				catch(err){
+					super.sendError(res);
+				}
+			}
+	
 	async handleGetPackageDetailByStatus(req: IValidateRequest | any,
 		res: Response,
 		next: NextFunction){

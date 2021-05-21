@@ -22,6 +22,7 @@ export interface IPackage {
   FK_Transport:string,
 
   status?:string,
+	isAwait?:boolean,
 	prices?:string,
 	distance:string,
 	weight:string,
