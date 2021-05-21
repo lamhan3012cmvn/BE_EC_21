@@ -18,7 +18,7 @@ export default class PaypalService {
         : dollar3f + 0.01;
     const return_url =
       body.typeOrder == defaultTypeOder.POINT
-        ? `http:///localhost:3000/Payment/Paypal/success?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrder}`
+        ? `http:///localhost:3000/Payment/Paypal/success?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
         : `http:///localhost:3000/Payment/Paypal/success?price=${formatTransactions}&idUser=${body.idUser}`;
     const create_payment_json = {
       intent: "sale",
@@ -87,6 +87,7 @@ export default class PaypalService {
               { new: true }
             );
           } else {
+            // Type ORDER
           }
         }
         next(error, payment);

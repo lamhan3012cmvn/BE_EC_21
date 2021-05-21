@@ -20,7 +20,7 @@ const validate = {
   }),
   buyPoint: joi.object().keys({
 	point: joi.string().required(),
-	typeOrders: joi.string().required(),
+	typePayment: joi.string().required(),
   }),
 };
 export default validate;

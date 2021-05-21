@@ -3,6 +3,7 @@ dotenv.config();
 import morgan from "morgan";
 import { urlencoded } from "body-parser";
 import cors from "cors";
+import path from "path";
 // express
 import express, { Application, RequestHandler } from "express";
 // important typings
@@ -36,6 +37,7 @@ const controllers: Array<Controller> = [
 ];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
+  express.static(path.join(__dirname, "public")),
   urlencoded({ extended: false }),
   cors({ origin: true }),
   morgan("combined"),
@@ -49,5 +51,5 @@ Promise.resolve()
   .then(() => {
     server.loadMiddleware(globalMiddleware);
     server.loadControllers(controllers);
-    const httpServer = server.run();
+    const httpServer = server.run(path.join(__dirname, "views"));
   });

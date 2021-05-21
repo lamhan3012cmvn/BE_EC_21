@@ -6,6 +6,8 @@ import Validate from "../Validates/Validate";
 import schemaUser from "../Validates/User.Validate";
 import { IValidateRequest } from "../common/DefineRequest";
 import UserServices from "../Services/User.Services";
+import { defaultTypePayment } from "../common/constants";
+import { ReturnServices } from "../Interfaces/Services";
 export default class UserController extends Controller {
   path = "/User";
   routes = [
@@ -199,22 +201,35 @@ export default class UserController extends Controller {
       const idUser = req.value.body.token.data;
       const body = req.value.body;
       const userServices: UserServices = new UserServices();
-      await userServices.buyPoint(idUser, body, (error: any, payment: any) => {
-        if (error) {
-          console.log(error);
-          super.sendError(res, "Payment failure!");
-        } else {
-          for (let i = 0; i < payment.links.length; i++) {
-            if (payment.links[i].rel === "approval_url") {
-              super.sendSuccess(
-                res,
-                payment.links[i].href,
-                "Successfully create order"
-              );
+      await userServices.buyPoint(
+        idUser,
+        body,
+        req,
+        body.typePayment === defaultTypePayment.PAYPAL
+          ? (error: any, payment: any) => {
+              if (error) {
+                console.log(error);
+                super.sendError(res, "Payment failure!");
+              } else {
+                for (let i = 0; i < payment.links.length; i++) {
+                  if (payment.links[i].rel === "approval_url") {
+                    super.sendSuccess(
+                      res,
+                      payment.links[i].href,
+                      "Successfully create order"
+                    );
+                  }
+                }
+              }
             }
-          }
-        }
-      });
+          : (result: ReturnServices) => {
+              if (result.success) {
+                super.sendSuccess(res, result.data.url, "Successfully create order");
+              }else {
+                super.sendError(res, result.message);
+              }
+            }
+      );
     } catch (e) {
       console.log(e);
       super.sendError(res);

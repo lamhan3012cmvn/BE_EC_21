@@ -2,7 +2,8 @@ import { PaymentPath } from "../common/RoutePath";
 import { Response, NextFunction } from "express";
 import Controller, { Methods } from "./Controller";
 import { IValidateRequest } from "../common/DefineRequest";
-import PaymentServices from "../Services/Paypal.Services";
+import PaypalServices from "../Services/Paypal.Services";
+import VnpayServices from "../Services/VNPay.Services";
 export default class PaymentController extends Controller {
   path = "/Payment";
   routes = [
@@ -15,7 +16,13 @@ export default class PaymentController extends Controller {
     {
       path: `/${PaymentPath.PAYPAL_CANCEL}`,
       method: Methods.GET,
-      handler: this.handleUpdate,
+      handler: this.handleCancel,
+      localMiddleware: [],
+    },
+    {
+      path: `/${PaymentPath.VNPAY_RETURN}`,
+      method: Methods.GET,
+      handler: this.handleVnpayReturn,
       localMiddleware: [],
     },
   ];
@@ -30,7 +37,7 @@ export default class PaymentController extends Controller {
   ): Promise<void> {
     try {
       let paymentInfo = req.query;
-      const paymentServices: PaymentServices = new PaymentServices();
+      const paymentServices: PaypalServices = new PaypalServices();
       await paymentServices.paymentSuccess(
         paymentInfo,
         (error: any, payment: any) => {
@@ -47,13 +54,13 @@ export default class PaymentController extends Controller {
       super.sendError(res);
     }
   }
-  async handleUpdate(
+  async handleCancel(
     req: IValidateRequest | any,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const paymentServices: PaymentServices = new PaymentServices();
+      const paymentServices: PaypalServices = new PaypalServices();
       const result = await paymentServices.cancelPayment();
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
@@ -61,6 +68,27 @@ export default class PaymentController extends Controller {
         super.sendError(res, result.message);
       }
     } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleVnpayReturn(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const body = req.query;
+      const vnpayServices: VnpayServices = new VnpayServices();
+      const result = await vnpayServices.vpnReturn(body);
+      if (result.success) {
+        res.render("success", { code: "00"});
+        console.log(result);
+      } else {
+        res.render("success", { code: "97" });
+      }
+    } catch (e) {
+      console.log(e);
       super.sendError(res);
     }
   }

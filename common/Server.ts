@@ -13,7 +13,9 @@ class App {
     this._port = PORT;
     this._dbUrl = DB_URL;
   }
-  public run(): http.Server {
+  public run(dirname: any): http.Server {
+    this.app.set("views", dirname);
+    this.app.set("view engine", "jade");
     return this.app.listen(this._port, () =>
       console.log(
         ` ⚡️ [server]: Server is running at https://localhost:${this._port}`

@@ -78,4 +78,6 @@ export const UserPath = {
 export const PaymentPath = {
   PAYPAL_SUCCESS: "Paypal/Success",
   PAYPAL_CANCEL: "Paypal/Cancel", 
+  VNPAY: "VNPay",
+  VNPAY_RETURN: "VNPayReturn",
 };

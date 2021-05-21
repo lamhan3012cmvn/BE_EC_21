@@ -7,9 +7,8 @@ export default async (id: string, secret: string) => {
       client_id: id,
       client_secret: secret,
     });
-    console.log("Success Paypal");
   } catch (error) {
-    console.log(error);
+    console.log("Connect Paypal Fail!");
   }
 }
 

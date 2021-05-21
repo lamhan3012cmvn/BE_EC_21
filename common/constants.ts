@@ -72,3 +72,9 @@ export const defaultTypeOder={
   POINT: "POINT",
   ORDER: "ORDER",
 }
+
+export const defaultTypePayment={
+  POINT: "POINT",
+  PAYPAL: "PAYPAL",
+  VNPAY: "VNPAY",
+}
