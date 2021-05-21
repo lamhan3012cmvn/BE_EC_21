@@ -1,5 +1,9 @@
+import { defaultTypePayment } from "../common/constants";
+import { defaultTypeOrders } from "../common/constants";
 import { ReturnServices } from "../Interfaces/Services";
 import { User, Product, ProductInfo } from "../Models";
+import PaypalServices from "./Paypal.Services";
+import VNPayServices from "./VNPay.Services";
 
 export default class UserService {
   constructor() {}
@@ -152,7 +156,7 @@ export default class UserService {
               lat: body.lat,
               lng: body.lng,
             },
-            phoneNumber: user.phone,
+            phoneNumber: body.phone,
           });
           user.update(
             {
@@ -208,6 +212,42 @@ export default class UserService {
           success: true,
           data: user,
         };
+      }
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
+  public buyPoint = async (idUser: string, body: any, req: any, next: any) => {
+    try {
+      if (body.typePayment == defaultTypePayment.PAYPAL) {
+        const paypalServices: PaypalServices = new PaypalServices();
+        const transactionsInfo = {
+          idUser: idUser,
+          point: body.point,
+          typeOrders: defaultTypeOrders.POINT,
+        };
+        const transactions = ~~body.point * 100;
+        paypalServices.payment(transactions, transactionsInfo, next);
+      } else {
+        const vnpayServices: VNPayServices = new VNPayServices();
+        const transactionsInfo = {
+          idUser: idUser,
+          point: body.point,
+          typeOrders: defaultTypeOrders.POINT,
+          amount: `${~~body.point * 100}`,
+          bankCode: "NCB",
+          orderDescription: "Thanh toan hoa don mua point Van Transport",
+          language: "vn",
+        };
+        const result = await vnpayServices.payment(
+          transactionsInfo,
+          req.headers,
+          req.connection,
+          req.socket
+        );
+        next(result);
       }
     } catch (e) {
       console.log(e);

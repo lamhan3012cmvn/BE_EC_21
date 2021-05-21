@@ -81,8 +81,8 @@ export default class ProductService {
 
   public getProductByMerchant = async (body: any): Promise<ReturnServices> => {
     try {
-      let perPage = body.perPage || 12;
-      let page = body.page || 1;
+      let perPage = ~~body.perPage || 12;
+      let page = ~~body.page || 1;
       const products = await ProductInfo.find({
         FK_merchant: body.id,
         status: defaultTypeStatus.active,
@@ -103,8 +103,8 @@ export default class ProductService {
 
   public getProductByGroup = async (body: any): Promise<ReturnServices> => {
     try {
-      let perPage = body.perPage || 12;
-      let page = body.page || 1;
+      let perPage = ~~body.perPage || 12;
+      let page = ~~body.page || 1;
       const products = await ProductInfo.find({
         FK_groupProduct: body.id,
         status: defaultTypeStatus.active,
@@ -153,6 +153,77 @@ export default class ProductService {
           data: productInfo,
         };
       }
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
+  public filterAllProducts = async (body: any): Promise<ReturnServices> => {
+    try {
+      let search = body.search || '';
+      let perPage = ~~body.perPage || 12;
+      let page = ~~body.page || 1;
+      const products = await ProductInfo.find({
+        name: new RegExp('/' + search + '/'),
+        status: defaultTypeStatus.active,
+      })
+        .skip(perPage * page - perPage)
+        .limit(perPage);
+
+      return {
+        message: "Successfully get product",
+        success: true,
+        data: products,
+      };
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
+  public filterProductByCategory = async (
+    body: any
+  ): Promise<ReturnServices> => {
+    try {
+      let search = body.search || '';
+      let idCategory = body.idCategory;
+      let perPage = ~~body.perPage || 12;
+      let page = ~~body.page || 1;
+      let result = [];
+      const merchants = await Merchant.find({ FK_category: idCategory });
+      if (!merchants) {
+        return {
+          message: "Could not found merchants",
+          success: false,
+        };
+      } else {
+        for (let i = 0; i < merchants.length; i++) {
+          const products = await ProductInfo.find({
+            name: new RegExp('/' + search + '/'),
+            FK_merchant: body.id,
+            status: defaultTypeStatus.active,
+          })
+            .skip(perPage * page - perPage)
+            .limit(perPage);
+
+          perPage -= products.length;
+          if (perPage == 0) {
+            return {
+              message: "Successfully get product",
+              success: true,
+              data: result,
+            };
+          } else {
+            result.push(products);
+          }
+        }
+      }
+      return {
+        message: "Successfully get product",
+        success: true,
+        data: result,
+      };
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };

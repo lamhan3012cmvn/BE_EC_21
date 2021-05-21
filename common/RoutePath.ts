@@ -53,6 +53,8 @@ export const ProductPath = {
   UPDATE: "Update",
   GET_BY_MERCHANT: "GetProductByMerchant",
   GET_BY_GROUP_PRODUCT: "GetProductByGroup",
+  FILTER_ALL: "FilterAll",
+  FILTER_BY_CATEGORY: "FilterByCategory",
   DELETE: "Delete",
 };
 
@@ -70,4 +72,12 @@ export const UserPath = {
   GET_FAVORITES: "GetFavorites",
   ADD_ADDRESS: "AddAddress",
   DELETE_ADDRESS: "DeleteAddress",
+  BUY_POINT: "BuyPoint",
+};
+
+export const PaymentPath = {
+  PAYPAL_SUCCESS: "Paypal/Success",
+  PAYPAL_CANCEL: "Paypal/Cancel", 
+  VNPAY: "VNPay",
+  VNPAY_RETURN: "VNPayReturn",
 };

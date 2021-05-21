@@ -40,6 +40,18 @@ export default class ProductController extends Controller {
       localMiddleware: [],
     },
     {
+      path: `/${ProductPath.FILTER_ALL}`,
+      method: Methods.GET,
+      handler: this.handleFilterAll,
+      localMiddleware: [],
+    },
+    {
+      path: `/${ProductPath.FILTER_BY_CATEGORY}`,
+      method: Methods.GET,
+      handler: this.handleFilterByCategory,
+      localMiddleware: [],
+    },
+    {
       path: `/${ProductPath.DELETE}`,
       method: Methods.DELETE,
       handler: this.handleDelete,
@@ -114,6 +126,44 @@ export default class ProductController extends Controller {
       const query = req.query;
       const productService: ProductServices = new ProductServices();
       const result = await productService.getProductByGroup(query);
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleFilterAll(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const query = req.query;
+      const productService: ProductServices = new ProductServices();
+      const result = await productService.filterAllProducts(query);
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleFilterByCategory(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const query = req.query;
+      const productService: ProductServices = new ProductServices();
+      const result = await productService.filterProductByCategory(query);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {

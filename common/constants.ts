@@ -73,3 +73,13 @@ export const defaultStatusPackage={
   onGoing:"ON_GOING",
   delivered:"DELIVERED"
 }
+export const defaultTypeOrders={
+  POINT: "POINT",
+  ORDER: "ORDER",
+}
+
+export const defaultTypePayment={
+  POINT: "POINT",
+  PAYPAL: "PAYPAL",
+  VNPAY: "VNPAY",
+}

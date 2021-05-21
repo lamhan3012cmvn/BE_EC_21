@@ -3,6 +3,7 @@ dotenv.config();
 import morgan from "morgan";
 import { urlencoded } from "body-parser";
 import cors from "cors";
+import path from "path";
 // express
 import express, { Application, RequestHandler } from "express";
 // important typings
@@ -19,6 +20,7 @@ import GroupProductController from "./Controllers/GroupProduct.Controller";
 import ProductController from "./Controllers/Product.Controller";
 import PackageController from "./Controllers/Package.Controller";
 import UserController from "./Controllers/User.Controller";
+import PaymentController from "./Controllers/Payment.Controller";
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -31,9 +33,11 @@ const controllers: Array<Controller> = [
   new ProductController(),
   new PackageController(),
   new UserController(),
+  new PaymentController(),
 ];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
+  express.static(path.join(__dirname, "public")),
   urlencoded({ extended: false }),
   cors({ origin: true }),
   morgan("combined"),
@@ -47,5 +51,5 @@ Promise.resolve()
   .then(() => {
     server.loadMiddleware(globalMiddleware);
     server.loadControllers(controllers);
-    const httpServer = server.run();
+    const httpServer = server.run(path.join(__dirname, "views"));
   });
