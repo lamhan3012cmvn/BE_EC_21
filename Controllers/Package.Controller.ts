@@ -7,6 +7,7 @@ import schemaPackage from '../Validates/Package.Validate';
 import { IValidateRequest } from '../common/DefineRequest';
 import PackageService from '../Services/Package.Services';
 import RoleInstance from '../common/RoleInstance';
+import { defaultRoleAccount as Role} from '../dist/common/constants';
 
 export default class PackageController extends Controller {
 	path = '/Package';
@@ -44,7 +45,7 @@ export default class PackageController extends Controller {
 			handler: this.handleConfirmPackage,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole("SingleTon NEk"),
+				RoleInstance.getInstance().isRole([Role.TRANSPORT,Role.TRANSPORT_SUB,Role.TRANSPORT_SUB_CITY]),
 				Validate.body(schemaPackage.getPackageDetailByStatus)
 			]
 		},
@@ -54,7 +55,7 @@ export default class PackageController extends Controller {
 			handler: this.handleConfirmPackages,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole("SingleTon NEk"),
+				RoleInstance.getInstance().isRole([Role.TRANSPORT,Role.TRANSPORT_SUB,Role.TRANSPORT_SUB_CITY]),
 				Validate.body(schemaPackage.getPackageDetailByStatus)
 			]
 		}
