@@ -141,6 +141,34 @@ export default class PackageService {
 		}
 	}
 
+	public automaticPackageToSub = async (): Promise<ReturnServices> => {
+		try {
+			return { message: 'An error occurred', success: false };
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+
+	public automaticSubToPackage = async (): Promise<ReturnServices> => {
+		try {
+			return { message: 'An error occurred', success: false };
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+
+	public updatePackage= async (body:any): Promise<ReturnServices> => {
+		try {
+
+			return { message: 'An error occurred', success: false };
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+
 	public functionInit = async (): Promise<ReturnServices> => {
 		try {
 			return { message: 'An error occurred', success: false };

@@ -6,6 +6,7 @@ import Validate from '../Validates/Validate';
 import schemaPackage from '../Validates/Package.Validate';
 import { IValidateRequest } from '../common/DefineRequest';
 import PackageService from '../Services/Package.Services';
+import RoleInstance from '../common/RoleInstance';
 
 export default class PackageController extends Controller {
 	path = '/Package';
@@ -36,11 +37,33 @@ export default class PackageController extends Controller {
 				TokenServices.verify,
 				Validate.body(schemaPackage.getPackageDetailByStatus)
 			]
+		},
+		{
+			path: `/${PackagePath.UPDATE}`,
+			method: Methods.POST,
+			handler: this.handleUpdatePackage,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole("SingleTon NEk"),
+				// Validate.body(schemaPackage.getPackageDetailByStatus)
+			]
 		}
 	];
 	constructor() {
 		super();
 	}
+
+	async handleUpdatePackage(req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction){
+			try{
+				console.log("package update")
+				super.sendError(res);
+			}
+			catch(err){
+				super.sendError(res);
+			}
+		}
 
 	async handleGetPackageDetailByStatus(req: IValidateRequest | any,
 		res: Response,

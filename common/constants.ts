@@ -67,3 +67,9 @@ export const defaultTypeLogin={
 	GOOGLE : 'GOOGLE',
 	FACEBOOK : 'FACEBOOK'
 }
+
+export const defaultStatusPackage={
+  waitForConfirmation:"AWAIT_FOR_CONFIRMATION",
+  onGoing:"ON_GOING",
+  delivered:"DELIVERED"
+}

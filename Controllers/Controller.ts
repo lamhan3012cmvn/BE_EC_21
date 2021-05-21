@@ -1,5 +1,6 @@
 import { Response, NextFunction, Router, RequestHandler } from "express";
 import { IValidateRequest } from "../common/DefineRequest";
+import RoleInstance from "../common/RoleInstance";
 
 export enum Methods {
   GET = "GET",
@@ -20,11 +21,11 @@ interface IRoute {
     req: IValidateRequest,
     res: Response,
     next: NextFunction
-  ) => void)[];
+  ) => void)[]|RoleInstance[];
 }
 
 export default abstract class Controller {
-  public router: Router = Router();
+  public router: Router|any = Router();
   public abstract path: string;
   protected abstract readonly routes: Array<IRoute> = [];
 

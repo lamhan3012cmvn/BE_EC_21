@@ -16,6 +16,8 @@ export default {
 
   status:{...defaultModel.string,default:'INACTIVE'},
 
+  isAwait:defaultModel.booleanFalse,
+
   prices:defaultModel.string,
   weight:defaultModel.string,
 
