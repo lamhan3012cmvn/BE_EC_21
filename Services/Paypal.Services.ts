@@ -8,12 +8,12 @@ export default class PaypalService {
 
   public payment = async (transactions: number, body: any, next: any) => {
     const dollar = transactions / 23050;
-    const dollar2f = Math.round(dollar * 100) / 100;
-    const dollar3f = Math.round(dollar * 1000) / 1000;
+    const dollar2f = parseFloat(dollar.toFixed(2));
+    const dollar3f = parseFloat(dollar.toFixed(3));
     const formatTransactions =
       dollar % dollar2f == 0
         ? dollar2f
-        : dollar2f > dollar3f
+        : dollar2f >= dollar3f
         ? dollar2f
         : dollar3f + 0.01;
     const return_url =

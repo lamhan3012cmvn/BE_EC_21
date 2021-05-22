@@ -77,6 +77,7 @@ export default class MerchantService {
         description: body.description,
         image: body.image,
         address: address,
+        FK_category: body.FK_category,
       };
       const merchant = await Merchant.findOneAndUpdate(
         { _id: body.id, FK_createUser: body.FK_createUser },

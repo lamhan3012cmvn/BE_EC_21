@@ -19,6 +19,7 @@ export default class Token {
 			return;
 		}
 		const token = header.split(' ')[1];
+		console.log(token);
 		jwt.verify(token, ACCESS_TOKEN_SECRET!, (err:any, decodedFromToken:any) => {
 			if (err) {
 				res.status(400).json({
