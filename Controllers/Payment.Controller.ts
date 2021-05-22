@@ -43,9 +43,9 @@ export default class PaymentController extends Controller {
         (error: any, payment: any) => {
           {
             if (error) {
-              super.sendError(res, "Payment failure");
+              res.render("success", { code: "97" });
             } else {
-              super.sendSuccess(res, payment, "Successfully payment");
+              res.render("success", { code: "00" });
             }
           }
         }
@@ -61,12 +61,8 @@ export default class PaymentController extends Controller {
   ): Promise<void> {
     try {
       const paymentServices: PaypalServices = new PaypalServices();
-      const result = await paymentServices.cancelPayment();
-      if (result.success) {
-        super.sendSuccess(res, result.data, result.message);
-      } else {
-        super.sendError(res, result.message);
-      }
+      await paymentServices.cancelPayment();
+      res.render("success", { code: "97" });
     } catch {
       super.sendError(res);
     }
@@ -82,8 +78,7 @@ export default class PaymentController extends Controller {
       const vnpayServices: VnpayServices = new VnpayServices();
       const result = await vnpayServices.vpnReturn(body);
       if (result.success) {
-        res.render("success", { code: "00"});
-        console.log(result);
+        res.render("success", { code: "00" });
       } else {
         res.render("success", { code: "97" });
       }
