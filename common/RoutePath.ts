@@ -71,6 +71,7 @@ export const UserPath = {
   FAVORITE: "Favorite",
   GET_FAVORITES: "GetFavorites",
   ADD_ADDRESS: "AddAddress",
+  UPDATE_ADDRESS: "UpdateAddress",
   DELETE_ADDRESS: "DeleteAddress",
   BUY_POINT: "BuyPoint",
 };
