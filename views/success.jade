@@ -2,8 +2,6 @@ extends layout
 
 block content
     if code == "00"
-        p(style="text-align: center; color: green")  GD thành công
+        p(style="text-align: center; color: green")  Giao dịch thành công
     else
-        p(style="text-align: center; color: red") GD thất bại
-    p(style="text-align: center")
-        a.btn.btn-default(href='/order') Về danh sách
+        p(style="text-align: center; color: red") Giao dịch thất bại

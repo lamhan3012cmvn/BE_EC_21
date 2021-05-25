@@ -5,9 +5,9 @@
 	"author": "\"o0oKenZyo0o\"",
 	"license": "MIT",
 	"scripts": {
-		"build": "rimraf dist/ && tsc",
+		"build": "rimraf dist/ && tsc && cp -r ./public dist/ && cp -r ./views dist/",
 		"start": "npm run build && node dist/index.js",
-		"build:prod": "tsc",
+		"build:prod": "tsc && cp -r ./public dist/ && cp -r ./views dist/",
 		"start:prod": "node dist/index.js",
 		"dev": "nodemon dist/index.js",
 		"pm2": "yarn build && yarn pm2:start",

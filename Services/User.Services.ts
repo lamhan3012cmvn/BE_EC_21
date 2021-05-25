@@ -178,6 +178,52 @@ export default class UserService {
     }
   };
 
+  public updateAddress = async (
+    idUser: string,
+    body: any
+  ): Promise<ReturnServices> => {
+    try {
+      const user = await User.findById(idUser);
+      if (!user) {
+        return {
+          message: "User does not exists",
+          success: false,
+        };
+      } else {
+        var address = user.address;
+        if (!address) {
+          return {
+            message: "User does not exists",
+            success: false,
+          };
+        } else {
+          const index = address.findIndex((e) => e.id == body.id);
+          if (index != -1) {
+            address[index] = {
+              id: body.id,
+              fullAddress: body.fullAddress,
+              coordinates: {
+                lat: body.lat,
+                lng: body.lng,
+              },
+              phoneNumber: body.phone,
+            };
+          }
+          user.update({$set: {address: address}}).exec();
+          await user.save();
+        }
+        return {
+          message: "Successfully update address",
+          success: true,
+          data: user,
+        };
+      }
+    } catch (error) {
+      console.log(error);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
   public deleteAddress = async (
     idUser: string,
     idAddress: string

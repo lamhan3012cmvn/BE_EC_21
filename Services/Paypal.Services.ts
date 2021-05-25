@@ -8,26 +8,26 @@ export default class PaypalService {
 
   public payment = async (transactions: number, body: any, next: any) => {
     const dollar = transactions / 23050;
-    const dollar2f = Math.round(dollar * 100) / 100;
-    const dollar3f = Math.round(dollar * 1000) / 1000;
+    const dollar2f = parseFloat(dollar.toFixed(2));
+    const dollar3f = parseFloat(dollar.toFixed(3));
     const formatTransactions =
       dollar % dollar2f == 0
         ? dollar2f
-        : dollar2f > dollar3f
+        : dollar2f >= dollar3f
         ? dollar2f
         : dollar3f + 0.01;
     const return_url =
-      body.typeOrder == defaultTypeOrders.POINT
-        ? `http:///localhost:3000/Payment/Paypal/success?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-        : `http:///localhost:3000/Payment/Paypal/success?price=${formatTransactions}&idUser=${body.idUser}`;
+      body.typeOrders == defaultTypeOrders.POINT
+        ? `?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
+        : `?price=${formatTransactions}&idUser=${body.idUser}`;
     const create_payment_json = {
       intent: "sale",
       payer: {
         payment_method: "paypal",
       },
       redirect_urls: {
-        return_url: return_url,
-        cancel_url: "http://localhost:3000/Payment/Paypal/Cancel",
+        return_url: process.env.paypal_success + return_url,
+        cancel_url: process.env.paypal_cancel,
       },
       transactions: [
         {
