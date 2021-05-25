@@ -27,6 +27,17 @@ export default class PackageController extends Controller {
 			handler: this.handleGetPackageByStatus,
 			localMiddleware: [
 				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
+				Validate.body(schemaPackage.getPackageByStatus)
+			]
+		},
+		{
+			path: `/${PackagePath.GET_PACKAGE_SUB_BY_STATUS}`,
+			method: Methods.GET,
+			handler: this.handleGetPackageSubByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT_SUB]),
 				Validate.body(schemaPackage.getPackageByStatus)
 			]
 		},
@@ -36,6 +47,7 @@ export default class PackageController extends Controller {
 			handler: this.handleGetPackageDetailByStatus,
 			localMiddleware: [
 				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT,Role.TRANSPORT_SUB,Role.TRANSPORT_SUB_CITY]),
 				Validate.body(schemaPackage.getPackageDetailByStatus)
 			]
 		},
@@ -122,6 +134,23 @@ export default class PackageController extends Controller {
 		try{
 			const packageService: PackageService = new PackageService();
 			const result = await packageService.getPackageByStatus(req.value.body);
+
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		}
+		catch(err){
+			super.sendError(res);
+		}
+	}
+	async handleGetPackageSubByStatus(req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction){
+		try{
+			const packageService: PackageService = new PackageService();
+			const result = await packageService.getPackageSubByStatus(req.value.body);
 
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
