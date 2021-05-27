@@ -1,7 +1,7 @@
 import { defaultModel } from '../../common/constants';
+import { defaultTypeStatus } from '../../dist/common/constants';
 
 export default {
-	FK_merchant:defaultModel.string,
   name:defaultModel.string,
   image:defaultModel.string,
   totalCode:defaultModel.number,
@@ -9,6 +9,6 @@ export default {
   discountByPercent:defaultModel.boolean,
   discountAmount:defaultModel.string,
   discountPercent:defaultModel.string,
-  status:defaultModel.string,
+  status:{...defaultModel.string, default: defaultTypeStatus.active},
   expiredDate:defaultModel.string
 };
