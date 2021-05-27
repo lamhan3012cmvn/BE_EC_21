@@ -1,3 +1,4 @@
+import { ITransportSub, ITransportSubDocument } from './../Models/TransportSub/TransportSub.Interface';
 import { defaultStatusPackage } from './../common/constants';
 import {
 	IPackage,
@@ -5,11 +6,27 @@ import {
 	IInfoUser
 } from './../Models/Package/Package.Interface';
 import { ReturnServices } from '../Interfaces/Services';
-import { Package, Transport } from '../Models';
+import { Package, Transport, TransportSub } from '../Models';
+import {getDistanceFromLatLonInKm} from '../common/helper' 
 
 export default class PackageService {
 	constructor() {}
 
+	private findSubTransport= (SubPackage:Array<ITransportSubDocument>,currentLocation:ILocation):ITransportSubDocument|null=>{
+		if(SubPackage.length>0) return null
+		const minSub={current:SubPackage[0],value:getDistanceFromLatLonInKm(+SubPackage[0].location.coordinate.lat,+SubPackage[0].location.coordinate.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)}
+		SubPackage.forEach((elm)=>{
+			const coordinateSub=elm.location.coordinate
+			const min= getDistanceFromLatLonInKm(+coordinateSub.lat,+coordinateSub.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)
+			if(min<minSub.value)
+			{
+				minSub.current=elm
+				minSub.value=min
+			}
+		})
+		return minSub.current
+		
+	}
 	public createPackage = async (body: any): Promise<ReturnServices> => {
 		try {
 			const {
@@ -100,6 +117,20 @@ export default class PackageService {
 				`LHA:  ===> file: Package.Services.ts ===> line 73 ===> currentSender`,
 				currentSender
 			);
+			
+			const transportSub=await TransportSub.find({FK_Transport:FK_Transport})
+
+      console.log(`LHA:  ===> file: Package.Services.ts ===> line 105 ===> transportSub`, transportSub)
+			const findLocationSender=this.findSubTransport(transportSub,senderLocation)
+			if(!findLocationSender)
+				return { message: 'Dont find Sub transport sender', success: false };
+			const FK_LocationSub=findLocationSender._id
+
+			const findLocationNext=this.findSubTransport(transportSub,recipientLocation)
+			if(!findLocationNext)
+				return { message: 'Dont find Sub transport sender', success: false };
+			const FK_LocationNext=findLocationSender._id
+
 
 			const obj: IPackage = {
 				title,
@@ -108,6 +139,8 @@ export default class PackageService {
 				FK_ProductId,
 				FK_ProductType,
 				FK_Transport,
+				FK_SubTransport:FK_LocationSub,
+				FK_SubTransportAwait:FK_LocationNext,
 				estimatedDate: `${estimatedDate + 172800}`,
 				codeBill: `${currentTransport.name
 					.slice(0, 3)
@@ -168,8 +201,8 @@ export default class PackageService {
 				{ _id: 1, codeBill: 1, estimatedDate: 1, FK_Transport: 1 }
 			);
 			const clonePackage = await Promise.all(
-				packages.map(async elm => {
-					const { FK_Transport, ...cloneObj } = elm.toObject();
+				packages.map(async (elm:any) => {
+					const { FK_Transport, ...cloneObj } = elm
 					const res = await Transport.findById(elm.FK_Transport, {
 						_id: 1,
 						name: 1
@@ -200,7 +233,7 @@ export default class PackageService {
 				{ _id: 1, codeBill: 1, estimatedDate: 1, FK_Transport: 1 }
 			);
 			const clonePackage = await Promise.all(
-				packages.map(async elm => {
+				packages.map(async (elm:any) => {
 					const { FK_Transport, ...cloneObj } = elm.toObject();
 					const res = await Transport.findById(elm.FK_Transport, {
 						_id: 1,

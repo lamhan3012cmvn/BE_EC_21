@@ -1,9 +1,9 @@
+import { ILocation } from './../Package/Package.Interface';
 import { Document } from 'mongoose';
 
 export interface ITransportSub{
 	name:string,
-	city:string,
-	address?:string,
+	location:ILocation,
 	phoneNumber?:string,
 	mail?:string,
 	status?:string,

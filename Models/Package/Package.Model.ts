@@ -13,6 +13,8 @@ export default {
   estimatedDate:defaultModel.stringR,
 
   FK_Transport:defaultModel.stringRef,
+  FK_SubTransport:defaultModel.stringRef,
+  FK_SubTransportAwait:defaultModel.stringRef,
 
   status:{...defaultModel.string,default:defaultStatusPackage.waitForConfirmation},
 

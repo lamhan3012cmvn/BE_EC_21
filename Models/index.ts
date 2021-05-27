@@ -1,3 +1,4 @@
+import { ICartDocument } from './Cart/Cart.Interface';
 
 import Cart from './Cart';
 import Category from './Category';

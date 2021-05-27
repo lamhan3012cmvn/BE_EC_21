@@ -10,18 +10,22 @@ export const TransportPath = {
   CREATE: "Create",
   GET_INFO: "GetInfo",
   UPDATE: "Update",
+  ASSIGN_STAFF:"AssignStaff"
+  
 };
 
 export const TransportSubPath = {
   CREATE: "Create",
   GET_INFO: "GetInfo",
   UPDATE: "Update",
+  CHANGE_STATUS:"ChangeStatus"
 };
 
 export const TransportSubCityPath = {
   CREATE: "Create",
   GET_INFO: "GetInfo",
   UPDATE: "Update",
+  CHANGE_STATUS:"ChangeStatus"
 };
 export const DevicePath = {
   CREATE: "Create",

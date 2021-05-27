@@ -20,6 +20,8 @@ export interface IPackage {
   estimatedDate:string,
 
   FK_Transport:string,
+  FK_SubTransport:string,
+	FK_SubTransportAwait:string,
 
   status?:string,
 	isAwait?:boolean,

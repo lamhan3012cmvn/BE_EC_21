@@ -5,7 +5,7 @@ import TokenServices from '../Services/Token.Services';
 import Validate from '../Validates/Validate';
 import schemaTransport from '../Validates/Transport.Validate';
 import { IValidateRequest } from '../common/DefineRequest';
-import TransportServices from '../Services/Transport.Services';
+import TransportSubCityServices from '../Services/TransportSubCity.Services';
 
 export default class TransportSubCityController extends Controller {
 	path = '/TransportSunCity';
@@ -48,8 +48,8 @@ export default class TransportSubCityController extends Controller {
 				phone,
 				headquarters
 			} = req.value.body;
-			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.createTransportSubCity(
+			const subCity: TransportSubCityServices = new TransportSubCityServices();
+			const result = await subCity.createTransportSubCity(
 				idUser,
 				{
 					name,
@@ -76,8 +76,8 @@ export default class TransportSubCityController extends Controller {
 	): Promise<void> {
 		try {
 			const { id, data } = req.value.body;
-			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.updateTransportSubCity(id, data);
+			const subCity: TransportSubCityServices = new TransportSubCityServices();
+			const result = await subCity.updateTransportSubCity(id, data);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
@@ -94,8 +94,8 @@ export default class TransportSubCityController extends Controller {
 	): Promise<void> {
 		try {
 			const { id } = req.value.body;
-			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.getTransportSubCity(id);
+			const subCity: TransportSubCityServices = new TransportSubCityServices();
+			const result = await subCity.getTransportSubCity(id);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
