@@ -89,3 +89,10 @@ export const PaymentPath = {
   VNPAY: "VNPay",
   VNPAY_RETURN: "VNPayReturn",
 };
+
+export const CouponPath = {
+  CREATE: "Create",
+  UPDATE: "Update",
+  GET_INFO: "GetAll",
+  DELETE: "Delete",
+};
