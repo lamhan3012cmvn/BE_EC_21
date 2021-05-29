@@ -5,7 +5,7 @@ export default {
 	description:defaultModel.stringR,
   
 
-  FK_ProductId:defaultModel.stringRef,
+  FK_ProductId:[defaultModel.stringRef],
   FK_ProductType:defaultModel.stringR,
 
   codeBill:defaultModel.stringR,

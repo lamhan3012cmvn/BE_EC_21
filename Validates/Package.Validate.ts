@@ -4,9 +4,12 @@ const validate = {
 	createPackage: joi.object().keys({
 		title: joi.string().required(),
 		description: joi.string().min(0).max(100).required(),
-		FK_ProductId: joi.string().empty().required(),
+		FK_ProductId: joi.array().items(joi.string().regex(/^[A-Fa-f0-9]{24}$/)),
 		FK_ProductType: joi.string().empty().required(),
 
+		recipientName: joi.string().empty().required(),
+		recipientPhone: joi.string().empty().required(),
+		recipientCity: joi.string().empty().required(),
 		recipientCounty: joi.string().empty().required(),
 		recipientWard: joi.string().empty().required(),
 		recipientAddress: joi.string().empty().required(),
@@ -40,3 +43,4 @@ const validate = {
 };
 
 export default validate;
+

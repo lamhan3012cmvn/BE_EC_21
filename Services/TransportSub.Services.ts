@@ -22,15 +22,15 @@ export default class TransportSubServices {
 
 	//Transport Sub
 	private findTransportByUser = async (id: string, option = {}) => {
-		const user = await User.findById(id);
-		if (!user) {
-			return {
-				current: null,
-				message: 'Can not find a user to create transportSub'
-			};
-		}
-		const idTransport = await Transport.findOne(
-			{ FK_createUser: user._id },
+		// const user = await User.findById(id);
+		// if (!user) {
+		// 	return {
+		// 		current: null,
+		// 		message: 'Can not find a user to create transportSub'
+		// 	};
+		// }
+				const idTransport = await Transport.findOne(
+			{ FK_createUser: id },
 			option
 		);
 		if (!idTransport) {
@@ -40,7 +40,7 @@ export default class TransportSubServices {
 			};
 		}
 		return {
-			current: { transport: idTransport, user: user }
+			current: { transport: idTransport, message:"success" }
 		};
 	};
 
@@ -58,40 +58,40 @@ export default class TransportSubServices {
 			}
 
 			const {
-				city,
-				county,
-				ward,
-				address,
-				coordinateLat,
-				coordinateLng,
-				phoneNumber,
-				mail
+				locationCity,
+				locationCoordinateLat,
+				locationCoordinateLng,
+				locationCounty,
+				locationWard,
+				locationAddress,
+				phoneNumber
 			} = data;
 
 			const locationTransport: ILocation = {
-				city,
-				county,
-				ward,
-				address,
+				city:locationCity,
+				county:locationCounty,
+				ward:locationWard,
+				address:locationAddress,
 				coordinate: {
-					lat: coordinateLat,
-					lng: coordinateLng
+					lat: locationCoordinateLat,
+					lng: locationCoordinateLng
 				}
 			};
+			const nameTransport=_transport.current.transport.name
+			const nameMail=nameTransport.slice(0,nameTransport.search("Transport")-1)
 			const obj: ITransportSub = {
-				name: `${_transport.current.transport.name}_${city}`,
+				name: `${nameTransport}_${locationCity}`,
 				location: locationTransport,
 				phoneNumber,
-				mail,
+				mail:`${nameMail.replace(" ","")}.${locationCity}.Transport@gmail.com`,
 				FK_Transport: _transport.current.transport._id,
-				FK_CreateUser: _transport.current.user._id
 			};
-
+			
 			const newTransportSub = new TransportSub(obj);
 			await newTransportSub.save();
 
 			// _transport.current.user.FK_transport=newTransportSub._id
-			await _transport.current.user.save();
+			// await _transport.current.user.save();
 
 			return {
 				message: 'Successfully created transportSub',

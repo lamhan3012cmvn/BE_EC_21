@@ -29,7 +29,7 @@ export interface IPackage {
 	distance:string,
 	weight:string,
 	
-	FK_ProductId: string;
+	FK_ProductId: Array<string>;
 
 	FK_ProductType: string;
 	recipient: IInfoUser;

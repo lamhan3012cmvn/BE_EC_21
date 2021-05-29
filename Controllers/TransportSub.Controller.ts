@@ -62,14 +62,24 @@ export default class TransportSubController extends Controller {
 	): Promise<void> {
 		try {
 			const idUser = req.value.body.token.data;
-			const { city, address, phoneNumber, mail } = req.value.body;
+			const {
+				locationCity,
+				locationCoordinateLat,
+				locationCoordinateLng,
+				locationCounty,
+				locationWard,
+				locationAddress,
+				phoneNumber
+			} = req.value.body;
 			const SubServices: TransportSubServices = new TransportSubServices();
 			const result = await SubServices.createTransportSub(idUser, {
-				idUser,
-				address,
-				phoneNumber,
-				mail,
-				city
+				locationCity,
+				locationCoordinateLat,
+				locationCoordinateLng,
+				locationCounty,
+				locationWard,
+				locationAddress,
+				phoneNumber
 			});
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);

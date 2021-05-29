@@ -1,5 +1,5 @@
 import { ITransportSub, ITransportSubDocument } from './../Models/TransportSub/TransportSub.Interface';
-import { defaultStatusPackage } from './../common/constants';
+import { defaultStatusPackage, defaultTypeStatus } from './../common/constants';
 import {
 	IPackage,
 	ILocation,
@@ -13,7 +13,7 @@ export default class PackageService {
 	constructor() {}
 
 	private findSubTransport= (SubPackage:Array<ITransportSubDocument>,currentLocation:ILocation):ITransportSubDocument|null=>{
-		if(SubPackage.length>0) return null
+		if(SubPackage.length<=0) return null
 		const minSub={current:SubPackage[0],value:getDistanceFromLatLonInKm(+SubPackage[0].location.coordinate.lat,+SubPackage[0].location.coordinate.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)}
 		SubPackage.forEach((elm)=>{
 			const coordinateSub=elm.location.coordinate
@@ -32,15 +32,15 @@ export default class PackageService {
 			const {
 				title,
 				description,
-				
 				FK_ProductId,
 				FK_ProductType,
-
 				estimatedDate,
 				FK_Transport,
+
 				distance,
 				prices,
 				weight,
+
 				recipientName,
 				recipientPhone,
 				recipientCity,
@@ -60,10 +60,6 @@ export default class PackageService {
 				senderCoordinateLat,
 				senderCoordinateLng
 			} = body;
-			console.log(
-				`LHA:  ===> file: Package.Services.ts ===> line 40 ===> body`,
-				body
-			);
 
 			const currentTransport = await Transport.findById(FK_Transport);
 			if (!currentTransport)
@@ -78,20 +74,12 @@ export default class PackageService {
 					lng: recipientCoordinateLng
 				}
 			};
-			console.log(
-				`LHA:  ===> file: Package.Services.ts ===> line 43 ===> recipientLocation`,
-				recipientLocation
-			);
 
 			const currentRecipient: IInfoUser = {
 				name: recipientName,
 				phone: recipientPhone,
 				location: recipientLocation
 			};
-			console.log(
-				`LHA:  ===> file: Package.Services.ts ===> line 55 ===> currentRecipient`,
-				currentRecipient
-			);
 
 			const senderLocation: ILocation = {
 				city: senderCity,
@@ -103,33 +91,26 @@ export default class PackageService {
 					lng: senderCoordinateLng
 				}
 			};
-			console.log(
-				`LHA:  ===> file: Package.Services.ts ===> line 62 ===> senderLocation`,
-				senderLocation
-			);
 			const currentSender: IInfoUser = {
 				name: senderName,
 				phone: senderPhone,
 				location: senderLocation
 			};
 
-			console.log(
-				`LHA:  ===> file: Package.Services.ts ===> line 73 ===> currentSender`,
-				currentSender
-			);
 			
-			const transportSub=await TransportSub.find({FK_Transport:FK_Transport})
+			const transportSub=await TransportSub.find({FK_Transport:FK_Transport,status:defaultTypeStatus.active})
 
-      console.log(`LHA:  ===> file: Package.Services.ts ===> line 105 ===> transportSub`, transportSub)
 			const findLocationSender=this.findSubTransport(transportSub,senderLocation)
+      console.log(`LHA:  ===> file: Package.Services.ts ===> line 125 ===> findLocationSender`, findLocationSender)
 			if(!findLocationSender)
 				return { message: 'Dont find Sub transport sender', success: false };
 			const FK_LocationSub=findLocationSender._id
 
 			const findLocationNext=this.findSubTransport(transportSub,recipientLocation)
+      console.log(`LHA:  ===> file: Package.Services.ts ===> line 110 ===> findLocationNext`, findLocationNext)
 			if(!findLocationNext)
 				return { message: 'Dont find Sub transport sender', success: false };
-			const FK_LocationNext=findLocationSender._id
+			const FK_LocationNext=findLocationNext._id
 
 
 			const obj: IPackage = {
@@ -157,7 +138,7 @@ export default class PackageService {
 			);
 
 			const newPackage = new Package(obj);
-			//await newPackage.save();
+			await newPackage.save();
 			console.log(
 				`LHA:  ===> file: Package.Services.ts ===> line 85 ===> newPackage`,
 				newPackage

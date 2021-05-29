@@ -2,10 +2,13 @@ import joi from '@hapi/joi';
 
 const validate = {
 	createTransportSub: joi.object().keys({
-		city: joi.string().required(),
-		address: joi.string().required(),
-		phoneNumber: joi.string().min(10).max(15).required().regex(/^\d+$/),
-		mail: joi.string().email().required(),
+		locationCity: joi.string().required(),
+		locationCoordinateLat:joi.string().required(),
+		locationCoordinateLng:joi.string().required(),
+		locationCounty:joi.string().required(),
+		locationWard:joi.string().required(),
+		locationAddress:joi.string().required(),
+		phoneNumber:joi.string().min(10).max(15).regex(/^\d+$/)
 	}),
 	updateTransportSub: joi.object().keys({
 		name: joi.string(),
@@ -24,3 +27,5 @@ const validate = {
 	})
 };
 export default validate;
+
+	
