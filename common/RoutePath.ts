@@ -96,3 +96,8 @@ export const CouponPath = {
   GET_INFO: "GetAll",
   DELETE: "Delete",
 };
+
+export const Automatic={
+  AUTOMATIC_PACKAGE_TO_SUB:"AutomaticPackageToSub",
+  AUTOMATIC_SUB_TO_PACKAGE:"AutomaticSubToPackage",
+}
