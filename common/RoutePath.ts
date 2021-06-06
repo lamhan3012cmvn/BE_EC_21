@@ -97,7 +97,18 @@ export const CouponPath = {
   DELETE: "Delete",
 };
 
-export const Automatic={
+export const AutomaticPath={
   AUTOMATIC_PACKAGE_TO_SUB:"AutomaticPackageToSub",
   AUTOMATIC_SUB_TO_PACKAGE:"AutomaticSubToPackage",
 }
+
+export const AdminPath = {
+  APPROVE_MERCHANT: "ApproveMerchant",
+  APPROVE_TRANSPORT: "ApproveTransport",
+  REJECT_MERCHANT: "RejectMerchant",
+  REJECT_TRANSPORT: "RejectTransport",
+  CANCEL_MERCHANT: "CancelMerchant",
+  CANCEL_TRANSPORT: "CancelMerchant",
+  GET_MERCHANT_BY_STATUS: "GetMerchantByStatus",
+  GET_TRANSPORT_BY_STATUS: "GetTransportByStatus",
+};

@@ -1,5 +1,5 @@
 import { defaultModel } from '../../common/constants';
-import { defaultTypeStatus } from '../../dist/common/constants';
+import { defaultTypeStatus } from '../../common/constants';
 
 export default {
   name:defaultModel.string,

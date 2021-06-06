@@ -2,7 +2,8 @@ import { SendMail } from './SendMail.Services';
 import jwtServices from './Token.Services'
 import { User } from '../Models/index';
 import bcrypt from 'bcrypt';
-import {getRandString} from '../common/helper'
+import {getRandString} from '../common/helper';
+import NotificationServices from "./Notifications.Services";
 interface AuthReturnData {
 	message: string;
 	success: boolean;
@@ -38,6 +39,8 @@ export default class AuthService {
 					resDbUser.password
 				);
 				if (isPasswordEqual) {
+					const notificationServices: NotificationServices = new NotificationServices();
+					notificationServices.pushNotification('Van Transport', 'Giao hàng thành công', null, null, resDbUser);
 					return {
 						message: 'Successfully logged in',
 						success: true,

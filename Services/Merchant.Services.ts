@@ -2,6 +2,7 @@ import { ReturnServices } from "../Interfaces/Services";
 import { Merchant, User } from "../Models";
 import { defaultTypeStatus } from "../common/constants";
 import { IAddress } from "../Models/User/User.Interface";
+import { defaultRoleAccount } from "../common/constants";
 
 export default class MerchantService {
   constructor() {}
@@ -10,7 +11,7 @@ export default class MerchantService {
       const user = await User.findById(body.FK_createUser);
       if (!user) {
         return {
-          message: 'User does not exists',
+          message: "User does not exists",
           success: false,
         };
       }
@@ -59,7 +60,7 @@ export default class MerchantService {
       const user = await User.findById(body.FK_createUser);
       if (!user) {
         return {
-          message: 'User does not exists',
+          message: "User does not exists",
           success: false,
         };
       }
@@ -101,6 +102,46 @@ export default class MerchantService {
     }
   };
 
+  public adminUpdateMerchant = async (
+    idUser: string,
+    body: any
+  ): Promise<ReturnServices> => {
+    try {
+      const user = await User.findById(idUser);
+      if (!user) {
+        return {
+          message: "User does not exists",
+          success: false,
+        };
+      }
+      if (user.role != defaultRoleAccount.ADMIN) {
+        return {
+          message: "Your role does not ADMIN",
+          success: false,
+        };
+      }
+      const merchant = await Merchant.findOneAndUpdate(
+        { _id: body.idMerchant },
+        { status: body.status },
+        { new: true }
+      );
+      if (!merchant) {
+        return {
+          message: "Merchant does not exists",
+          success: false,
+        };
+      }
+      return {
+        message: "Update merchant successfully",
+        success: true,
+        data: merchant,
+      };
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
   public getMerchant = async (idUser: string): Promise<ReturnServices> => {
     try {
       const merchant = await Merchant.findOne({
@@ -119,6 +160,35 @@ export default class MerchantService {
           data: merchant,
         };
       }
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
+  public getMerchantByStatus = async (idUser: string, status: string): Promise<ReturnServices> => {
+    try {
+      const user = await User.findById(idUser);
+      if (!user) {
+        return {
+          message: 'User does not exists',
+          success: false,
+        };
+      }
+      if (user.role != defaultRoleAccount.ADMIN) {
+        return {
+          message: 'Your role does not ADMIN',
+          success: false,
+        };
+      }
+      const merchant = await Merchant.find({
+        status: status,
+      });
+      return {
+        message: "Get merchant info successfully",
+        success: true,
+        data: merchant,
+      };
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };
