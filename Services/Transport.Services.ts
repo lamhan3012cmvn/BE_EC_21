@@ -177,7 +177,27 @@ export default class TransportServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
-
+	public getAssignStaff = async (): Promise<ReturnServices> => {
+		try {
+			const staff = await User.find({role:defaultRoleAccount.STAFF},{_id:1,email:1,fullName:1,image:1,address:1});
+			if (staff) {
+				return {
+					message: 'Successful data retrieval',
+					success: true,
+					data: staff
+				};
+			} else {
+				return {
+					message: 'transport  already does not exists',
+					success: false
+				};
+			}
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+	
 	public getTransport = async (id: string): Promise<ReturnServices> => {
 		try {
 			const transport = await Transport.findOne({ FK_createUser: id });

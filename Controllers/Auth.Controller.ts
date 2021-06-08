@@ -22,6 +22,12 @@ export default class AuthController extends Controller {
 			localMiddleware: [Validate.body(schemaAuth.register)]
 		},
 		{
+			path: `/${AuthPath.REGISTER_STAFF}`,
+			method: Methods.POST,
+			handler: this.handleRegisterStaff,
+			localMiddleware: [Validate.body(schemaAuth.register)]
+		},
+		{
 			path: `/${AuthPath.FORGOT_PASSWORD}`,
 			method: Methods.PUT,
 			handler: this.handleForgotPassword,
@@ -79,6 +85,25 @@ export default class AuthController extends Controller {
 			const { email, password, phone, fullName }: any = req.value.body;
 			const authService: AuthService = new AuthService();
 			const result = await authService.register(email,password,phone,fullName);
+			if (result.success) {
+				super.sendSuccess(res, result.data!, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
+	async handleRegisterStaff(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		//Handle
+		try {
+			const { email, password, phone, fullName }: any = req.value.body;
+			const authService: AuthService = new AuthService();
+			const result = await authService.registerStaff(email,password,phone,fullName);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {

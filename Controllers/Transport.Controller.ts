@@ -46,6 +46,15 @@ export default class TransportController extends Controller {
 				Validate.body(schemaTransport.assignStaff)
 			]
 		},
+		{
+			path: `/${TransportPath.GET_ASSIGN_STAFF}`,
+			method: Methods.GET,
+			handler: this.handleAssignStaff,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
+			]
+		},
 	];  
 	constructor() {
 		super();
@@ -137,5 +146,21 @@ export default class TransportController extends Controller {
 			super.sendError(res);
 		}
 	}
-
+	async handleGetAssignStaff(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const transportServices: TransportServices = new TransportServices();
+			const result = await transportServices.getAssignStaff();
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
 }

@@ -1,6 +1,7 @@
 export const AuthPath = {
   LOGIN: "Login",
   REGISTER: "Register",
+  REGISTER_STAFF: "RegisterStaff",
   FORGOT_PASSWORD: "ForgotPassword",
   CHANGE_PASSWORD: "ChangePassword",
   VERIFY: "Verify",
@@ -11,8 +12,7 @@ export const TransportPath = {
   GET_INFO: "GetInfo",
   UPDATE: "Update",
   ASSIGN_STAFF:"AssignStaff",
-
-  
+  GET_ASSIGN_STAFF:"GetAssignStaff",
 };
 
 export const TransportSubPath = {
