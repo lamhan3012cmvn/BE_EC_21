@@ -1,7 +1,9 @@
+import { ICoordinates } from './../Models/User/User.Interface';
 import { defaultTypePayment } from "../common/constants";
 import { defaultTypeOrders } from "../common/constants";
 import { ReturnServices } from "../Interfaces/Services";
 import { User, Product, ProductInfo } from "../Models";
+import { ILocation } from "../Models/Package/Package.Interface";
 import PaypalServices from "./Paypal.Services";
 import VNPayServices from "./VNPay.Services";
 
@@ -300,7 +302,18 @@ export default class UserService {
       return { message: "An error occurred", success: false };
     }
   };
+  public calcPricePackage = async (locationSender:ICoordinates,locationRecipient:ICoordinates): Promise<ReturnServices> => {
+    try {
+      
 
+
+
+      return { message: "An error occurred", success: false };
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
   public functionInit = async (): Promise<ReturnServices> => {
     try {
       return { message: "An error occurred", success: false };
@@ -310,3 +323,4 @@ export default class UserService {
     }
   };
 }
+

@@ -101,13 +101,11 @@ export default class PackageService {
 			const transportSub=await TransportSub.find({FK_Transport:FK_Transport,status:defaultTypeStatus.active})
 
 			const findLocationSender=this.findSubTransport(transportSub,senderLocation)
-      console.log(`LHA:  ===> file: Package.Services.ts ===> line 125 ===> findLocationSender`, findLocationSender)
 			if(!findLocationSender)
 				return { message: 'Dont find Sub transport sender', success: false };
 			const FK_LocationSub=findLocationSender._id
 
 			const findLocationNext=this.findSubTransport(transportSub,recipientLocation)
-      console.log(`LHA:  ===> file: Package.Services.ts ===> line 110 ===> findLocationNext`, findLocationNext)
 			if(!findLocationNext)
 				return { message: 'Dont find Sub transport sender', success: false };
 			const FK_LocationNext=findLocationNext._id
@@ -132,17 +130,9 @@ export default class PackageService {
 				distance
 			};
 
-			console.log(
-				`LHA:  ===> file: Package.Services.ts ===> line 81 ===> obj`,
-				obj
-			);
 
 			const newPackage = new Package(obj);
 			await newPackage.save();
-			console.log(
-				`LHA:  ===> file: Package.Services.ts ===> line 85 ===> newPackage`,
-				newPackage
-			);
 
 			return { message: 'Create Successfully', success: true };
 		} catch (e) {
@@ -237,6 +227,12 @@ export default class PackageService {
 	
 	public automaticPackageToSub = async (): Promise<ReturnServices> => {
 		try {
+			const autoPackage=await Package.find({
+				isAwait:false,
+				status:defaultStatusPackage.onGoing
+			})
+			
+      console.log(`LHA:  ===> file: Package.Services.ts ===> line 234 ===> autoPackage`, autoPackage)
 			return { message: 'An error occurred', success: false };
 		} catch (e) {
 			console.log(e);

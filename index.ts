@@ -24,6 +24,7 @@ import UserController from "./Controllers/User.Controller";
 import PaymentController from "./Controllers/Payment.Controller";
 import CouponController from "./Controllers/Coupon.Controller";
 import AdminController from "./Controllers/Admin.Controller";
+import AutomaticController from "./Controllers/Automactic.Controller";
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -39,6 +40,7 @@ const controllers: Array<Controller> = [
   new PaymentController(),
   new CouponController(),
   new AdminController(),
+  new AutomaticController()
 ];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),

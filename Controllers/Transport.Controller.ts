@@ -1,4 +1,3 @@
-import { Services, TypeService } from './../Services/Services';
 import { TransportPath } from './../common/RoutePath';
 import { Response, NextFunction } from 'express';
 import Controller, { Methods } from './Controller';
@@ -46,7 +45,7 @@ export default class TransportController extends Controller {
 				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
 				Validate.body(schemaTransport.assignStaff)
 			]
-		}
+		},
 	];  
 	constructor() {
 		super();
@@ -138,4 +137,5 @@ export default class TransportController extends Controller {
 			super.sendError(res);
 		}
 	}
+
 }
