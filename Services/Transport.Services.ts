@@ -180,7 +180,8 @@ export default class TransportServices {
 	public getAssignStaff = async (): Promise<ReturnServices> => {
 		try {
 			const staff = await User.find({role:defaultRoleAccount.STAFF},{_id:1,email:1,fullName:1,image:1,address:1});
-			if (staff) {
+      console.log(`LHA:  ===> file: Transport.Services.ts ===> line 183 ===> staff`, staff)
+			if (staff.length>0) {
 				return {
 					message: 'Successful data retrieval',
 					success: true,
