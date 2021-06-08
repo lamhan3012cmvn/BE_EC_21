@@ -23,6 +23,7 @@ import PackageController from "./Controllers/Package.Controller";
 import UserController from "./Controllers/User.Controller";
 import PaymentController from "./Controllers/Payment.Controller";
 import CouponController from "./Controllers/Coupon.Controller";
+import AdminController from "./Controllers/Admin.Controller";
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -37,6 +38,7 @@ const controllers: Array<Controller> = [
   new UserController(),
   new PaymentController(),
   new CouponController(),
+  new AdminController(),
 ];
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
