@@ -1,8 +1,11 @@
+import { IPackage, IPackageDocument } from './../Package/Package.Interface';
 import { Document } from 'mongoose';
 
 export interface IAwaitTransportPackage{
-	packages:string,
+	packages:Array<IPackageDocument>,
   status:string,
+  historyStatus:Array<string>,
+  isDone:boolean,
   FK_from:string,
   FK_to:string,
 }

@@ -10,7 +10,8 @@ export const TransportPath = {
   CREATE: "Create",
   GET_INFO: "GetInfo",
   UPDATE: "Update",
-  ASSIGN_STAFF:"AssignStaff"
+  ASSIGN_STAFF:"AssignStaff",
+
   
 };
 
@@ -81,6 +82,7 @@ export const UserPath = {
   UPDATE_ADDRESS: "UpdateAddress",
   DELETE_ADDRESS: "DeleteAddress",
   BUY_POINT: "BuyPoint",
+  CALC_PRICE_PACKAGE:"CalcPricePackage"
 };
 
 export const PaymentPath = {
@@ -100,6 +102,7 @@ export const CouponPath = {
 export const AutomaticPath={
   AUTOMATIC_PACKAGE_TO_SUB:"AutomaticPackageToSub",
   AUTOMATIC_SUB_TO_PACKAGE:"AutomaticSubToPackage",
+  AUTOMATIC_SUB_TO_SUB:"AutomaticSubToSub",
 }
 
 export const AdminPath = {

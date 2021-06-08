@@ -22,6 +22,12 @@ export default class AutomaticController extends Controller {
 			method: Methods.GET,
 			handler: this.handleAutomaticPackageToSub,
 			localMiddleware: [TokenServices.verify,RoleInstance.getInstance().isRole([Role.ADMIN])]
+		},
+    {
+			path: `/${AutomaticPath.AUTOMATIC_SUB_TO_SUB}`,
+			method: Methods.GET,
+			handler: this.handleAutomaticSubToSub,
+			localMiddleware: [TokenServices.verify,RoleInstance.getInstance().isRole([Role.ADMIN])]
 		}
 	];
 	constructor() {
@@ -57,8 +63,10 @@ export default class AutomaticController extends Controller {
 	): Promise<void> {
 		//Handle
 		try {
+			console.log("===============================Start handleAutomaticSubToSub=========================")
       const _automaticPackage:AutomaticPackageServices=new AutomaticPackageServices()
-      const result =await _automaticPackage.automaticPackageToSub()
+      const result =await _automaticPackage.automaticSubToSub()
+			console.log("===============================End handleAutomaticSubToSub===========================")
       if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {

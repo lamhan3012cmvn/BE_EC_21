@@ -73,6 +73,12 @@ export const defaultStatusPackage={
   onGoing:"ON_GOING",
   delivered:"DELIVERED"
 }
+
+export const defaultStatusAwaitPackage={
+  goingClientToSub:"GOING_CLIENT_TO_SUB",
+  goingSubToSub:"GOING_SUB_TO_SUB",
+  goingSubToClient:"GOING_SUB_TO_CLIENT"
+}
 export const defaultTypeOrders={
   POINT: "POINT",
   ORDER: "ORDER",
