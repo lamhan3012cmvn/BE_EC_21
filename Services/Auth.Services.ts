@@ -1,3 +1,4 @@
+import { defaultRoleAccount } from './../common/constants';
 import { SendMail } from './SendMail.Services';
 import jwtServices from './Token.Services'
 import { User } from '../Models/index';
@@ -107,6 +108,47 @@ export default class AuthService {
 
 				const send:SendMail = new SendMail()
 				send.sendMail(email,"Verify",rdVerify)
+				await createdUser.save();
+
+				return {
+					message: 'Successfully registered',
+					success: true,
+				};
+			} else {
+				return { message: 'User already exists', success: false };
+			}
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+	public registerStaff = async (
+		email: string,
+		password: string,
+		phone: string,
+		fullName: string
+	): Promise<AuthReturnData> => {
+		try {
+			const userFromDb = await User.findOne({
+				where: { email: email }
+			});
+			if (!userFromDb) {
+				const hashedPassword = await bcrypt.hash(password, 10);
+				const rdVerify=getRandString(100000,999999)
+
+				const createdUser = new User({
+					email: email,
+					password: hashedPassword,
+					phone: phone,
+					fullName: fullName,
+					otp:rdVerify,
+					role:defaultRoleAccount.STAFF,
+					isVerify: true
+				});
+
+
+				// const send:SendMail = new SendMail()
+				// send.sendMail(email,"Verify",rdVerify)
 				await createdUser.save();
 
 				return {

@@ -59,7 +59,8 @@ export const defaultRoleAccount={
   TRANSPORT:"TRANSPORT",
   TRANSPORT_SUB:"TRANSPORT_SUB",
   TRANSPORT_SUB_CITY:"TRANSPORT_SUB_CITY",
-  MERCHANT:"MERCHANT"
+  MERCHANT:"MERCHANT",
+  STAFF:"STAFF"
 }
 
 export const defaultTypeLogin={
