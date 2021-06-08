@@ -10,6 +10,7 @@ export default class CheckRole {
 			next: NextFunction
 		): Promise<void> => {
 			try {
+				if(roles.length<=0)	next()
 				const tokenId = req.value.body.token.data;
 				const user = await User.findById(tokenId, { _id: 1, role: 1 });
 				

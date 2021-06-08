@@ -21,7 +21,7 @@ export default class UserController extends Controller {
 			handler: this.handleUpdate,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER]),
+				RoleInstance.getInstance().isRole([]),
 				Validate.body(schemaUser.updateUser)
 			]
 		},
@@ -31,7 +31,7 @@ export default class UserController extends Controller {
 			handler: this.handleGetInfo,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER])
+				RoleInstance.getInstance().isRole([])
 			]
 		},
 		{
@@ -40,7 +40,7 @@ export default class UserController extends Controller {
 			handler: this.handleFavorite,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER]),
+				RoleInstance.getInstance().isRole([]),
 				Validate.body(schemaUser.favorite)
 			]
 		},
@@ -50,7 +50,7 @@ export default class UserController extends Controller {
 			handler: this.handleGetFavorites,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER])
+				RoleInstance.getInstance().isRole([])
 			]
 		},
 		{
@@ -59,7 +59,7 @@ export default class UserController extends Controller {
 			handler: this.handleAddAddress,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER]),
+				RoleInstance.getInstance().isRole([]),
 				Validate.body(schemaUser.addAddress)
 			]
 		},
@@ -69,7 +69,7 @@ export default class UserController extends Controller {
 			handler: this.handleUpdateAddress,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER]),
+				RoleInstance.getInstance().isRole([]),
 				Validate.body(schemaUser.updateAddress)
 			]
 		},
@@ -79,7 +79,7 @@ export default class UserController extends Controller {
 			handler: this.handleDeleteAddress,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER])
+				RoleInstance.getInstance().isRole([])
 			]
 		},
 		{
@@ -88,7 +88,7 @@ export default class UserController extends Controller {
 			handler: this.handleBuyPoint,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER]),
+				RoleInstance.getInstance().isRole([]),
 				Validate.body(schemaUser.buyPoint)
 			]
 		},
@@ -98,7 +98,7 @@ export default class UserController extends Controller {
 			handler: this.handleCalcPricePackage,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.USER])
+				RoleInstance.getInstance().isRole([])
 			]
 		}
 	];

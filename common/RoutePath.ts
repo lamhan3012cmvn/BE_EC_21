@@ -12,8 +12,7 @@ export const TransportPath = {
   GET_INFO: "GetInfo",
   UPDATE: "Update",
   ASSIGN_STAFF:"AssignStaff",
-
-  
+  GET_ASSIGN_STAFF:"GetAssignStaff",
 };
 
 export const TransportSubPath = {
