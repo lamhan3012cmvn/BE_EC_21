@@ -49,7 +49,7 @@ export default class TransportController extends Controller {
 		{
 			path: `/${TransportPath.GET_ASSIGN_STAFF}`,
 			method: Methods.GET,
-			handler: this.handleAssignStaff,
+			handler: this.handleGetAssignStaff,
 			localMiddleware: [
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
