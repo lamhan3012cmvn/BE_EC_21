@@ -25,7 +25,7 @@ export default class AuthController extends Controller {
 			path: `/${AuthPath.REGISTER_STAFF}`,
 			method: Methods.POST,
 			handler: this.handleRegisterStaff,
-			localMiddleware: [Validate.body(schemaAuth.register)]
+			localMiddleware: [Validate.body(schemaAuth.registerStaff)]
 		},
 		{
 			path: `/${AuthPath.FORGOT_PASSWORD}`,
@@ -101,9 +101,9 @@ export default class AuthController extends Controller {
 	): Promise<void> {
 		//Handle
 		try {
-			const { email, password, phone, fullName }: any = req.value.body;
+			const { email, password, phone, fullName,image }: any = req.value.body;
 			const authService: AuthService = new AuthService();
-			const result = await authService.registerStaff(email,password,phone,fullName);
+			const result = await authService.registerStaff(email,password,phone,fullName,image);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {

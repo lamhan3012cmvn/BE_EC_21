@@ -35,12 +35,21 @@ const validate = {
 		phone: joi.string().min(10).max(15).regex(/^\d+$/),
 		headquarters: joi.string()
 	}),
+	removeStaffTransport:joi.object().keys({
+		idStaff:joi.string().regex(/^[A-Fa-f0-9]{24}$/)
+	}),
 	deleteTransport: joi.object().keys({
 		status: joi.string().required(),
 	}),
 	assignStaff:joi.object().keys({
 		idUser:joi.string().regex(/^[A-Fa-f0-9]{24}$/),
 		idSub:joi.string().regex(/^[A-Fa-f0-9]{24}$/)
+	}),
+	updatePriceByType:joi.object().keys({
+			title:joi.string().required(),
+			price:joi.string().required(),
+			avalable:joi.boolean().required(),
+			type:joi.string().valid("km","kg")
 	})
 
 };
