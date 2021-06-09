@@ -1,13 +1,17 @@
 import { Document } from 'mongoose';
 export interface ICartProduct{
-  current:Array<string>,
-  quantity:number,
-  status:string
+  name:string,
+  weight:string,
+  type:string,
+  image:Array<string>
 }
 export interface ICart{
-	products:ICartProduct,
-  FK_CreateUser:string,
+	products:Array<ICartProduct>,
+  status?:string,
+  FK_CreateUser?:string,
 }
 export interface ICartDocument extends Document,ICart {
 
 }
+
+

@@ -1,6 +1,6 @@
-import { ICartDocument } from './Cart/Cart.Interface';
+import { ICartDocument } from './MerchantCart/MechantCart.Interface';
 
-import Cart from './Cart';
+import Cart from './MerchantCart';
 import Category from './Category';
 import Coupon from './Coupon';
 

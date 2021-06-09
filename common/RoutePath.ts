@@ -117,3 +117,11 @@ export const AdminPath = {
   GET_MERCHANT_BY_STATUS: "GetMerchantByStatus",
   GET_TRANSPORT_BY_STATUS: "GetTransportByStatus",
 };
+
+export const CartPath={
+  PAYMENT_CART:"PaymentCart",
+  GET_MY_CART:"GetMyCart",
+  ADD_PRODUCT_TO_CART:"AddProductToCart",
+  DELETE_PRODUCT_FROM_CART:"DeleteProductFromCart",
+  UPDATE_PRODUCT_FROM_CART:"UpdateProductFromCart"
+}
