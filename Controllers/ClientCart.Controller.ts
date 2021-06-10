@@ -5,8 +5,9 @@ import TokenServices from '../Services/Token.Services';
 import { IValidateRequest } from '../common/DefineRequest';
 import Validate from '../Validates/Validate';
 import RoleInstance from '../common/RoleInstance';
+import ClientCartServices from '../Services/ClientCart.Services';
 export default class ClientCartController extends Controller {
-	path = '/Client';
+	path = '/User/Client';
 	routes = [
 		{
 			path: `/${CartPath.ADD_PRODUCT_TO_CART}`,
@@ -28,7 +29,7 @@ export default class ClientCartController extends Controller {
 		},
 		{
 			path: `/${CartPath.GET_MY_CART}`,
-			method: Methods.POST,
+			method: Methods.GET,
 			handler: this.handleGetMyCart,
 			localMiddleware: [
 				TokenServices.verify,
@@ -37,7 +38,7 @@ export default class ClientCartController extends Controller {
 		},
 		{
 			path: `/${CartPath.PAYMENT_CART}`,
-			method: Methods.GET,
+			method: Methods.POST,
 			handler: this.handlePaymentCart,
 			localMiddleware: [
 				TokenServices.verify,
@@ -46,7 +47,7 @@ export default class ClientCartController extends Controller {
 		},
 		{
 			path: `/${CartPath.UPDATE_PRODUCT_FROM_CART}`,
-			method: Methods.GET,
+			method: Methods.POST,
 			handler: this.handleUpdateProductFromCart,
 			localMiddleware: [
 				TokenServices.verify,
@@ -96,11 +97,14 @@ export default class ClientCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			// if (result.success) {
-			//   super.sendSuccess(res, result.data, result.message);
-			// } else {
-			//   super.sendError(res, result.message);
-			// }
+			const idUser=req.value.body.token.data
+			const clientCartServices:ClientCartServices=new ClientCartServices()
+			const result=await clientCartServices.getMyCart(idUser)
+			if (result.success) {
+			  super.sendSuccess(res, result.data, result.message);
+			} else {
+			  super.sendError(res, result.message);
+			}
 		} catch {
 			super.sendError(res);
 		}

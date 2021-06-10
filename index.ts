@@ -25,7 +25,7 @@ import PaymentController from "./Controllers/Payment.Controller";
 import CouponController from "./Controllers/Coupon.Controller";
 import AutomaticController from "./Controllers/Automactic.Controller";
 import ClientCartController from "./Controllers/ClientCart.Controller"
-import MerchatCsrtControler from "./Controllers/MerchantCart.Controller"
+import MerchatCartControler from "./Controllers/MerchantCart.Controller"
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -42,7 +42,7 @@ const controllers: Array<Controller> = [
   new CouponController(),
   new AutomaticController(),
   new ClientCartController(),
-  new MerchantController()
+  new MerchatCartControler()
 ];
 
 const globalMiddleware: Array<RequestHandler> = [
