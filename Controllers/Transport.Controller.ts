@@ -13,6 +13,13 @@ export default class TransportController extends Controller {
 	path = '/Transport';
 	routes = [
 		{
+			path: `/test`,
+			method: Methods.POST,
+			handler: this.handleTest,
+			localMiddleware: [
+			]
+		},
+		{
 			path: `/${TransportPath.CREATE}`,
 			method: Methods.POST,
 			handler: this.handleCreate,
@@ -28,6 +35,26 @@ export default class TransportController extends Controller {
 			localMiddleware: [
 				TokenServices.verify,
 				Validate.body(schemaTransport.updateTransport)
+			]
+		},
+		{
+			path: `/${TransportPath.UPDATE_PRICE_TYPE}`,
+			method: Methods.POST,
+			handler: this.handleUpdatePriceType,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
+				Validate.body(schemaTransport.updatePriceByType)
+			]
+		},
+		{
+			path: `/${TransportPath.REMOVE_STAFF_TRANSPORT}`,
+			method: Methods.POST,
+			handler: this.handleRemoveStaff,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
+				Validate.body(schemaTransport.removeStaffTransport)
 			]
 		},
 		{
@@ -52,13 +79,14 @@ export default class TransportController extends Controller {
 			handler: this.handleGetAssignStaff,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
+				RoleInstance.getInstance().isRole([Role.TRANSPORT])
 			]
-		},
-	];  
+		}
+	];
 	constructor() {
 		super();
 	}
+
 
 	async handleCreate(
 		req: IValidateRequest | any,
@@ -84,11 +112,67 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err){
 			super.sendError(res);
 		}
 	}
-
+	async handleRemoveStaff(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const idUserTransport=req.value.body.token.data
+			const idStaff=req.value.body.idStaff
+			console.log(
+				`LHA:  ===> file: Transport.Controller.ts ===> line 110 ===> req.value.body`,
+				req.value.body
+			);
+			const transportServices: TransportServices = new TransportServices();
+			const result = await transportServices.removeStaffTransport(
+				idUserTransport,
+				idStaff
+			);
+			if (result.success) {
+				super.sendSuccess(res, result.data,result.message);
+			}else{
+				super.sendError(res, result.message);
+			}
+		} catch (err){
+			super.sendError(res);
+		}
+	}
+	async handleUpdatePriceType(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const data = req.value.body;
+      console.log(`LHA:  ===> file: Transport.Controller.ts ===> line 151 ===> data`, data)
+			const token = req.value.body.token;
+      console.log(`LHA:  ===> file: Transport.Controller.ts ===> line 153 ===> token`, token)
+			delete data.token;
+			console.log(`LHA:  ===> file: Transport.Controller.ts ===> line 172 ===> data`, data)
+			
+			const transportServices: TransportServices = new TransportServices();
+			const result = await transportServices.updatePriceTypeTransport(
+				token.data,
+				data
+			);
+			// console.log(
+			// 	`LHA:  ===> file: Transport.Controller.ts ===> line 150 ===> result`,
+			// 	result
+			// );
+			if (result.success) {
+				super.sendSuccess(res, result.data,result.message);
+			}else{
+				super.sendError(res, result.message);
+			}
+		} catch (err){
+			super.sendError(res);
+		}
+	}
 	async handleUpdate(
 		req: IValidateRequest | any,
 		res: Response,
@@ -103,7 +187,7 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err){
 			super.sendError(res);
 		}
 	}
@@ -122,7 +206,7 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err){
 			super.sendError(res);
 		}
 	}
@@ -133,16 +217,16 @@ export default class TransportController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			console.log("handleAssign Staff")
-			const {idUser,idSub}=req.value.body
+			console.log('handleAssign Staff');
+			const { idUser, idSub } = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
-			const result = await transportServices.assignStaff(idSub,idUser);
+			const result = await transportServices.assignStaff(idSub, idUser);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err){
 			super.sendError(res);
 		}
 	}
@@ -153,13 +237,25 @@ export default class TransportController extends Controller {
 	): Promise<void> {
 		try {
 			const transportServices: TransportServices = new TransportServices();
+
 			const result = await transportServices.getAssignStaff();
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
-				super.sendError(res, result.message);
+				super.sendError(res, 'result.message');
 			}
-		} catch {
+		} catch (err){
+			super.sendError(res);
+		}
+	}
+	async handleTest(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+				super.sendError(res, 'result.message');
+		} catch (err){
 			super.sendError(res);
 		}
 	}

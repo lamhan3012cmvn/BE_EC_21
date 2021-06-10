@@ -1,7 +1,11 @@
 import { ILocation } from './../Models/Package/Package.Interface';
 import { ITransportSubCity } from './../Models/TransportSubCity/TransportSubCity.Interface';
 import { ITransportSub } from './../Models/TransportSub/TransportSub.Interface';
-import { defaultRoleAccount, defaultTypeSupport } from './../common/constants';
+import {
+	defaultRoleAccount,
+	defaultTypeSupport,
+	defaultTypeStatus
+} from './../common/constants';
 import { ITransport } from '../Models/Transport/Transport.interface';
 import {
 	Transport,
@@ -19,9 +23,98 @@ export default class TransportServices {
 	public getPrice = async (): Promise<ReturnServices> => {
 		return {
 			message: 'Can not find a user to create transport',
-			success: false,
-			status: 400
+			success: false
 		};
+	};
+
+	public removeStaffTransport = async (
+		idUserTransport: string,
+		idStaff: string
+	): Promise<ReturnServices> => {
+		try {
+			const transport = await Transport.findOne({
+				FK_createUser: idUserTransport
+			});
+			if (!transport) {
+				return {
+					message: 'Can not find transport',
+					success: false
+				};
+			}
+			const user = await User.findById(idStaff);
+			if (!user) {
+				return {
+					message: 'Can not find user',
+					success: false
+				};
+			}
+
+			const transportSub = await TransportSub.findOne({
+				FK_CreateUser: idStaff,
+				FK_Transport: transport._id
+			});
+
+			if (!transportSub) {
+				return {
+					message: 'Can not find transport sub',
+					success: false
+				};
+			}
+
+			const newFKStaff = transport.FK_Staffs.filter(f => f !== idStaff);
+			user.role = defaultRoleAccount.USER;
+			transport.FK_Staffs = newFKStaff;
+			transportSub.status = defaultTypeStatus.inActive;
+			transportSub.FK_CreateUser = '';
+      
+
+			await transportSub.save();
+			await user.save();
+			await transport.save();
+			
+			return {
+				message: 'Remove staff success',
+				success: true,
+				data:{}
+			};
+		} catch (error) {
+			console.log(error);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+	public updatePriceTypeTransport = async (
+		idUserTransport: string,
+		data: any
+	): Promise<ReturnServices> => {
+		try {
+			const transport = await Transport.findOne({
+				FK_createUser: idUserTransport
+			});
+			if (!transport) {
+				return {
+					message: 'Can not find transport',
+					success: false
+				};
+			}
+			transport.typeSupport.forEach(type => {
+				if (type.title === data.title) {
+					const t = data.type === 'km' ? 'km' : 'kg';
+					type.price[t] = data.price;
+					type.available = defaultTypeStatus.active;
+				}
+			});
+
+			await transport.save()
+
+			return {
+				message: 'Update Price Type Success',
+				success: true,
+				data: transport
+			};
+		} catch (err) {
+			console.log(err);
+			return { message: 'An error occurred', success: false };
+		}
 	};
 	public createTransport = async (
 		idUser: string,
@@ -32,8 +125,7 @@ export default class TransportServices {
 			if (!user) {
 				return {
 					message: 'Can not find a user to create transport',
-					success: false,
-					status: 400
+					success: false
 				};
 			}
 
@@ -179,9 +271,11 @@ export default class TransportServices {
 	};
 	public getAssignStaff = async (): Promise<ReturnServices> => {
 		try {
-			const staff = await User.find({role:defaultRoleAccount.STAFF},{_id:1,email:1,fullName:1,image:1,address:1});
-      console.log(`LHA:  ===> file: Transport.Services.ts ===> line 183 ===> staff`, staff)
-			if (staff.length>0) {
+			const staff = await User.find(
+				{ role: defaultRoleAccount.STAFF },
+				{ _id: 1, email: 1, fullName: 1, image: 1, address: 1 }
+			);
+			if (staff.length > 0) {
 				return {
 					message: 'Successful data retrieval',
 					success: true,
@@ -198,7 +292,7 @@ export default class TransportServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
-	
+
 	public getTransport = async (id: string): Promise<ReturnServices> => {
 		try {
 			const transport = await Transport.findOne({ FK_createUser: id });
@@ -236,8 +330,7 @@ export default class TransportServices {
 				const updateUserService = await userServices.updateInfo(idUser, {
 					role: defaultRoleAccount.TRANSPORT_SUB
 				});
-				if(updateUserService.success)
-				{
+				if (updateUserService.success) {
 					return {
 						message: 'Successful assign staff',
 						success: true,
@@ -246,7 +339,7 @@ export default class TransportServices {
 				}
 				return {
 					message: updateUserService.message,
-					success: false,
+					success: false
 				};
 			} else {
 				return {

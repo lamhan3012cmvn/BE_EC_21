@@ -13,6 +13,8 @@ export const TransportPath = {
   UPDATE: "Update",
   ASSIGN_STAFF:"AssignStaff",
   GET_ASSIGN_STAFF:"GetAssignStaff",
+  UPDATE_PRICE_TYPE:"UpdatePriceType",
+  REMOVE_STAFF_TRANSPORT:"RemoveStaffTransport"
 };
 
 export const TransportSubPath = {

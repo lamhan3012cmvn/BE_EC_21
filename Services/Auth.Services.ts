@@ -126,7 +126,8 @@ export default class AuthService {
 		email: string,
 		password: string,
 		phone: string,
-		fullName: string
+		fullName: string,
+		image:string
 	): Promise<AuthReturnData> => {
 		try {
 			const userFromDb = await User.findOne({
@@ -143,7 +144,8 @@ export default class AuthService {
 					fullName: fullName,
 					otp:rdVerify,
 					role:defaultRoleAccount.STAFF,
-					isVerify: true
+					isVerify: true,
+					image
 				});
 
 
