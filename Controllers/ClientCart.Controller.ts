@@ -54,7 +54,8 @@ export default class ClientCartController extends Controller {
 			handler: this.handleUpdateProductFromCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaClientCart.updateProductToCartid)
 			]
 		}
 	];
@@ -151,11 +152,21 @@ export default class ClientCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			// if (result.success) {
-			//   super.sendSuccess(res, result.data, result.message);
-			// } else {
-			//   super.sendError(res, result.message);
-			// }
+			const idUser = req.value.body.token.data;
+			const objData: any = {
+				idProduct:req.value.body.idProduct,
+				name: req.value.body.name,
+    		weight:req.value.body.weight,
+    		type: req.value.body.type,
+    		image: req.value.body.image
+			};
+			const clientCartServices: ClientCartServices = new ClientCartServices();
+			const result = await clientCartServices.updateProductFromCart(idUser, objData);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
 		} catch {
 			super.sendError(res);
 		}

@@ -72,9 +72,26 @@ export default class ClientCartServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
-	public updateProductFromCart = async (): Promise<ReturnServices> => {
+	public updateProductFromCart = async (idUser:string,objData:any): Promise<ReturnServices> => {
 		try {
-			return { message: 'An error occurred', success: false };
+			const cart = await ClientCart.findOne({
+				status: defaultTypeStatus.active,
+				FK_CreateUser: idUser
+			});
+      console.log(`LHA:  ===> file: ClientCart.Services.ts ===> line 14 ===> cart`, cart)
+			if (!cart) {
+				const newCart = new ClientCart({
+					FK_CreateUser: idUser,
+					products: []
+				});
+				newCart.save();
+				return { message: 'Update Product success my cart', success: true, data: {} };
+			}
+			const indexProduct=cart.products.findIndex((p)=>p._id+""===objData.idProduct)
+			if(indexProduct===-1)  	return { message: 'Dont find product my cart', success: false};
+			cart.products[indexProduct]=objData
+			await cart.save()
+			return { message: 'Update Product success my cart', success: true, data: cart };
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
