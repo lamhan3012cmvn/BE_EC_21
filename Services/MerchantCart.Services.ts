@@ -1,7 +1,7 @@
 // import { IProductCartMerchant } from '../Models/MerchantCart/MechantCart.Interface';
 import { defaultTypeStatus } from '../common/constants';
 import { ReturnServices } from '../Interfaces/Services';
-import { MerchantCart } from '../Models';
+import { MerchantCart, ProductInfo } from '../Models';
 
 export default class MerchantCartServices {
 	constructor() {}
@@ -60,7 +60,13 @@ export default class MerchantCartServices {
 				newCart.save();
 				return { message: 'Get success my cart', success: true, data: newCart };
 			}
-			return { message: 'Get success my cart', success: true, data: cart };
+			
+			const cartFindProduct=cart.toObject()
+			cartFindProduct.products=await Promise.all(cartFindProduct.products.map(async (p:any)=>{
+				const product=await ProductInfo.findById(p.idProduct,{_id:1,name:1,price:1,image:1})
+				return {product,quantity:p.quantity}
+			}))
+			return { message: 'Get success my cart', success: true, data: cartFindProduct };
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
