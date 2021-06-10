@@ -11,5 +11,5 @@ export default {
 		default:[]
 	},
 	status: {...defaultModel.string,default:defaultTypeStatus.active},
-	FK_CreateUser: { ...defaultModel.stringR, match: /^[a-fA-F0-9]{24}$/ }
+	FK_CreateUser: defaultModel.stringRef
 };

@@ -1,4 +1,4 @@
-import { defaultModel } from '../../common/constants';
+import { defaultModel, defaultTypeStatus } from '../../common/constants';
 
 export default {
 	products: {
@@ -9,6 +9,6 @@ export default {
 		default:[]
 
 	},
-	status: defaultModel.string,
+	status: {...defaultModel.string,default:defaultTypeStatus.active},
 	FK_CreateUser: defaultModel.stringRef
 };

@@ -1,6 +1,7 @@
-import { ICartDocument } from './MerchantCart/MechantCart.Interface';
 
-import Cart from './MerchantCart';
+import MerchantCart from './MerchantCart';
+
+import ClientCart from './ClientCart';
 import Category from './Category';
 import Coupon from './Coupon';
 
@@ -24,7 +25,8 @@ import User from './User';
 
 export {
 	User,
-	Cart,
+	ClientCart,
+	MerchantCart,
 	Category,
 	Coupon,
 	Device,
