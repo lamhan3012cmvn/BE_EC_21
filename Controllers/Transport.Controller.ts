@@ -13,13 +13,6 @@ export default class TransportController extends Controller {
 	path = '/Transport';
 	routes = [
 		{
-			path: `/test`,
-			method: Methods.POST,
-			handler: this.handleTest,
-			localMiddleware: [
-			]
-		},
-		{
 			path: `/${TransportPath.CREATE}`,
 			method: Methods.POST,
 			handler: this.handleCreate,
@@ -77,6 +70,15 @@ export default class TransportController extends Controller {
 			path: `/${TransportPath.GET_ASSIGN_STAFF}`,
 			method: Methods.GET,
 			handler: this.handleGetAssignStaff,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT])
+			]
+		},
+		{
+			path: `/${TransportPath.GET_ALL_TRANSPORT_SUB}`,
+			method: Methods.GET,
+			handler: this.handleGetAllTransportSub,
 			localMiddleware: [
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([Role.TRANSPORT])
@@ -248,14 +250,25 @@ export default class TransportController extends Controller {
 			super.sendError(res);
 		}
 	}
-	async handleTest(
+	async handleGetAllTransportSub(
 		req: IValidateRequest | any,
 		res: Response,
 		next: NextFunction
 	): Promise<void> {
 		try {
-				super.sendError(res, 'result.message');
+
+			const idTransport=req.value.body.token.data
+			const status=req.query.status
+			const transportServices: TransportServices = new TransportServices();
+
+			const result = await transportServices.getAllTransportSub(idTransport,status);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
 		} catch (err){
+			console.log(err)
 			super.sendError(res);
 		}
 	}

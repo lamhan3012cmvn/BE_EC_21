@@ -1,11 +1,7 @@
 import { ILocation } from './../Models/Package/Package.Interface';
 import { ITransportSubCity } from './../Models/TransportSubCity/TransportSubCity.Interface';
 import { ITransportSub } from './../Models/TransportSub/TransportSub.Interface';
-import {
-	Transport,
-	TransportSub,
-	User
-} from '../Models/index';
+import { Transport, TransportSub, User } from '../Models/index';
 import { ReturnServices } from '../Interfaces/Services';
 import { defaultTypeStatus } from '../common/constants';
 
@@ -29,10 +25,7 @@ export default class TransportSubServices {
 		// 		message: 'Can not find a user to create transportSub'
 		// 	};
 		// }
-				const idTransport = await Transport.findOne(
-			{ FK_createUser: id },
-			option
-		);
+		const idTransport = await Transport.findOne({ FK_createUser: id }, option);
 		if (!idTransport) {
 			return {
 				current: null,
@@ -40,7 +33,7 @@ export default class TransportSubServices {
 			};
 		}
 		return {
-			current: { transport: idTransport, message:"success" }
+			current: { transport: idTransport, message: 'success' }
 		};
 	};
 
@@ -68,25 +61,31 @@ export default class TransportSubServices {
 			} = data;
 
 			const locationTransport: ILocation = {
-				city:locationCity,
-				county:locationCounty,
-				ward:locationWard,
-				address:locationAddress,
+				city: locationCity,
+				county: locationCounty,
+				ward: locationWard,
+				address: locationAddress,
 				coordinate: {
 					lat: locationCoordinateLat,
 					lng: locationCoordinateLng
 				}
 			};
-			const nameTransport=_transport.current.transport.name
-			const nameMail=nameTransport.slice(0,nameTransport.search("Transport")-1)
+			const nameTransport = _transport.current.transport.name;
+			const nameMail = nameTransport.slice(
+				0,
+				nameTransport.search('Transport') - 1
+			);
 			const obj: ITransportSub = {
 				name: `${nameTransport}_${locationCity}`,
 				location: locationTransport,
 				phoneNumber,
-				mail:`${nameMail.replace(" ","")}.${locationCity}.Transport@gmail.com`,
-				FK_Transport: _transport.current.transport._id,
+				mail: `${nameMail.replace(
+					' ',
+					''
+				)}.${locationCity}.Transport@gmail.com`,
+				FK_Transport: _transport.current.transport._id
 			};
-			
+
 			const newTransportSub = new TransportSub(obj);
 			await newTransportSub.save();
 
@@ -179,14 +178,17 @@ export default class TransportSubServices {
 		}
 	};
 
-	public changeStatusTransportSub = async (id: string, status: boolean): Promise<ReturnServices>  => {
+	public changeStatusTransportSub = async (
+		id: string,
+		status: boolean
+	): Promise<ReturnServices> => {
 		try {
 			const transportSub = await TransportSub.findById(id);
 			if (transportSub) {
 				transportSub.status = status
 					? defaultTypeStatus.active
 					: defaultTypeStatus.inActive;
-					await transportSub.save()
+				await transportSub.save();
 				return {
 					message: 'Successful change status transport sub',
 					success: true,
@@ -202,4 +204,5 @@ export default class TransportSubServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
+	
 }

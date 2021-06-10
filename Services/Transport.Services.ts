@@ -187,23 +187,23 @@ export default class TransportServices {
 			const newTransportSubHN = new TransportSub(objTransportSubHN);
 			await newTransportSubHN.save();
 
-			const objSubHCMQ1: ITransportSubCity = {
-				name: `${newTransport.name}_${'HCM'}_${'Q1'}`,
-				district: 'HO_CHI_MINH',
-				FK_Transport_Sub: newTransportSubHCM._id
-			};
+			// const objSubHCMQ1: ITransportSubCity = {
+			// 	name: `${newTransport.name}_${'HCM'}_${'Q1'}`,
+			// 	district: 'HO_CHI_MINH',
+			// 	FK_Transport_Sub: newTransportSubHCM._id
+			// };
 
-			const objSubHNHHK: ITransportSubCity = {
-				name: `${newTransport.name}_${'HCM'}_${'Q1'}`,
-				district: 'HO_HOAN_KIEM',
-				FK_Transport_Sub: newTransportSubHN._id
-			};
+			// const objSubHNHHK: ITransportSubCity = {
+			// 	name: `${newTransport.name}_${'HCM'}_${'Q1'}`,
+			// 	district: 'HO_HOAN_KIEM',
+			// 	FK_Transport_Sub: newTransportSubHN._id
+			// };
 
-			const subHCMQ1 = new TransportSubCity(objSubHCMQ1);
-			await subHCMQ1.save();
+			// const subHCMQ1 = new TransportSubCity(objSubHCMQ1);
+			// await subHCMQ1.save();
 
-			const subHNHHK = new TransportSubCity(objSubHNHHK);
-			await subHNHHK.save();
+			// const subHNHHK = new TransportSubCity(objSubHNHHK);
+			// await subHNHHK.save();
 
 			return {
 				message: 'Successfully created transport',
@@ -313,6 +313,46 @@ export default class TransportServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
+	public getAllTransportSub = async (
+		id: string,
+		status: string
+	): Promise<ReturnServices> => {
+		try {
+			const transport = await Transport.findOne({ FK_createUser: id });
+			if (transport) {
+				if(status==='')
+				{
+					const transportSub = await TransportSub.find(
+						{ FK_Transport: transport._id},
+						{ _id: 1, name: 1, location: 1, phone: 1 }
+					);
+					return {
+						message: 'get all transport sub success',
+						success: true,
+						data: transportSub
+					};	
+				}
+				const transportSub = await TransportSub.find(
+					{ FK_Transport: transport._id, status: status },
+					{ _id: 1, name: 1, location: 1, phone: 1 }
+				);
+				return {
+					message: 'get all transport sub success',
+					success: true,
+					data: transportSub
+				};
+			} else {
+				return {
+					message: 'transport  already does not exists',
+					success: false
+				};
+			}
+			
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
 	public assignStaff = async (
 		idSub: string,
 		idUser: string
@@ -325,6 +365,7 @@ export default class TransportServices {
 					FK_CreateUser: idUser
 				}
 			);
+			
 			if (updateTransportServices.success) {
 				const userServices: UserService = new UserService();
 				const updateUserService = await userServices.updateInfo(idUser, {
