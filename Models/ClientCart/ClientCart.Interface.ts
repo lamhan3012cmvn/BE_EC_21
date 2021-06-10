@@ -1,16 +1,17 @@
 import { Document } from 'mongoose';
-export interface ICartProduct{
+export interface IProductClient{
+  _id?:string,
   name:string,
   weight:string,
   type:string,
   image:Array<string>
 }
-export interface ICart{
-	products:Array<ICartProduct>,
+export interface ICartClient{
+	products:Array<IProductClient>,
   status?:string,
   FK_CreateUser?:string,
 }
-export interface ICartDocument extends Document,ICart {
+export interface ICartDocument extends Document,ICartClient {
 
 }
 

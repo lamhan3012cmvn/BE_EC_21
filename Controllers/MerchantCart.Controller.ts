@@ -6,6 +6,8 @@ import { IValidateRequest } from '../common/DefineRequest';
 import Validate from '../Validates/Validate';
 import RoleInstance from '../common/RoleInstance';
 import MerchantCartServices from '../Services/MerchantCart.Services';
+// import { IProductCartMerchant } from '../Models/MerchantCart/MechantCart.Interface';
+import schemaMerchantCart from '../Validates/MerchantCart.Validate';
 export default class MerchantCartController extends Controller {
 	path = '/User/Merchant';
 	routes = [
@@ -15,7 +17,8 @@ export default class MerchantCartController extends Controller {
 			handler: this.handleAddProductToCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaMerchantCart.addProductToCartid)
 			]
 		},
 		{
@@ -24,7 +27,8 @@ export default class MerchantCartController extends Controller {
 			handler: this.handleDeleteProductFromCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaMerchantCart.deleteProductFromCart)
 			]
 		},
 		{
@@ -44,7 +48,7 @@ export default class MerchantCartController extends Controller {
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([])
 			]
-		},
+		}
 	];
 	constructor() {
 		super();
@@ -56,15 +60,26 @@ export default class MerchantCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			// if (result.success) {
-			//   super.sendSuccess(res, result.data, result.message);
-			// } else {
-			//   super.sendError(res, result.message);
-			// }
+			const idUser = req.value.body.token.data;
+			const objData: any = {
+				idProduct: req.value.body.idProduct,
+				quantity: req.value.body.quantity
+			};
+			const merchantCartServices: MerchantCartServices =
+				new MerchantCartServices();
+			const result = await merchantCartServices.addProductToCart(
+				idUser,
+				objData
+			);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
 		} catch {
 			super.sendError(res);
 		}
-	}
+	}	
 
 	async handleDeleteProductFromCart(
 		req: IValidateRequest | any,
@@ -72,11 +87,21 @@ export default class MerchantCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			// if (result.success) {
-			//   super.sendSuccess(res, result.data, result.message);
-			// } else {
-			//   super.sendError(res, result.message);
-			// }
+			const idUser: string = req.value.body.token.data;
+			const idProduct: string = req.value.body.idProduct;
+
+			const merchantCartServices: MerchantCartServices =
+				new MerchantCartServices();
+			const result = await merchantCartServices.deleteProductFromCart(
+				idUser,
+				idProduct
+			);
+
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
 		} catch {
 			super.sendError(res);
 		}
@@ -88,13 +113,14 @@ export default class MerchantCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			const idUser=req.value.body.token.data
-			const merchantCartServices:MerchantCartServices=new MerchantCartServices()
-			const result=await merchantCartServices.getMyCart(idUser)
+			const idUser = req.value.body.token.data;
+			const merchantCartServices: MerchantCartServices =
+				new MerchantCartServices();
+			const result = await merchantCartServices.getMyCart(idUser);
 			if (result.success) {
-			  super.sendSuccess(res, result.data, result.message);
+				super.sendSuccess(res, result.data, result.message);
 			} else {
-			  super.sendError(res, result.message);
+				super.sendError(res, result.message);
 			}
 		} catch {
 			super.sendError(res);

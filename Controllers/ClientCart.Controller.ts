@@ -65,11 +65,18 @@ export default class ClientCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			// if (result.success) {
-			//   super.sendSuccess(res, result.data, result.message);
-			// } else {
-			//   super.sendError(res, result.message);
-			// }
+			const idUser = req.value.body.token.data;
+			const objData: any = {
+				idProduct: req.value.body.idProduct,
+				quantity: req.value.body.quantity
+			};
+			const clientCartServices: ClientCartServices = new ClientCartServices();
+			const result = await clientCartServices.addProductToCart(idUser, objData);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
 		} catch {
 			super.sendError(res);
 		}
@@ -81,11 +88,20 @@ export default class ClientCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			// if (result.success) {
-			//   super.sendSuccess(res, result.data, result.message);
-			// } else {
-			//   super.sendError(res, result.message);
-			// }
+			const idUser: string = req.value.body.token.data;
+			const idProduct: string = req.value.body.idProduct;
+
+			const clientCartServices: ClientCartServices =
+				new ClientCartServices();
+			const result = await clientCartServices.deleteProductFromCart(
+				idUser,
+				idProduct
+			);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
 		} catch {
 			super.sendError(res);
 		}
@@ -97,13 +113,13 @@ export default class ClientCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			const idUser=req.value.body.token.data
-			const clientCartServices:ClientCartServices=new ClientCartServices()
-			const result=await clientCartServices.getMyCart(idUser)
+			const idUser = req.value.body.token.data;
+			const clientCartServices: ClientCartServices = new ClientCartServices();
+			const result = await clientCartServices.getMyCart(idUser);
 			if (result.success) {
-			  super.sendSuccess(res, result.data, result.message);
+				super.sendSuccess(res, result.data, result.message);
 			} else {
-			  super.sendError(res, result.message);
+				super.sendError(res, result.message);
 			}
 		} catch {
 			super.sendError(res);

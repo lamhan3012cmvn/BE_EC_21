@@ -5,17 +5,43 @@ import { ClientCart } from '../Models';
 export default class ClientCartServices {
 	constructor() {}
 
-	public addProductToCart = async (): Promise<ReturnServices> => {
+	public addProductToCart = async (idUser:string,objData:any): Promise<ReturnServices> => {
 		try {
-			return { message: 'An error occurred', success: false };
+			const cart = await ClientCart.findOne({
+				status: defaultTypeStatus.active,
+				FK_CreateUser: idUser
+			});
+      console.log(`LHA:  ===> file: ClientCart.Services.ts ===> line 14 ===> cart`, cart)
+			if (!cart) {
+				const newCart = new ClientCart({
+					FK_CreateUser: idUser,
+					products: [objData]
+				});
+				newCart.save();
+				return { message: 'Add Product success my cart', success: true, data: {} };
+			}
+			cart.products.push(objData)
+			console.log(`LHA:  ===> file: ClientCart.Services.ts ===> line 34 ===> objData`, objData)
+			await cart.save()
+			return { message: 'Add Product success my cart', success: true, data: {} };
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
 		}
 	};
-	public deleteProductFromCart = async (): Promise<ReturnServices> => {
+	public deleteProductFromCart = async (idUser:string,idProduct:string): Promise<ReturnServices> => {
 		try {
-			return { message: 'An error occurred', success: false };
+			const cart = await ClientCart.findOne({
+				status: defaultTypeStatus.active,
+				FK_CreateUser: idUser
+			});
+			if (!cart) {
+				return { message: 'Dont find my cart is delete product', success: false, data: {} };
+			}
+
+			cart.products=cart.products.filter(p=>p._id!==idProduct)
+			await cart.save()
+			return { message: 'Delete product successs my cart', success: true,data:cart};
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
