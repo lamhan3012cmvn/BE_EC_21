@@ -39,7 +39,7 @@ export default class ClientCartServices {
 				return { message: 'Dont find my cart is delete product', success: false, data: {} };
 			}
 
-			cart.products=cart.products.filter(p=>p._id!==idProduct)
+			cart.products=cart.products.filter(p=>p._id+""!==idProduct)
 			await cart.save()
 			return { message: 'Delete product successs my cart', success: true,data:cart};
 		} catch (e) {

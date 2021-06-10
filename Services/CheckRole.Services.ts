@@ -10,8 +10,11 @@ export default class CheckRole {
 			next: NextFunction
 		): Promise<void> => {
 			try {
-        console.log(`LHA:  ===> file: CheckRole.Services.ts ===> line 14 ===> roles`, roles.length<=0)
-				if(roles.length<=0)	next()
+				if(roles.length<=0){
+					console.log(`LHA:  ===> file: CheckRole.Services.ts ===> line 14 ===> roles`, roles.length<=0)
+					next()
+					return
+				}
 				const tokenId = req.value.body.token.data;
 				const user = await User.findById(tokenId, { _id: 1, role: 1 });
         console.log(`LHA:  ===> file: CheckRole.Services.ts ===> line 16 ===> user`, user)

@@ -6,6 +6,7 @@ import { IValidateRequest } from '../common/DefineRequest';
 import Validate from '../Validates/Validate';
 import RoleInstance from '../common/RoleInstance';
 import ClientCartServices from '../Services/ClientCart.Services';
+import schemaClientCart from '../Validates/ClientCart.Validate'
 export default class ClientCartController extends Controller {
 	path = '/User/Client';
 	routes = [
@@ -15,7 +16,8 @@ export default class ClientCartController extends Controller {
 			handler: this.handleAddProductToCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaClientCart.addProductToCartid)
 			]
 		},
 		{
@@ -24,7 +26,8 @@ export default class ClientCartController extends Controller {
 			handler: this.handleDeleteProductFromCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaClientCart.deleteProductFromCart)
 			]
 		},
 		{
@@ -67,8 +70,10 @@ export default class ClientCartController extends Controller {
 		try {
 			const idUser = req.value.body.token.data;
 			const objData: any = {
-				idProduct: req.value.body.idProduct,
-				quantity: req.value.body.quantity
+				name: req.value.body.name,
+    		weight:req.value.body.weight,
+    		type: req.value.body.type,
+    		image: req.value.body.image
 			};
 			const clientCartServices: ClientCartServices = new ClientCartServices();
 			const result = await clientCartServices.addProductToCart(idUser, objData);
