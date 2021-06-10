@@ -1,7 +1,7 @@
 import { defaultRoleAccount } from './../common/constants';
 import { SendMail } from './SendMail.Services';
 import jwtServices from './Token.Services'
-import { User } from '../Models/index';
+import { ClientCart, MerchantCart, User } from '../Models/index';
 import bcrypt from 'bcrypt';
 import {getRandString} from '../common/helper';
 import NotificationServices from "./Notifications.Services";
@@ -105,10 +105,20 @@ export default class AuthService {
 					otp:rdVerify
 				});
 
+				const clientCart=new ClientCart({
+					FK_CreateUser:createdUser._id
+				})
+
+				const merchantCart=new MerchantCart({
+					FK_CreateUser:createdUser._id
+				})
 
 				const send:SendMail = new SendMail()
 				send.sendMail(email,"Verify",rdVerify)
+
 				await createdUser.save();
+				await clientCart.save()
+				await merchantCart.save()
 
 				return {
 					message: 'Successfully registered',

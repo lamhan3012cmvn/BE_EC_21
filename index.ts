@@ -25,6 +25,8 @@ import PaymentController from "./Controllers/Payment.Controller";
 import CouponController from "./Controllers/Coupon.Controller";
 import AdminController from "./Controllers/Admin.Controller";
 import AutomaticController from "./Controllers/Automactic.Controller";
+import ClientCartController from "./Controllers/ClientCart.Controller"
+import MerchatCartControler from "./Controllers/MerchantCart.Controller"
 
 const controllers: Array<Controller> = [
   new AuthController(),
@@ -40,8 +42,11 @@ const controllers: Array<Controller> = [
   new PaymentController(),
   new CouponController(),
   new AdminController(),
-  new AutomaticController()
+  new AutomaticController(),
+  new ClientCartController(),
+  new MerchatCartControler()
 ];
+
 const globalMiddleware: Array<RequestHandler> = [
   express.json(),
   express.static(path.join(__dirname, "public")),
