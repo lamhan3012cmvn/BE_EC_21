@@ -122,6 +122,26 @@ export default class ProductService {
       return { message: "An error occurred", success: false };
     }
   };
+  public getAllProduct = async (body: any): Promise<ReturnServices> => {
+    try {
+      let perPage = ~~body.perPage || 12;
+      let page = ~~body.page || 1;
+      const products = await ProductInfo.find({
+        status: defaultTypeStatus.active,
+      })
+        .skip(perPage * page - perPage)
+        .limit(perPage);
+
+      return {
+        message: "Successfully get product",
+        success: true,
+        data: products,
+      };
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
 
   public deleteProduct = async (idProduct: string): Promise<ReturnServices> => {
     try {

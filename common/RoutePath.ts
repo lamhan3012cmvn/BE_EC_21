@@ -60,6 +60,7 @@ export const ProductPath = {
   UPDATE: "Update",
   GET_BY_MERCHANT: "GetProductByMerchant",
   GET_BY_GROUP_PRODUCT: "GetProductByGroup",
+  GET_ALL: "GetAll",
   FILTER_ALL: "FilterAll",
   FILTER_BY_CATEGORY: "FilterByCategory",
   DELETE: "Delete",

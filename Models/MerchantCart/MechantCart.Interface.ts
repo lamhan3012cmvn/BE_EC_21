@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 export interface IProductCartMerchant{
+  _id?:string,
   idProduct:string,
   quantity:number,
   
