@@ -43,6 +43,7 @@
 		"@types/request": "^2.48.5",
 		"@types/serve-favicon": "^2.5.2",
 		"@types/sha256": "^0.2.0",
+		"axios": "^0.21.1",
 		"babel-cli": "^6.26.0",
 		"bcrypt": "^5.0.1",
 		"config": "^1.31.0",

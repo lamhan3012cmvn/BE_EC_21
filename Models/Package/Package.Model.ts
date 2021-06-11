@@ -5,7 +5,7 @@ export default {
 	description:defaultModel.stringR,
   
 
-  FK_ProductId:[defaultModel.stringRef],
+  FK_Product:[defaultModel.object],
   FK_ProductType:defaultModel.stringR,
 
   codeBill:defaultModel.stringR,
@@ -22,6 +22,9 @@ export default {
 
   prices:defaultModel.string,
   weight:defaultModel.string,
+
+  FK_Recipient:defaultModel.stringRef,
+  isMerchantSend:defaultModel.boolean,
 
   recipient:{
     name:defaultModel.stringR,

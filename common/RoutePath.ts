@@ -85,7 +85,8 @@ export const UserPath = {
   UPDATE_ADDRESS: "UpdateAddress",
   DELETE_ADDRESS: "DeleteAddress",
   BUY_POINT: "BuyPoint",
-  CALC_PRICE_PACKAGE:"CalcPricePackage"
+  CALC_PRICE_PACKAGE:"CalcPricePackage",
+  GET_ORDER:"OrderByStatus"
 };
 
 export const PaymentPath = {

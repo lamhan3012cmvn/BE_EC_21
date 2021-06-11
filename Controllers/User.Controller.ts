@@ -100,6 +100,15 @@ export default class UserController extends Controller {
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([])
 			]
+		},
+		{
+			path: `/${UserPath.GET_ORDER}`,
+			method: Methods.GET,
+			handler: this.handleGetOrderByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([])
+			]
 		}
 	];
 	constructor() {
@@ -302,10 +311,9 @@ export default class UserController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-      // const userServices: UserServices = new UserServices();
+			// const userServices: UserServices = new UserServices();
 			// const result = await transportServices.assignStaff(idSub, idUser);
-      
-      // if (result.success) {
+			// if (result.success) {
 			// 	super.sendSuccess(res, result.data, result.message);
 			// } else {
 			// 	super.sendError(res, result.message);
@@ -313,5 +321,26 @@ export default class UserController extends Controller {
 		} catch {
 			super.sendError(res);
 		}
+	}
+	async handleGetOrderByStatus(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const {status}=req.query
+			const idUser = req.value.body.token.data;
+			const userServices: UserServices = new UserServices();
+			const result = await userServices.getOrderByStatus(idUser, status);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (e) {
+			console.log(e);
+			super.sendError(res);
+		}
+		
 	}
 }
