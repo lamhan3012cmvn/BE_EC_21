@@ -6,6 +6,6 @@ export default {
   image: defaultModel.string,
   address: {...defaultModel.object, required: true },
   status: { ...defaultModel.string, default: defaultTypeStatus.inActive },
-  FK_category: defaultModel.stringRef,
+  productType: defaultModel.stringRef,
   FK_createUser: defaultModel.stringRef,
 };
