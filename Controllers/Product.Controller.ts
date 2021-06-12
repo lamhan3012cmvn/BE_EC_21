@@ -57,6 +57,12 @@ export default class ProductController extends Controller {
       handler: this.handleDelete,
       localMiddleware: [TokenServices.verify],
     },
+    {
+      path: `/${ProductPath.GET_ALL}`,
+      method: Methods.GET,
+      handler: this.handleGetAll,
+      localMiddleware: [],
+    },
   ];
   constructor() {
     super();
@@ -126,6 +132,25 @@ export default class ProductController extends Controller {
       const query = req.query;
       const productService: ProductServices = new ProductServices();
       const result = await productService.getProductByGroup(query);
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleGetAll(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const query = req.query;
+      const productService: ProductServices = new ProductServices();
+      const result = await productService.getAllProduct(query);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {

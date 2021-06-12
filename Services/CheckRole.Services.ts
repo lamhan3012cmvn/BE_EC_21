@@ -18,7 +18,6 @@ export default class CheckRole {
 				const tokenId = req.value.body.token.data;
 				const user = await User.findById(tokenId, { _id: 1, role: 1 });
         console.log(`LHA:  ===> file: CheckRole.Services.ts ===> line 16 ===> user`, user)
-				
 				if (user && roles.includes(user.role)){
 					console.log(user)
 					next()
