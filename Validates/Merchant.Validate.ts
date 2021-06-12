@@ -8,7 +8,7 @@ const validate = {
     fullAddress: joi.string().required(),
     lat: joi.string().required(),
     lng: joi.string().required(),
-    FK_category: joi.string().required(),
+    productType: joi.string().required(),
     phone: joi.string().required(),
   }),
   updateMerchant: joi.object().keys({
@@ -18,7 +18,7 @@ const validate = {
     fullAddress: joi.string(),
     lat: joi.string(),
     lng: joi.string(),
-    FK_category: joi.string(),
+    productType: joi.string(),
     phone: joi.string(),
     id: joi.string().required(),
   }),

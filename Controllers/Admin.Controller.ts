@@ -31,7 +31,7 @@ export default class AdminController extends Controller {
     {
       path: `/${AdminPath.CANCEL_MERCHANT}`,
       method: Methods.POST,
-      handler: this.handleRejectMerchant,
+      handler: this.handleCancelMerchant,
       localMiddleware: [
         TokenServices.verify,
         Validate.body(schemaAdmin.updateMerchant),
@@ -40,7 +40,7 @@ export default class AdminController extends Controller {
     {
       path: `/${AdminPath.GET_MERCHANT_BY_STATUS}`,
       method: Methods.GET,
-      handler: this.handleRejectMerchant,
+      handler: this.handleGetMerchantByStatus,
       localMiddleware: [
         TokenServices.verify,
       ],
@@ -83,6 +83,30 @@ export default class AdminController extends Controller {
       const idUser = req.value.body.token.data;
       let merchantInfo = req.value.body;
       merchantInfo.status = defaultTypeStatus.deleted;
+      const merchantServices: MerchantServices = new MerchantServices();
+      const result = await merchantServices.adminUpdateMerchant(
+        idUser,
+        merchantInfo
+      );
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleCancelMerchant(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const idUser = req.value.body.token.data;
+      let merchantInfo = req.value.body;
+      merchantInfo.status = defaultTypeStatus.inActive;
       const merchantServices: MerchantServices = new MerchantServices();
       const result = await merchantServices.adminUpdateMerchant(
         idUser,
