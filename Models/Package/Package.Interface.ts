@@ -7,15 +7,19 @@ export interface ILocation {
 	address: string;
 	coordinate: { lat: string; lng: string };
 }
+export interface ILocation_v2 {
+	address: string;
+	coordinate: { lat: string; lng: string };
+}
 export interface IInfoUser {
 	name: string;
 	phone: string;
-	location: ILocation;
+	location: ILocation_v2;
 }
 export interface IPackage {
 	title: string;
 	description: string;
-	codeBill:string,
+	codeBill?:string,
 
   estimatedDate:string,
 	FK_Recipient:string,
@@ -34,9 +38,7 @@ export interface IPackage {
 	FK_Product: Array<Object>;
 
 	FK_ProductType: string;
-	recipient: IInfoUser;
-	sender: IInfoUser;
-	createdAt:Date,
-	updatedAt:Date
+	recipient?: IInfoUser;
+	sender?: IInfoUser;
 }
 export interface IPackageDocument extends Document,IPackage {}

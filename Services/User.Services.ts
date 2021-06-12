@@ -336,7 +336,7 @@ export default class UserService {
 					isMerchantSend: 0
 				}
 			).sort(
-				(a: IPackage, b: IPackage) =>
+				(a: any, b: any) =>
 					b.updatedAt.getTime() - a.updatedAt.getTime()
 			);
 

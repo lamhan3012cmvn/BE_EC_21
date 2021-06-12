@@ -61,6 +61,7 @@
 		"nodemailer": "^6.5.0",
 		"paypal-rest-sdk": "^1.8.1",
 		"qs": "^6.7.0",
+		"query-string": "^7.0.0",
 		"request": "^2.88.2",
 		"serve-favicon": "^2.4.5",
 		"sha256": "^0.2.0",

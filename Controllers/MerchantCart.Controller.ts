@@ -1,3 +1,4 @@
+import { IPackage } from './../Models/Package/Package.Interface';
 import { CartPath } from '../common/RoutePath';
 import { Response, NextFunction } from 'express';
 import Controller, { Methods } from './Controller';
@@ -8,6 +9,9 @@ import RoleInstance from '../common/RoleInstance';
 import MerchantCartServices from '../Services/MerchantCart.Services';
 // import { IProductCartMerchant } from '../Models/MerchantCart/MechantCart.Interface';
 import schemaMerchantCart from '../Validates/MerchantCart.Validate';
+import clientAxios from '../common/ClientAxios';
+import PackageService from '../Services/Package.Services';
+import UserService from '../Services/User.Services';
 export default class MerchantCartController extends Controller {
 	path = '/User/Merchant';
 	routes = [
@@ -46,7 +50,8 @@ export default class MerchantCartController extends Controller {
 			handler: this.handlePaymentCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaMerchantCart.paymentMerchantCart)
 			]
 		}
 	];
@@ -79,7 +84,7 @@ export default class MerchantCartController extends Controller {
 		} catch {
 			super.sendError(res);
 		}
-	}	
+	}
 
 	async handleDeleteProductFromCart(
 		req: IValidateRequest | any,
@@ -132,12 +137,108 @@ export default class MerchantCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
+			const idUser: string = req.value.body.token.data;
+
+			console.log('data All', req.value.body);
+			const {
+				title,
+				description,
+				estimatedDate,
+				FK_Recipient,
+				FK_Address,
+				FK_Transport,
+				FK_SubTransport,
+				FK_SubTransportAwait,
+
+				prices,
+				distance,
+				weight,
+
+				FK_Product,
+
+				FK_ProductType,
+				senderName,
+				senderPhone,
+				senderFullAddress,
+				senderCoordinateLat,
+				senderCoordinateLng
+			} = req.value.body;
+
+			//get user
+			const userService: UserService = new UserService();
+			const user = await userService.getInfo(idUser);
+
+
+			const findSender = user.data.address.find((elm: any) => {
+				return elm.id === FK_Address;
+			});
+
+			if (!findSender) {
+				super.sendError(res, 'Dont find address recjpient');
+				return;
+			}
+
+			const merchantCartServices:MerchantCartServices=new MerchantCartServices();
+			const resMerchantCart=await merchantCartServices.paymentCart("60c1797e5999fac67ade94e7")
+
+
+
+			const obj: any = {
+				title,
+				description,
+				
+				estimatedDate,
+				FK_Recipient: '',
+				
+				FK_Transport: '',
+
+				prices,
+				distance,
+				weight,
+				
+				FK_Product: resMerchantCart.data.products, //Get from cart
+				
+				FK_ProductType: '', //Get from cart
+				recipient: {
+					name: findSender.fullName,
+					location: {
+						address: findSender.fullAddress,
+						coordinate: {
+							lat: findSender.coordinates.lat,
+							lng: findSender.coordinates.lng
+						}
+					},
+					phone: findSender.phone
+				},
+				sender: {
+					name: senderName,
+					location: {
+						address: senderFullAddress,
+						coordinate: {
+							lat: senderCoordinateLat,
+							lng:senderCoordinateLng
+						}
+					},
+					phone: senderPhone
+				}
+			};
+			
+			console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`, obj)
+			const packageService: PackageService = new PackageService();
+			// const result=await packageService.createPackage(obj)
+			if (user.success) {
+				super.sendSuccess(res,obj, user.message);
+				return;
+			} else {
+				super.sendError(res, user.message);
+			}
 			// if (result.success) {
 			//   super.sendSuccess(res, result.data, result.message);
 			// } else {
 			//   super.sendError(res, result.message);
 			// }
-		} catch {
+		} catch (err) {
+			console.log('err', err);
 			super.sendError(res);
 		}
 	}

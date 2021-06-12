@@ -30,5 +30,6 @@ const validate = {
     point: joi.string().required(),
     typePayment: joi.string().required(),
   }),
+  
 };
 export default validate;

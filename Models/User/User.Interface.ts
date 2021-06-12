@@ -6,7 +6,7 @@ export interface ICoordinates {
 }
 
 export interface IAddress {
-  id: string;
+  id?: string;
   fullAddress: string;
   coordinates: ICoordinates;
   phoneNumber: string;
