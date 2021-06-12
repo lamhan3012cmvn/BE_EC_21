@@ -83,12 +83,10 @@ export default class MerchantCartServices {
 			const cartFindProduct = cart.toObject();
 			cartFindProduct.products = await Promise.all(
 				cartFindProduct.products.map(async (p: any) => {
-          console.log(`LHA:  ===> file: MerchantCart.Services.ts ===> line 86 ===> p`, p)
 					const groupProduct = await GroupProduct.findOne(
 						{_id:p.idProduct,status:defaultTypeStatus.active},
 						{ _id: 1, name: 1, FK_merchant: 1 }
 					);
-          console.log(`LHA:  ===> file: MerchantCart.Services.ts ===> line 91 ===> groupProduct`, groupProduct)
 					if (!groupProduct) return { product: null, quantity: p.quantity };
 					const product = await ProductInfo.findOne({FK_groupProduct:groupProduct._id,status:defaultTypeStatus.active}, {
 						_id: 1,

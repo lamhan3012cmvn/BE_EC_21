@@ -5,7 +5,7 @@ const validate = {
     name: joi.string().required(),
     weight: joi.string().required(),
     type: joi.string().required(),
-    image: joi.array().items(joi.string())
+    image: joi.string().required()
 	}),
 	updateProductToCartid: joi.object().keys({
 		idProduct:joi.string().required(),

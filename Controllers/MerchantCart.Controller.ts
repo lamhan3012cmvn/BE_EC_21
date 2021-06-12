@@ -9,7 +9,6 @@ import RoleInstance from '../common/RoleInstance';
 import MerchantCartServices from '../Services/MerchantCart.Services';
 // import { IProductCartMerchant } from '../Models/MerchantCart/MechantCart.Interface';
 import schemaMerchantCart from '../Validates/MerchantCart.Validate';
-import clientAxios from '../common/ClientAxios';
 import PackageService from '../Services/Package.Services';
 import UserService from '../Services/User.Services';
 export default class MerchantCartController extends Controller {

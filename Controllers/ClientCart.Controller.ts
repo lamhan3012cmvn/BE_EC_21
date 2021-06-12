@@ -74,7 +74,7 @@ export default class ClientCartController extends Controller {
 				name: req.value.body.name,
     		weight:req.value.body.weight,
     		type: req.value.body.type,
-    		image: req.value.body.image
+    		image: req.value.body.image.split(" ")
 			};
 			const clientCartServices: ClientCartServices = new ClientCartServices();
 			const result = await clientCartServices.addProductToCart(idUser, objData);
