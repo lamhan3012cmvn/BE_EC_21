@@ -119,6 +119,7 @@ export const AdminPath = {
   CANCEL_TRANSPORT: "CancelMerchant",
   GET_MERCHANT_BY_STATUS: "GetMerchantByStatus",
   GET_TRANSPORT_BY_STATUS: "GetTransportByStatus",
+  GET_TRANSPORT_BY_ADDRESS:"GetTransportByAddress"
 };
 
 export const CartPath={

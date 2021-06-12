@@ -178,25 +178,20 @@ export default class MerchantCartController extends Controller {
 			}
 
 			const merchantCartServices:MerchantCartServices=new MerchantCartServices();
-			const resMerchantCart=await merchantCartServices.paymentCart("60c1797e5999fac67ade94e7")
+			const resMerchantCart=await merchantCartServices.paymentCart(idUser)
 
 
 
 			const obj: any = {
 				title,
 				description,
-				
 				estimatedDate,
 				FK_Recipient: '',
-				
 				FK_Transport: '',
-
 				prices,
 				distance,
 				weight,
-				
 				FK_Product: resMerchantCart.data.products, //Get from cart
-				
 				FK_ProductType: '', //Get from cart
 				recipient: {
 					name: findSender.fullName,
@@ -221,8 +216,6 @@ export default class MerchantCartController extends Controller {
 					phone: senderPhone
 				}
 			};
-			
-			console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`, obj)
 			const packageService: PackageService = new PackageService();
 			// const result=await packageService.createPackage(obj)
 			if (user.success) {

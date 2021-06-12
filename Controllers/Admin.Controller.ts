@@ -45,6 +45,14 @@ export default class AdminController extends Controller {
         TokenServices.verify,
       ],
     },
+    {
+      path: `/${AdminPath.GET_TRANSPORT_BY_ADDRESS}`,
+      method: Methods.GET,
+      handler: this.handleRejectMerchant,
+      localMiddleware: [
+        TokenServices.verify,
+      ],
+    }
   ];
   constructor() {
     super();
