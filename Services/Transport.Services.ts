@@ -16,6 +16,7 @@ import {
 import { ReturnServices } from '../Interfaces/Services';
 import TransportSubServices from './TransportSub.Services';
 import UserService from './User.Services';
+import { getDistanceFromLatLonInKm } from '../common/helper';
 
 export default class TransportServices {
 	constructor() {}
@@ -66,16 +67,15 @@ export default class TransportServices {
 			transport.FK_Staffs = newFKStaff;
 			transportSub.status = defaultTypeStatus.inActive;
 			transportSub.FK_CreateUser = '';
-      
 
 			await transportSub.save();
 			await user.save();
 			await transport.save();
-			
+
 			return {
 				message: 'Remove staff success',
 				success: true,
-				data:{}
+				data: {}
 			};
 		} catch (error) {
 			console.log(error);
@@ -99,12 +99,14 @@ export default class TransportServices {
 			transport.typeSupport.forEach(type => {
 				if (type.title === data.title) {
 					const t = data.type === 'km' ? 'km' : 'kg';
+					const p = data.type === 'kg' ? 'km' : 'kg';
 					type.price[t] = data.price;
-					type.available = defaultTypeStatus.active;
+					type.price[p] = "0";
+					type.available = data.available?defaultTypeStatus.active:defaultTypeStatus.inActive;
 				}
 			});
 
-			await transport.save()
+			await transport.save();
 
 			return {
 				message: 'Update Price Type Success',
@@ -320,17 +322,16 @@ export default class TransportServices {
 		try {
 			const transport = await Transport.findOne({ FK_createUser: id });
 			if (transport) {
-				if(status==='')
-				{
+				if (status === '') {
 					const transportSub = await TransportSub.find(
-						{ FK_Transport: transport._id},
+						{ FK_Transport: transport._id },
 						{ _id: 1, name: 1, location: 1, phone: 1 }
 					);
 					return {
 						message: 'get all transport sub success',
 						success: true,
 						data: transportSub
-					};	
+					};
 				}
 				const transportSub = await TransportSub.find(
 					{ FK_Transport: transport._id, status: status },
@@ -347,7 +348,6 @@ export default class TransportServices {
 					success: false
 				};
 			}
-			
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
@@ -365,7 +365,7 @@ export default class TransportServices {
 					FK_CreateUser: idUser
 				}
 			);
-			
+
 			if (updateTransportServices.success) {
 				const userServices: UserService = new UserService();
 				const updateUserService = await userServices.updateInfo(idUser, {
@@ -388,6 +388,88 @@ export default class TransportServices {
 					success: false
 				};
 			}
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+
+	// private findSubTransport= (SubPackage:Array<ITransportSubDocument>,currentLocation:ILocation):ITransportSubDocument|null=>{
+	// 	if(SubPackage.length<=0) return null
+	// 	const minSub={current:SubPackage[0],value:getDistanceFromLatLonInKm(+SubPackage[0].location.coordinate.lat,+SubPackage[0].location.coordinate.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)}
+	// 	SubPackage.forEach((elm)=>{
+	// 		const coordinateSub=elm.location.coordinate
+	// 		const min= getDistanceFromLatLonInKm(+coordinateSub.lat,+coordinateSub.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)
+	// 		if(min<minSub.value)
+	// 		{
+	// 			minSub.current=elm
+	// 			minSub.value=min
+	// 		}
+	// 	})
+	// 	return minSub.current
+	// }
+
+
+	public getTransportByAddress = async (
+		lat: string,
+		lng: string
+	): Promise<ReturnServices> => {
+		try {
+			const transportSub = await TransportSub.find();
+			const groupByTransport = transportSub.reduce((t: any, v: any) => {
+				const findIdTransport = t.findIndex((k: any) => {
+					return k.FK_Transport + '' === v.FK_Transport + '';
+				});
+				// getDistanceFromLatLonInKm(+SubPackage[0].location.coordinate.lat,+SubPackage[0].location.coordinate.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)
+				if (findIdTransport === -1) {
+					const km=getDistanceFromLatLonInKm(+lat,+lng,+v.location.coordinate.lat,+v.location.coordinate.lng)
+					const obj = {
+						FK_Transport: v.FK_Transport,
+						transportSub: [Object.assign(v)],
+						distance:km
+					};
+					t.push(obj);
+					return t;
+				}
+				t[findIdTransport].transportSub.push(Object.assign(v));
+				return t;
+			}, []);
+
+			// const subServices: TransportSubServices = new TransportSubServices();
+			// const updateTransportServices = await subServices.updateTransportSub(
+			// 	idSub,
+			// 	{
+			// 		FK_CreateUser: idUser
+			// 	}
+			// );
+
+			// if (updateTransportServices.success) {
+			// 	const userServices: UserService = new UserService();
+			// 	const updateUserService = await userServices.updateInfo(idUser, {
+			// 		role: defaultRoleAccount.TRANSPORT_SUB
+			// 	});
+			// 	if (updateUserService.success) {
+			// 		return {
+			// 			message: 'Successful assign staff',
+			// 			success: true,
+			// 			data: {}
+			// 		};
+			// 	}
+			// 	return {
+			// 		message: updateUserService.message,
+			// 		success: false
+			// 	};
+			// } else {
+			// 	return {
+			// 		message: 'transport  already does not exists',
+			// 		success: false
+			// 	};
+			// }
+			return {
+				message: 'Get All Success',
+				data: groupByTransport,
+				success: true
+			};
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };

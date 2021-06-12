@@ -7,6 +7,7 @@ import schemaAdmin from "../Validates/Admin.Validate";
 import MerchantServices from "../Services/Merchant.Services";
 import { defaultTypeStatus } from "../common/constants";
 import Validate from "../Validates/Validate";
+import TransportServices from "../Services/Transport.Services";
 export default class AdminController extends Controller {
   path = "/Admin";
   routes = [
@@ -48,9 +49,9 @@ export default class AdminController extends Controller {
     {
       path: `/${AdminPath.GET_TRANSPORT_BY_ADDRESS}`,
       method: Methods.GET,
-      handler: this.handleRejectMerchant,
+      handler: this.handleGetTransportByAddress,
       localMiddleware: [
-        TokenServices.verify,
+        //  TokenServices.verify,
       ],
     }
   ];
@@ -140,6 +141,26 @@ export default class AdminController extends Controller {
       const status = req.query.status;
       const merchantServices: MerchantServices = new MerchantServices();
       const result = await merchantServices.getMerchantByStatus(idUser, status);
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+  
+  async handleGetTransportByAddress(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      // const idUser = req.value.body.token.data;
+      // const status = req.query.status;
+      const transportService: TransportServices = new TransportServices();
+      const result = await transportService.getTransportByAddress("37.7858214","-122.4064015");
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {

@@ -27,6 +27,7 @@ export default class TransportController extends Controller {
 			handler: this.handleUpdate,
 			localMiddleware: [
 				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT]),
 				Validate.body(schemaTransport.updateTransport)
 			]
 		},
@@ -54,7 +55,11 @@ export default class TransportController extends Controller {
 			path: `/${TransportPath.GET_INFO}`,
 			method: Methods.GET,
 			handler: this.handleGetTransport,
-			localMiddleware: [TokenServices.verify]
+
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT])
+			]
 		},
 		{
 			path: `/${TransportPath.ASSIGN_STAFF}`,
@@ -89,7 +94,6 @@ export default class TransportController extends Controller {
 		super();
 	}
 
-
 	async handleCreate(
 		req: IValidateRequest | any,
 		res: Response,
@@ -114,7 +118,7 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch (err){
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
@@ -124,8 +128,8 @@ export default class TransportController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			const idUserTransport=req.value.body.token.data
-			const idStaff=req.value.body.idStaff
+			const idUserTransport = req.value.body.token.data;
+			const idStaff = req.value.body.idStaff;
 			console.log(
 				`LHA:  ===> file: Transport.Controller.ts ===> line 110 ===> req.value.body`,
 				req.value.body
@@ -136,11 +140,11 @@ export default class TransportController extends Controller {
 				idStaff
 			);
 			if (result.success) {
-				super.sendSuccess(res, result.data,result.message);
-			}else{
+				super.sendSuccess(res, result.data, result.message);
+			} else {
 				super.sendError(res, result.message);
 			}
-		} catch (err){
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
@@ -151,12 +155,21 @@ export default class TransportController extends Controller {
 	): Promise<void> {
 		try {
 			const data = req.value.body;
-      console.log(`LHA:  ===> file: Transport.Controller.ts ===> line 151 ===> data`, data)
+			console.log(
+				`LHA:  ===> file: Transport.Controller.ts ===> line 151 ===> data`,
+				data
+			);
 			const token = req.value.body.token;
-      console.log(`LHA:  ===> file: Transport.Controller.ts ===> line 153 ===> token`, token)
+			console.log(
+				`LHA:  ===> file: Transport.Controller.ts ===> line 153 ===> token`,
+				token
+			);
 			delete data.token;
-			console.log(`LHA:  ===> file: Transport.Controller.ts ===> line 172 ===> data`, data)
-			
+			console.log(
+				`LHA:  ===> file: Transport.Controller.ts ===> line 172 ===> data`,
+				data
+			);
+
 			const transportServices: TransportServices = new TransportServices();
 			const result = await transportServices.updatePriceTypeTransport(
 				token.data,
@@ -167,11 +180,11 @@ export default class TransportController extends Controller {
 			// 	result
 			// );
 			if (result.success) {
-				super.sendSuccess(res, result.data,result.message);
-			}else{
+				super.sendSuccess(res, result.data, result.message);
+			} else {
 				super.sendError(res, result.message);
 			}
-		} catch (err){
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
@@ -189,7 +202,7 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch (err){
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
@@ -208,7 +221,7 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch (err){
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
@@ -228,7 +241,7 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch (err){
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
@@ -246,7 +259,7 @@ export default class TransportController extends Controller {
 			} else {
 				super.sendError(res, 'result.message');
 			}
-		} catch (err){
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
@@ -256,19 +269,21 @@ export default class TransportController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-
-			const idTransport=req.value.body.token.data
-			const status=req.query.status
+			const idTransport = req.value.body.token.data;
+			const status = req.query.status;
 			const transportServices: TransportServices = new TransportServices();
 
-			const result = await transportServices.getAllTransportSub(idTransport,status);
+			const result = await transportServices.getAllTransportSub(
+				idTransport,
+				status
+			);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch (err){
-			console.log(err)
+		} catch (err) {
+			console.log(err);
 			super.sendError(res);
 		}
 	}

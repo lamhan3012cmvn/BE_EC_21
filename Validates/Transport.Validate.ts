@@ -48,7 +48,7 @@ const validate = {
 	updatePriceByType:joi.object().keys({
 			title:joi.string().required(),
 			price:joi.string().required(),
-			avalable:joi.boolean().required(),
+			available:joi.boolean().required(),
 			type:joi.string().valid("km","kg")
 	})
 
