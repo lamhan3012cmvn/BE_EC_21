@@ -64,9 +64,27 @@ export default class ClientCartServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
-	public paymentCart = async (): Promise<ReturnServices> => {
+	public paymentCart = async (idUser:string): Promise<ReturnServices> => {
 		try {
-			return { message: 'An error occurred', success: false };
+			const cart = await ClientCart.findOne({
+				status: defaultTypeStatus.active,
+				FK_CreateUser: idUser
+			});
+			if (!cart) {
+				const newCart = new ClientCart({ FK_CreateUser: idUser });
+				newCart.save();
+				return { message: 'Get success my cart', success: true, data: newCart };
+			}
+
+			
+			cart.status = defaultTypeStatus.inActive;
+			// await cart.save()
+			return {
+				message: 'Get success my cart',
+				success: true,
+				data: cart
+			};
+
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };

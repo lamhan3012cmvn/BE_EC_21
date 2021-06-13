@@ -52,6 +52,14 @@ export default class AdminController extends Controller {
 			localMiddleware: [
 				 TokenServices.verify,
 			]
+		},
+		{
+			path: `/${AdminPath.GET_TRANSPORT_BY_ADDRESS_CLIENT}`,
+			method: Methods.GET,
+			handler: this.handleGetTransportByAddressClient,
+			localMiddleware: [
+				 TokenServices.verify,
+			]
 		}
 	];
 	constructor() {
@@ -200,6 +208,55 @@ export default class AdminController extends Controller {
 		}
 	}
 
+	async handleGetTransportByAddressClient(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const { senderIdAddress, receiverLat,receiverLng } = req.query;
+			const idUser = req.value.body.token.data;
+			// const status = req.query.status;
+
+			const userService: UserService = new UserService();
+			const findAddress = await userService.findCoordinateByAddress(
+			  idUser,
+				senderIdAddress
+			);
+			if (!findAddress) {
+				super.sendError(res, 'Dont find address receiver');
+			}
+
+      // const merchantService:MerchantServices=new MerchantServices()
+      // const findAddressMerchant=await merchantService.getCoordinate(senderIdMerchant)
+      // if(!findAddressMerchant)
+      // {
+      //   super.sendError(res,'Dont find address Merchant')
+      // }
+
+
+			const coordinateReceiver = findAddress.coordinates;
+      // const coordinateMerchant= findAddressMerchant.address.coordinates
+			const transportService: TransportServices = new TransportServices();
+			const result = await transportService.getTransportByAddress(
+				{ lat: coordinateReceiver.lat, lng: coordinateReceiver.lng },
+				{ lat: receiverLat, lng: receiverLng }
+			);
+			
+			const transport=JSON.parse(JSON.stringify(result.data))
+			const address={sender:Object.assign(findAddress)}
+			const newObj=Object.assign({transport:transport},address) 
+
+			if (result.success) {
+				super.sendSuccess(res, newObj, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (err) {
+			console.log(err);
+			super.sendError(res);
+		}
+	}
 	//   async handleDelete(
 	//     req: IValidateRequest | any,
 	//     res: Response,

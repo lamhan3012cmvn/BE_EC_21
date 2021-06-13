@@ -1,7 +1,7 @@
 // import { IProductCartMerchant } from '../Models/MerchantCart/MechantCart.Interface';
 import { defaultModel, defaultTypeStatus } from '../common/constants';
 import { ReturnServices } from '../Interfaces/Services';
-import { GroupProduct, MerchantCart, Product, ProductInfo } from '../Models';
+import { GroupProduct, Merchant, MerchantCart, Product, ProductInfo } from '../Models';
 
 export default class MerchantCartServices {
 	constructor() {}
@@ -64,13 +64,12 @@ export default class MerchantCartServices {
 			const newArr = JSON.parse(JSON.stringify(cart.products));
 			const filterProduct = [];
 			for (let i = 0; i < newArr.length; i++) {
-				const groupProduct = await GroupProduct.findOne({
-					_id: newArr[i].idProduct,
-					status: defaultTypeStatus.active
+				const currentProduct = await Product.findOne({
+					_id: newArr[i].idProduct, status: defaultTypeStatus.active 
 				});
-				if (groupProduct) {
+				if (currentProduct) {
 					const product = await ProductInfo.findOne({
-						FK_groupProduct: groupProduct._id,
+						_id: currentProduct.FK_currentInfo,
 						status: defaultTypeStatus.active
 					});
 					if (product) {
@@ -160,14 +159,14 @@ export default class MerchantCartServices {
 			const cartFindProduct = cart.toObject();
 			cartFindProduct.products = await Promise.all(
 				cartFindProduct.products.map(async (p: any) => {
-					const groupProduct = await GroupProduct.findOne(
+					const currentProduct = await Product.findOne(
 						{ _id: p.idProduct, status: defaultTypeStatus.active },
-						{ _id: 1, name: 1, FK_merchant: 1 }
+						{ _id: 1, FK_currentInfo: 1, FK_merchant: 1 }
 					);
-					if (!groupProduct) return { product: null, quantity: p.quantity };
+					if (!currentProduct) return { product: null, quantity: p.quantity };
 					const product = await ProductInfo.findOne(
 						{
-							FK_groupProduct: groupProduct._id,
+							_id: currentProduct.FK_currentInfo,
 							status: defaultTypeStatus.active
 						},
 						{
@@ -177,11 +176,13 @@ export default class MerchantCartServices {
 							image: 1
 						}
 					);
+					const merchant=await Merchant.findById(currentProduct.FK_merchant)
+
 					return {
 						product: product,
 						quantity: p.quantity,
-						FK_merchant: groupProduct.FK_merchant,
-						name: groupProduct.name
+						FK_merchant: currentProduct.FK_merchant,
+						name: merchant?merchant.name:""
 					};
 				})
 			);
@@ -197,7 +198,6 @@ export default class MerchantCartServices {
 	};
 	public paymentCart = async (idUser: string): Promise<ReturnServices> => {
 		try {
-			console.log('co run khong');
 			const cart = await MerchantCart.findOne({
 				status: defaultTypeStatus.active,
 				FK_CreateUser: idUser
@@ -211,14 +211,14 @@ export default class MerchantCartServices {
 			const cartFindProduct = cart.toObject();
 			cartFindProduct.products = await Promise.all(
 				cartFindProduct.products.map(async (p: any) => {
-					const groupProduct = await GroupProduct.findOne(
+					const currentProduct = await Product.findOne(
 						{ _id: p.idProduct, status: defaultTypeStatus.active },
 						{ _id: 1, name: 1, FK_merchant: 1 }
 					);
-					if (!groupProduct) return { product: null, quantity: p.quantity };
+					if (!currentProduct) return { product: null, quantity: p.quantity };
 					const product = await ProductInfo.findOne(
 						{
-							FK_groupProduct: groupProduct._id,
+							_id: currentProduct.FK_currentInfo,
 							status: defaultTypeStatus.active
 						},
 						{
@@ -231,7 +231,7 @@ export default class MerchantCartServices {
 					return {
 						product: product,
 						quantity: p.quantity,
-						FK_Merchant: groupProduct.FK_merchant
+						FK_Merchant: currentProduct.FK_merchant
 					};
 				})
 			);
