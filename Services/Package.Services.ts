@@ -1,4 +1,7 @@
-import { ITransportSub, ITransportSubDocument } from './../Models/TransportSub/TransportSub.Interface';
+import {
+	ITransportSub,
+	ITransportSubDocument
+} from './../Models/TransportSub/TransportSub.Interface';
 import { defaultStatusPackage, defaultTypeStatus } from './../common/constants';
 import {
 	IPackage,
@@ -7,29 +10,45 @@ import {
 } from './../Models/Package/Package.Interface';
 import { ReturnServices } from '../Interfaces/Services';
 import { Package, Transport, TransportSub } from '../Models';
-import {getDistanceFromLatLonInKm} from '../common/helper' 
+import { getDistanceFromLatLonInKm } from '../common/helper';
 
 export default class PackageService {
 	constructor() {}
 
-	private findSubTransport= (SubPackage:Array<ITransportSubDocument>,currentLocation:ILocation):ITransportSubDocument|null=>{
-		if(SubPackage.length<=0) return null
-		const minSub={current:SubPackage[0],value:getDistanceFromLatLonInKm(+SubPackage[0].location.coordinate.lat,+SubPackage[0].location.coordinate.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)}
-		SubPackage.forEach((elm)=>{
-			const coordinateSub=elm.location.coordinate
-			const min= getDistanceFromLatLonInKm(+coordinateSub.lat,+coordinateSub.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)
-			if(min<minSub.value)
-			{
-				minSub.current=elm
-				minSub.value=min
+	private findSubTransport = (
+		SubPackage: Array<ITransportSubDocument>,
+		currentLocation: ILocation
+	): ITransportSubDocument | null => {
+		if (SubPackage.length <= 0) return null;
+		const minSub = {
+			current: SubPackage[0],
+			value: getDistanceFromLatLonInKm(
+				+SubPackage[0].location.coordinate.lat,
+				+SubPackage[0].location.coordinate.lng,
+				+currentLocation.coordinate.lat,
+				+currentLocation.coordinate.lng
+			)
+		};
+		SubPackage.forEach(elm => {
+			const coordinateSub = elm.location.coordinate;
+			const min = getDistanceFromLatLonInKm(
+				+coordinateSub.lat,
+				+coordinateSub.lng,
+				+currentLocation.coordinate.lat,
+				+currentLocation.coordinate.lng
+			);
+			if (min < minSub.value) {
+				minSub.current = elm;
+				minSub.value = min;
 			}
-		})
-		return minSub.current
-		
-	}
-	public createPackage = async (body: any): Promise<ReturnServices> => {
+		});
+		return minSub.current;
+	};
+	public createPackage = async (
+		body: any,
+		isMerchantSend: boolean=true
+	): Promise<ReturnServices> => {
 		try {
-			
 			const {
 				title,
 				description,
@@ -41,19 +60,17 @@ export default class PackageService {
 				prices,
 				distance,
 				weight,
-				FK_Product,//Get from cart
+				FK_Product, //Get from cart
 				FK_ProductType, //Get from cart
 				recipient,
 				sender
-			}=body
-
-
-
-
-
+			} = body;
 
 			const currentTransport = await Transport.findById(FK_Transport);
-      console.log(`LHA:  ===> file: Package.Services.ts ===> line 56 ===> currentTransport`, currentTransport)
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 56 ===> currentTransport`,
+				currentTransport
+			);
 			if (!currentTransport)
 				return { message: "Don't find transport", success: false };
 			// const recipientLocation: ILocation = {
@@ -83,7 +100,6 @@ export default class PackageService {
 			// 	location: senderLocation
 			// };
 
-			
 			// const transportSub=await TransportSub.find({FK_Transport:FK_Transport,status:defaultTypeStatus.active})
 
 			// const findLocationSender=this.findSubTransport(transportSub,senderLocation)
@@ -95,7 +111,6 @@ export default class PackageService {
 			// if(!findLocationNext)
 			// 	return { message: 'Dont find Sub transport sender', success: false };
 			// const FK_LocationNext=findLocationNext._id
-
 
 			const obj: IPackage = {
 				title,
@@ -114,9 +129,9 @@ export default class PackageService {
 				description,
 				prices,
 				weight,
-				distance
+				distance,
+				isMerchantSend
 			};
-
 
 			const newPackage = new Package(obj);
 			await newPackage.save();
@@ -159,8 +174,8 @@ export default class PackageService {
 				{ _id: 1, codeBill: 1, estimatedDate: 1, FK_Transport: 1 }
 			);
 			const clonePackage = await Promise.all(
-				packages.map(async (elm:any) => {
-					const { FK_Transport, ...cloneObj } = elm
+				packages.map(async (elm: any) => {
+					const { FK_Transport, ...cloneObj } = elm;
 					const res = await Transport.findById(elm.FK_Transport, {
 						_id: 1,
 						name: 1
@@ -182,8 +197,6 @@ export default class PackageService {
 
 	public getPackageSubByStatus = async (body: any): Promise<ReturnServices> => {
 		try {
-
-
 			///???
 			const { name } = body;
 			const packages = await Package.find(
@@ -191,7 +204,7 @@ export default class PackageService {
 				{ _id: 1, codeBill: 1, estimatedDate: 1, FK_Transport: 1 }
 			);
 			const clonePackage = await Promise.all(
-				packages.map(async (elm:any) => {
+				packages.map(async (elm: any) => {
 					const { FK_Transport, ...cloneObj } = elm.toObject();
 					const res = await Transport.findById(elm.FK_Transport, {
 						_id: 1,
@@ -211,15 +224,18 @@ export default class PackageService {
 			return { message: 'An error occurred', success: false };
 		}
 	};
-	
+
 	public automaticPackageToSub = async (): Promise<ReturnServices> => {
 		try {
-			const autoPackage=await Package.find({
-				isAwait:false,
-				status:defaultStatusPackage.onGoing
-			})
-			
-      console.log(`LHA:  ===> file: Package.Services.ts ===> line 234 ===> autoPackage`, autoPackage)
+			const autoPackage = await Package.find({
+				isAwait: false,
+				status: defaultStatusPackage.onGoing
+			});
+
+			console.log(
+				`LHA:  ===> file: Package.Services.ts ===> line 234 ===> autoPackage`,
+				autoPackage
+			);
 			return { message: 'An error occurred', success: false };
 		} catch (e) {
 			console.log(e);
@@ -259,7 +275,7 @@ export default class PackageService {
 	public confirmPackages = async (body: any): Promise<ReturnServices> => {
 		try {
 			const { idPackages } = body;
-			idPackages.forEach(async (id:string) => {
+			idPackages.forEach(async (id: string) => {
 				const resPackage = await Package.findById(id);
 				if (resPackage) {
 					resPackage.status = defaultStatusPackage.onGoing;

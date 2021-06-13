@@ -499,13 +499,20 @@ export default class TransportServices {
 								delete findEndTransport.transportSub.FK_CreateUser
 
 								const distance=km.toFixed(0)
+                console.log(`LHA:  ===> file: Transport.Services.ts ===> line 502 ===> distance`, distance)
 								const price=+typePrice.price.km*+distance
+                console.log(`LHA:  ===> file: Transport.Services.ts ===> line 504 ===> price`, price)
 								newGroup.push({
 									FK_Transport:transport,
 									start: Object.assign( startTransport[i].transportSub,{}),
 									end: Object.assign( findEndTransport.transportSub,{}),
-									price:price.toFixed(2),
-									distance:distance
+									price:price===0?"15000":price.toFixed(2),
+									distance:+distance!==0?distance:getDistanceFromLatLonInKm(
+										+start.lat,
+										+start.lng,
+										+end.lat,
+										+end.lng
+									).toFixed(2)
 								});
 							}
 								

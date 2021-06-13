@@ -7,6 +7,8 @@ import Validate from '../Validates/Validate';
 import RoleInstance from '../common/RoleInstance';
 import ClientCartServices from '../Services/ClientCart.Services';
 import schemaClientCart from '../Validates/ClientCart.Validate'
+import UserService from '../Services/User.Services';
+import PackageService from '../Services/Package.Services';
 export default class ClientCartController extends Controller {
 	path = '/User/Client';
 	routes = [
@@ -36,7 +38,8 @@ export default class ClientCartController extends Controller {
 			handler: this.handleGetMyCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				
 			]
 		},
 		{
@@ -45,7 +48,8 @@ export default class ClientCartController extends Controller {
 			handler: this.handlePaymentCart,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([])
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaClientCart.paymentPointClientCart)
 			]
 		},
 		{
@@ -137,11 +141,96 @@ export default class ClientCartController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			// if (result.success) {
-			//   super.sendSuccess(res, result.data, result.message);
-			// } else {
-			//   super.sendError(res, result.message);
-			// }
+			const idUser: string = req.value.body.token.data;
+
+			const {
+				title,
+				description,
+				estimatedDate,
+				
+				FK_Transport,
+				FK_SubTransport,
+				FK_SubTransportAwait,
+				
+				recipientName,
+				recipientAddress,
+				recipientLat,
+				recipientLng,
+				recipientPhone,
+				prices,
+				distance,
+				weight,
+
+				senderPhone,
+				senderAddress,
+				senderLat,
+				senderLng
+			} = req.value.body;
+
+			//get user
+			const userService: UserService = new UserService();
+			const user = await userService.getInfo(idUser);
+      console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 167 ===> user`, user)
+			const converPriceToPoint=~~+prices/5000
+			if(user.data.point>converPriceToPoint)
+			{
+				user.data.point=user.data.point-10
+				await user.data.save()
+	
+				const clientCartServices:ClientCartServices=new ClientCartServices();
+				const resClientCart=await clientCartServices.paymentCart(idUser)
+	
+				const obj: any = {
+					title,
+					description,
+					estimatedDate,
+					FK_Recipient: idUser,
+					FK_Transport,
+					FK_SubTransport,
+					FK_SubTransportAwait,
+					prices,
+					distance,
+					weight,
+					FK_Product: resClientCart.data.products, //Get from cart
+					FK_ProductType: 'Standard', //Get from cart
+					recipient: {
+						name: recipientName,
+						location: {
+							address: recipientAddress,
+							coordinate: {
+								lat: recipientLat,
+								lng: recipientLng
+							}
+						},
+						phone: recipientPhone
+					},
+					sender: {
+						name: user.data.fullName,
+						location: {
+							address: senderAddress,
+							coordinate: {
+								lat: senderLat,
+								lng:senderLng
+							}
+						},
+						phone: senderPhone
+					},
+					
+				};
+				console.log(`LHA:  ===> file: ClientCart.Controller.ts ===> line 183 ===> obj`, obj)
+				super.sendSuccess(res, obj,"Your points are not enough to pay for this order");
+				return
+				console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`, obj)
+				const packageService: PackageService = new PackageService();
+				const result=await packageService.createPackage(obj,false)
+				if (result.success) {
+					super.sendSuccess(res,{}, result.message);
+					return;
+				} else {
+					super.sendError(res, result.message);
+				}
+			}
+			super.sendError(res, "Your points are not enough to pay for this order");
 		} catch {
 			super.sendError(res);
 		}
