@@ -25,6 +25,16 @@ export default class MerchantCartController extends Controller {
 			]
 		},
 		{
+			path: `/${CartPath.UPDATE_PRODUCT_FROM_CART}`,
+			method: Methods.POST,
+			handler: this.handleUpdateProductToCart,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([]),
+				Validate.body(schemaMerchantCart.updateProductToCartid)
+			]
+		},
+		{
 			path: `/${CartPath.DELETE_PRODUCT_FROM_CART}`,
 			method: Methods.POST,
 			handler: this.handleDeleteProductFromCart,
@@ -72,6 +82,32 @@ export default class MerchantCartController extends Controller {
 			const merchantCartServices: MerchantCartServices =
 				new MerchantCartServices();
 			const result = await merchantCartServices.addProductToCart(
+				idUser,
+				objData
+			);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
+	async handleUpdateProductToCart(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const idUser = req.value.body.token.data;
+			const objData: any = {
+				idProduct: req.value.body.idProduct,
+				quantity: req.value.body.quantity
+			};
+			const merchantCartServices: MerchantCartServices =
+				new MerchantCartServices();
+			const result = await merchantCartServices.updateProductToCart(
 				idUser,
 				objData
 			);

@@ -5,6 +5,10 @@ const validate = {
 		idProduct: joi.string().required(),
 		quantity: joi.number().min(1).required()
 	}),
+	updateProductToCartid: joi.object().keys({
+		idProduct: joi.string().required(),
+		quantity: joi.number().min(1).required()
+	}),
 	deleteProductFromCart: joi.object().keys({
 		idProduct: joi.string().required()
 	}),

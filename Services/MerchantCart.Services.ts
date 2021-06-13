@@ -46,6 +46,54 @@ export default class MerchantCartServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
+	public updateProductToCart = async (
+		idUser: string,
+		objData: any
+	): Promise<ReturnServices> => {
+		try {
+			const cart = await MerchantCart.findOne({
+				status: defaultTypeStatus.active,
+				FK_CreateUser: idUser
+			});
+			if (!cart) {
+				return {
+					message: 'Dont find my cart',
+					success: false,
+				};
+			}
+			const newArr = JSON.parse(JSON.stringify(cart.products));
+			const filterProduct = [];
+			for (let i = 0; i < newArr.length; i++) {
+				const groupProduct = await GroupProduct.findOne({
+					_id: newArr[i].idProduct,
+					status: defaultTypeStatus.active
+				});
+				if (groupProduct) {
+					const product = await ProductInfo.findOne({
+						FK_groupProduct: groupProduct._id,
+						status: defaultTypeStatus.active
+					});
+					if (product) {
+						if (product._id + '' === objData.idProduct) {
+							newArr[i].quantity=objData.quantity
+							
+						}
+					}
+				}
+				filterProduct.push(newArr[i]);
+			}
+			cart.products = filterProduct;
+			await cart.save();
+			return {
+				message: 'Update Product success my cart',
+				success: true,
+				data: {}
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
 	public deleteProductFromCart = async (
 		idUser: string,
 		idProduct: string
