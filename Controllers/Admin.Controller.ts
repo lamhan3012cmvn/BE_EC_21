@@ -178,9 +178,7 @@ export default class AdminController extends Controller {
 
 
 			const coordinateReceiver = findAddress.coordinates;
-      console.log(`LHA:  ===> file: Admin.Controller.ts ===> line 181 ===> coordinateReceiver`, findAddress)
       const coordinateMerchant= findAddressMerchant.address.coordinates
-      console.log(`LHA:  ===> file: Admin.Controller.ts ===> line 183 ===> coordinateMerchant`, findAddressMerchant)
 			const transportService: TransportServices = new TransportServices();
 			const result = await transportService.getTransportByAddress(
 				{ lat: coordinateMerchant.lat, lng: coordinateMerchant.lng },
@@ -190,12 +188,7 @@ export default class AdminController extends Controller {
 			const transport=JSON.parse(JSON.stringify(result.data))
 			const address={receiver:Object.assign(findAddress),sender:findAddressMerchant.address }
 			const newObj=Object.assign({transport:transport},address) 
-		
-			
 
-
-
-      console.log(`LHA:  ===> file: Admin.Controller.ts ===> line 192 ===> newObj`, newObj)
 			if (result.success) {
 				super.sendSuccess(res, newObj, result.message);
 			} else {
