@@ -138,94 +138,90 @@ export default class MerchantCartController extends Controller {
 		try {
 			const idUser: string = req.value.body.token.data;
 
-			console.log('data All', req.value.body);
 			const {
 				title,
 				description,
 				estimatedDate,
-				FK_Recipient,
 				FK_Address,
 				FK_Transport,
 				FK_SubTransport,
 				FK_SubTransportAwait,
-
+				recipientAddress,
+				recipientLat,
+				recipientLng,
+				recipientPhone,
 				prices,
 				distance,
 				weight,
 
-				FK_Product,
-
-				FK_ProductType,
 				senderName,
 				senderPhone,
-				senderFullAddress,
-				senderCoordinateLat,
-				senderCoordinateLng
+				senderAddress,
+				senderLat,
+				senderLng
 			} = req.value.body;
 
 			//get user
 			const userService: UserService = new UserService();
 			const user = await userService.getInfo(idUser);
-
-
-			const findSender = user.data.address.find((elm: any) => {
-				return elm.id === FK_Address;
-			});
-
-			if (!findSender) {
-				super.sendError(res, 'Dont find address recjpient');
-				return;
-			}
-
-			const merchantCartServices:MerchantCartServices=new MerchantCartServices();
-			const resMerchantCart=await merchantCartServices.paymentCart(idUser)
-
-
-
-			const obj: any = {
-				title,
-				description,
-				estimatedDate,
-				FK_Recipient: '',
-				FK_Transport: '',
-				prices,
-				distance,
-				weight,
-				FK_Product: resMerchantCart.data.products, //Get from cart
-				FK_ProductType: '', //Get from cart
-				recipient: {
-					name: findSender.fullName,
-					location: {
-						address: findSender.fullAddress,
-						coordinate: {
-							lat: findSender.coordinates.lat,
-							lng: findSender.coordinates.lng
-						}
+      console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 167 ===> user`, user)
+			const converPriceToPoint=~~+prices/5000
+			if(user.data.point>converPriceToPoint)
+			{
+				user.data.point=user.data.point-10
+				await user.data.save()
+	
+				const merchantCartServices:MerchantCartServices=new MerchantCartServices();
+				const resMerchantCart=await merchantCartServices.paymentCart(idUser)
+	
+				const obj: any = {
+					title,
+					description,
+					estimatedDate,
+					FK_Recipient: idUser,
+					FK_Transport,
+					FK_SubTransport,
+					FK_SubTransportAwait,
+					prices,
+					distance,
+					weight,
+					FK_Product: resMerchantCart.data.products, //Get from cart
+					FK_ProductType: 'Standard', //Get from cart
+					recipient: {
+						name: user.data.fullName,
+						location: {
+							address: recipientAddress,
+							coordinate: {
+								lat: recipientLat,
+								lng: recipientLng
+							}
+						},
+						phone: recipientPhone
 					},
-					phone: findSender.phone
-				},
-				sender: {
-					name: senderName,
-					location: {
-						address: senderFullAddress,
-						coordinate: {
-							lat: senderCoordinateLat,
-							lng:senderCoordinateLng
-						}
-					},
-					phone: senderPhone
+					sender: {
+						name: senderName,
+						location: {
+							address: senderAddress,
+							coordinate: {
+								lat: senderLat,
+								lng:senderLng
+							}
+						},
+						phone: senderPhone
+					}
+				};
+				
+				console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`, obj)
+				const packageService: PackageService = new PackageService();
+				const result=await packageService.createPackage(obj)
+				if (result.success) {
+					super.sendSuccess(res,{}, result.message);
+					return;
+				} else {
+					super.sendError(res, result.message);
 				}
-			};
-			
-			console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`, obj)
-			const packageService: PackageService = new PackageService();
-			// const result=await packageService.createPackage(obj)
-			if (user.success) {
-				super.sendSuccess(res,obj, user.message);
-				return;
-			} else {
-				super.sendError(res, user.message);
 			}
+			super.sendError(res, "Your points are not enough to pay for this order");
 			// if (result.success) {
 			//   super.sendSuccess(res, result.data, result.message);
 			// } else {

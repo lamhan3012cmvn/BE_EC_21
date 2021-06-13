@@ -29,89 +29,84 @@ export default class PackageService {
 	}
 	public createPackage = async (body: any): Promise<ReturnServices> => {
 		try {
+			
 			const {
 				title,
 				description,
-				FK_Product,
-				FK_ProductType,
 				estimatedDate,
+				FK_Recipient,
 				FK_Transport,
-
-				distance,
+				FK_SubTransport,
+				FK_SubTransportAwait,
 				prices,
+				distance,
 				weight,
+				FK_Product,//Get from cart
+				FK_ProductType, //Get from cart
+				recipient,
+				sender
+			}=body
 
-				recipientName,
-				recipientPhone,
-				recipientAddress,
 
-				recipientCoordinateLat,
-				recipientCoordinateLng,
 
-				senderName,
-				senderPhone,
-				senderCity,
-				senderCounty,
-				senderWard,
-				senderAddress,
-				senderCoordinateLat,
-				senderCoordinateLng
-			} = body;
+
+
 
 			const currentTransport = await Transport.findById(FK_Transport);
+      console.log(`LHA:  ===> file: Package.Services.ts ===> line 56 ===> currentTransport`, currentTransport)
 			if (!currentTransport)
 				return { message: "Don't find transport", success: false };
-			const recipientLocation: ILocation = {
-				address: recipientAddress,
-				coordinate: {
-					lat: recipientCoordinateLat,
-					lng: recipientCoordinateLng
-				}
-			};
+			// const recipientLocation: ILocation = {
+			// 	address: recipientAddress,
+			// 	coordinate: {
+			// 		lat: recipientCoordinateLat,
+			// 		lng: recipientCoordinateLng
+			// 	}
+			// };
 
-			const currentRecipient: IInfoUser = {
-				name: recipientName,
-				phone: recipientPhone,
-				location: recipientLocation
-			};
+			// const currentRecipient: IInfoUser = {
+			// 	name: recipientName,
+			// 	phone: recipientPhone,
+			// 	location: recipientLocation
+			// };
 
-			const senderLocation: ILocation = {
-				address: senderAddress,
-				coordinate: {
-					lat: senderCoordinateLat,
-					lng: senderCoordinateLng
-				}
-			};
-			const currentSender: IInfoUser = {
-				name: senderName,
-				phone: senderPhone,
-				location: senderLocation
-			};
+			// const senderLocation: ILocation = {
+			// 	address: senderAddress,
+			// 	coordinate: {
+			// 		lat: senderCoordinateLat,
+			// 		lng: senderCoordinateLng
+			// 	}
+			// };
+			// const currentSender: IInfoUser = {
+			// 	name: senderName,
+			// 	phone: senderPhone,
+			// 	location: senderLocation
+			// };
 
 			
-			const transportSub=await TransportSub.find({FK_Transport:FK_Transport,status:defaultTypeStatus.active})
+			// const transportSub=await TransportSub.find({FK_Transport:FK_Transport,status:defaultTypeStatus.active})
 
-			const findLocationSender=this.findSubTransport(transportSub,senderLocation)
-			if(!findLocationSender)
-				return { message: 'Dont find Sub transport sender', success: false };
-			const FK_LocationSub=findLocationSender._id
+			// const findLocationSender=this.findSubTransport(transportSub,senderLocation)
+			// if(!findLocationSender)
+			// 	return { message: 'Dont find Sub transport sender', success: false };
+			// const FK_LocationSub=findLocationSender._id
 
-			const findLocationNext=this.findSubTransport(transportSub,recipientLocation)
-			if(!findLocationNext)
-				return { message: 'Dont find Sub transport sender', success: false };
-			const FK_LocationNext=findLocationNext._id
+			// const findLocationNext=this.findSubTransport(transportSub,recipientLocation)
+			// if(!findLocationNext)
+			// 	return { message: 'Dont find Sub transport sender', success: false };
+			// const FK_LocationNext=findLocationNext._id
 
 
 			const obj: IPackage = {
 				title,
-				recipient: currentRecipient,
-				sender: currentSender,
+				recipient: recipient,
+				sender: sender,
 				FK_Product,
 				FK_ProductType,
 				FK_Transport,
-				FK_Recipient:"",
-				FK_SubTransport:FK_LocationSub,
-				FK_SubTransportAwait:FK_LocationNext,
+				FK_Recipient,
+				FK_SubTransport,
+				FK_SubTransportAwait,
 				estimatedDate: `${estimatedDate + 172800}`,
 				codeBill: `${currentTransport.name
 					.slice(0, 3)

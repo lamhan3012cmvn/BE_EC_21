@@ -186,7 +186,7 @@ export default class AdminController extends Controller {
 			);
 			
 			const transport=JSON.parse(JSON.stringify(result.data))
-			const address={receiver:Object.assign(findAddress),sender:findAddressMerchant.address }
+			const address={receiver:Object.assign(findAddress),sender:{address:findAddressMerchant.address,name:findAddressMerchant.name} }
 			const newObj=Object.assign({transport:transport},address) 
 
 			if (result.success) {
