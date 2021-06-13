@@ -5,8 +5,6 @@ const validate = {
 		locationCity: joi.string().required(),
 		locationCoordinateLat:joi.string().required(),
 		locationCoordinateLng:joi.string().required(),
-		locationCounty:joi.string().required(),
-		locationWard:joi.string().required(),
 		locationAddress:joi.string().required(),
 		phoneNumber:joi.string().min(10).max(15).regex(/^\d+$/)
 	}),

@@ -66,8 +66,6 @@ export default class TransportSubController extends Controller {
 				locationCity,
 				locationCoordinateLat,
 				locationCoordinateLng,
-				locationCounty,
-				locationWard,
 				locationAddress,
 				phoneNumber
 			} = req.value.body;
@@ -76,8 +74,6 @@ export default class TransportSubController extends Controller {
 				locationCity,
 				locationCoordinateLat,
 				locationCoordinateLng,
-				locationCounty,
-				locationWard,
 				locationAddress,
 				phoneNumber
 			});

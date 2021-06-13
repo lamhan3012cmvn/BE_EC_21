@@ -350,4 +350,10 @@ export default class UserService {
 			return { message: 'An error occurred', success: false };
 		}
 	};
+	public findCoordinateByAddress=async(idUser:string,receiverIdAddress:string):Promise<any>=>{
+		const user=await User.findById(idUser)
+		if(!user) return null
+		const findAddress=user.address?user.address.find(ad=>ad.id===receiverIdAddress):null
+		return findAddress
+	}
 }

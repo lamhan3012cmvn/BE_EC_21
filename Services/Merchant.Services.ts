@@ -195,12 +195,13 @@ export default class MerchantService {
     }
   };
 
-  public functionInit = async (): Promise<ReturnServices> => {
+  public getCoordinate = async (senderIdMerchant:string): Promise<any> => {
     try {
-      return { message: "An error occurred", success: false };
+      const merchant=await Merchant.findById(senderIdMerchant)
+      return merchant
     } catch (e) {
       console.log(e);
-      return { message: "An error occurred", success: false };
+      return null
     }
   };
 }
