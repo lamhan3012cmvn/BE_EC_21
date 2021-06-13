@@ -216,6 +216,8 @@ export default class MerchantCartController extends Controller {
 					phone: senderPhone
 				}
 			};
+			
+			console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`, obj)
 			const packageService: PackageService = new PackageService();
 			// const result=await packageService.createPackage(obj)
 			if (user.success) {

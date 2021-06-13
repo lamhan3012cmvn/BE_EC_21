@@ -502,8 +502,8 @@ export default class TransportServices {
 								const price=+typePrice.price.km*+distance
 								newGroup.push({
 									FK_Transport:transport,
-									start: startTransport[i].transportSub,
-									end: findEndTransport.transportSub,
+									start: Object.assign( startTransport[i].transportSub,{}),
+									end: Object.assign( findEndTransport.transportSub,{}),
 									price:price.toFixed(2),
 									distance:distance
 								});
