@@ -58,11 +58,12 @@ export default class AutomaticPackageServices {
 				})
 			);
 
+      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 62 ===> currentPackage`, currentPackage)
 			currentPackage.forEach(async current=>{
 				current.forEach(async change=>{
 					change.isAwait=true
 					change.status=defaultStatusPackage.onGoing
-					await change.save()
+					// await change.save()
 				})
 
 				const obj={
@@ -73,11 +74,13 @@ export default class AutomaticPackageServices {
 					FK_to:current[0].FK_SubTransportAwait
 				}
 				const newAwaitPackage=new AwaitTranPackage(obj)
-				newAwaitPackage.save()
+				newAwaitPackage.historyStatus.push(`Your order has arrived at transportsub 1`)
+				// newAwaitPackage.save()
 			})
 			return {
 				message: 'Successful updated transport',
 				success: true,
+				data:currentPackage
 			};
 		} catch (e) {
 			console.log(e);
@@ -98,9 +101,11 @@ export default class AutomaticPackageServices {
 			})
       console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 99 ===> awaitPackages`, awaitPackages)
 			awaitPackages.forEach(async currentPackage=>{
+      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 101 ===> currentPackage`, currentPackage)
+
+				currentPackage.historyStatus.push("Your order has arrived at transportsub 2")
 				currentPackage.status=defaultStatusAwaitPackage.goingSubToSub
-				currentPackage.historyStatus.push("123123")
-				// await currentPackage.save()
+				await currentPackage.save()
 			})
 			console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 101 ===> awaitPackages`, awaitPackages)
 
@@ -142,6 +147,7 @@ export default class AutomaticPackageServices {
 					}
 				});
 				currentPackage.status=defaultStatusAwaitPackage.goingSubToClient
+				currentPackage.historyStatus.push("Your order is being delivered to you")
 				currentPackage.isDone=true
 				// await currentPackage.save()
 			})

@@ -27,7 +27,14 @@ export default class MerchantCartServices {
 					data: {}
 				};
 			}
-			cart.products.push(objData);
+			const findIndex=cart.products.findIndex((product=>product.idProduct+''===objData.idProduct))
+			if(findIndex===-1)
+			{
+				cart.products.push(objData);
+			}else{
+				cart.products[findIndex].quantity=cart.products[findIndex].quantity+objData.quantity
+			}
+			
 			await cart.save();
 			return {
 				message: 'Add Product success my cart',
@@ -48,6 +55,7 @@ export default class MerchantCartServices {
 				status: defaultTypeStatus.active,
 				FK_CreateUser: idUser
 			});
+
 			if (!cart) {
 				return {
 					message: 'Dont find my cart is delete product',
@@ -56,7 +64,28 @@ export default class MerchantCartServices {
 				};
 			}
 
-			cart.products = cart.products.filter(p => p._id + '' !== idProduct);
+			const newArr = JSON.parse(JSON.stringify(cart.products));
+			const filterProduct = [];
+			for (let i = 0; i < newArr.length; i++) {
+				const groupProduct = await GroupProduct.findOne({
+					_id: newArr[i].idProduct,
+					status: defaultTypeStatus.active
+				});
+				if (groupProduct) {
+					const product = await ProductInfo.findOne({
+						FK_groupProduct: groupProduct._id,
+						status: defaultTypeStatus.active
+					});
+					if (product) {
+						if (product._id + '' !== idProduct) {
+							console.log(product._id);
+							console.log(idProduct);
+							filterProduct.push(newArr[i]);
+						}
+					}
+				}
+			}
+			cart.products = filterProduct;
 			await cart.save();
 			return {
 				message: 'Delete product successs my cart',
@@ -154,31 +183,34 @@ export default class MerchantCartServices {
 					return {
 						product: product,
 						quantity: p.quantity,
-						FK_Merchant:groupProduct.FK_merchant
+						FK_Merchant: groupProduct.FK_merchant
 					};
 				})
 			);
 
-
 			// console.log(cartFindProduct.products)
-			cartFindProduct.products= cartFindProduct.products.reduce((t:any,v:any)=>{
-				console.log(t)
-				const findFK=t.findIndex((product:any)=>{
-					return product.FK_Merchant===v.FK_Merchant
-				})
-				if(findFK===-1) {
-					if(!v.product)
-						return t
-					const obj={
-						FK_Merchant:v.FK_Merchant,
-						products:[Object.assign(v.product,{quantity:v.quantity})]
+			cartFindProduct.products = cartFindProduct.products.reduce(
+				(t: any, v: any) => {
+					console.log(t);
+					const findFK = t.findIndex((product: any) => {
+						return product.FK_Merchant === v.FK_Merchant;
+					});
+					if (findFK === -1) {
+						if (!v.product) return t;
+						const obj = {
+							FK_Merchant: v.FK_Merchant,
+							products: [Object.assign(v.product, { quantity: v.quantity })]
+						};
+						t.push(obj);
+						return t;
 					}
-					t.push(obj)
-					return t
-				}
-				t[findFK].products.push(Object.assign(v.product,{quantity:v.quantity}))
-				return t;
-			},[])
+					t[findFK].products.push(
+						Object.assign(v.product, { quantity: v.quantity })
+					);
+					return t;
+				},
+				[]
+			);
 			cart.status = defaultTypeStatus.inActive;
 			// await cart.save()
 			return {
