@@ -5,5 +5,5 @@ export interface IProductInfo extends Document {
   description:string,
   price:string,
   total:number,
-  image:string
+  image:string,
 }

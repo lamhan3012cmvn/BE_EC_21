@@ -195,6 +195,20 @@ export default class MerchantService {
     }
   };
 
+  public getMerchantInfoById = async (idMerchant:string): Promise<ReturnServices> => {
+    try {
+      const merchant=await Merchant.findById(idMerchant)
+      return {
+        message: 'Get merchant successfully',
+        success: true,
+        data: merchant,
+      };
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
   public getCoordinate = async (senderIdMerchant:string): Promise<any> => {
     try {
       const merchant=await Merchant.findById(senderIdMerchant)
