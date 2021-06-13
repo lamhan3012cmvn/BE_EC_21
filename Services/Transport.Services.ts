@@ -1,5 +1,3 @@
-import { ILocation } from './../Models/Package/Package.Interface';
-import { ITransportSubCity } from './../Models/TransportSubCity/TransportSubCity.Interface';
 import { ITransportSub } from './../Models/TransportSub/TransportSub.Interface';
 import {
 	defaultRoleAccount,
@@ -10,7 +8,6 @@ import { ITransport } from '../Models/Transport/Transport.interface';
 import {
 	Transport,
 	TransportSub,
-	TransportSubCity,
 	User
 } from '../Models/index';
 import { ReturnServices } from '../Interfaces/Services';
@@ -101,8 +98,10 @@ export default class TransportServices {
 					const t = data.type === 'km' ? 'km' : 'kg';
 					const p = data.type === 'kg' ? 'km' : 'kg';
 					type.price[t] = data.price;
-					type.price[p] = "0";
-					type.available = data.available?defaultTypeStatus.active:defaultTypeStatus.inActive;
+					type.price[p] = '0';
+					type.available = data.available
+						? defaultTypeStatus.active
+						: defaultTypeStatus.inActive;
 				}
 			});
 
@@ -156,14 +155,11 @@ export default class TransportServices {
 			const objTransportSubHCM: ITransportSub = {
 				name: `${newTransport.name}_${'HCM'}`,
 				location: {
-					city: 'A',
 					coordinate: {
-						lat: '1',
-						lng: '1'
+						lat: '10.759014',
+						lng: '106.684102'
 					},
-					county: 'A',
-					ward: 'A',
-					address: 'A'
+					address: '123 Đ. Nguyễn Văn Cừ, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam'
 				},
 				FK_Transport: newTransport._id
 			};
@@ -171,14 +167,11 @@ export default class TransportServices {
 			const objTransportSubHN: ITransportSub = {
 				name: `${newTransport.name}_${'HN'}`,
 				location: {
-					city: 'B',
 					coordinate: {
-						lat: '1',
-						lng: '1'
+						lat: '21.020349',
+						lng: '105.812273'
 					},
-					county: 'B',
-					ward: 'B',
-					address: 'B'
+					address: '102A1 Thành Công,Ba Đình, Hà Nội, Việt Nam'
 				},
 				FK_Transport: newTransport._id
 			};
@@ -188,24 +181,6 @@ export default class TransportServices {
 
 			const newTransportSubHN = new TransportSub(objTransportSubHN);
 			await newTransportSubHN.save();
-
-			// const objSubHCMQ1: ITransportSubCity = {
-			// 	name: `${newTransport.name}_${'HCM'}_${'Q1'}`,
-			// 	district: 'HO_CHI_MINH',
-			// 	FK_Transport_Sub: newTransportSubHCM._id
-			// };
-
-			// const objSubHNHHK: ITransportSubCity = {
-			// 	name: `${newTransport.name}_${'HCM'}_${'Q1'}`,
-			// 	district: 'HO_HOAN_KIEM',
-			// 	FK_Transport_Sub: newTransportSubHN._id
-			// };
-
-			// const subHCMQ1 = new TransportSubCity(objSubHCMQ1);
-			// await subHCMQ1.save();
-
-			// const subHNHHK = new TransportSubCity(objSubHNHHK);
-			// await subHNHHK.save();
 
 			return {
 				message: 'Successfully created transport',
@@ -409,65 +384,141 @@ export default class TransportServices {
 	// 	return minSub.current
 	// }
 
-
 	public getTransportByAddress = async (
-		lat: string,
-		lng: string
+		start: {
+			lat: string;
+			lng: string;
+		},
+		end: {
+			lat: string;
+			lng: string;
+		}
 	): Promise<ReturnServices> => {
 		try {
-			const transportSub = await TransportSub.find();
-			const groupByTransport = transportSub.reduce((t: any, v: any) => {
-				const findIdTransport = t.findIndex((k: any) => {
-					return k.FK_Transport + '' === v.FK_Transport + '';
-				});
-				// getDistanceFromLatLonInKm(+SubPackage[0].location.coordinate.lat,+SubPackage[0].location.coordinate.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)
-				if (findIdTransport === -1) {
-					const km=getDistanceFromLatLonInKm(+lat,+lng,+v.location.coordinate.lat,+v.location.coordinate.lng)
-					const obj = {
-						FK_Transport: v.FK_Transport,
-						transportSub: [Object.assign(v)],
-						distance:km
-					};
-					t.push(obj);
-					return t;
+			const transportSub = await TransportSub.find(
+				{},
+				{
+					_id: 1,
+					__v: 0,
+					createdAt: 0,
+					updatedAt: 0,
+					status: 0,
+					mail: 0,
+					phoneNumber: 0
 				}
-				t[findIdTransport].transportSub.push(Object.assign(v));
-				return t;
-			}, []);
+			);
+			const startTransport = JSON.parse(JSON.stringify(transportSub)).reduce(
+				(t: any, v: any) => {
+					const findIdTransport = t.findIndex((k: any) => {
+						return k.FK_Transport + '' === v.FK_Transport + '';
+					});
+					const km = getDistanceFromLatLonInKm(
+						+start.lat,
+						+start.lng,
+						+v.location.coordinate.lat,
+						+v.location.coordinate.lng
+					);
+					if (km > 30) return t;
+					if (findIdTransport === -1) {
+						const obj = {
+							FK_Transport: v.FK_Transport,
+							transportSub: Object.assign(v, { distance: km })
+						};
+						t.push(obj);
+						return t;
+					}
+					if (t[findIdTransport].distance > km) {
+						t[findIdTransport].transportSub = Object.assign(v, {
+							distance: km
+						});
+						return t;
+					}
+					return t;
+				},
+				[]
+			);
 
-			// const subServices: TransportSubServices = new TransportSubServices();
-			// const updateTransportServices = await subServices.updateTransportSub(
-			// 	idSub,
-			// 	{
-			// 		FK_CreateUser: idUser
-			// 	}
-			// );
+			const endTransport = JSON.parse(JSON.stringify(transportSub)).reduce(
+				(t: any, v: any) => {
+					const findIdTransport = t.findIndex((k: any) => {
+						return k.FK_Transport + '' === v.FK_Transport + '';
+					});
+					const km = getDistanceFromLatLonInKm(
+						+end.lat,
+						+end.lng,
+						+v.location.coordinate.lat,
+						+v.location.coordinate.lng
+					);
+					if (km > 40) return t;
+					if (findIdTransport === -1) {
+						const obj = {
+							FK_Transport: v.FK_Transport,
+							transportSub: Object.assign(v, { distance: km })
+						};
+						t.push(obj);
+						return t;
+					}
+					if (t[findIdTransport].distance > km) {
+						t[findIdTransport].transportSub = Object.assign(v, {
+							distance: km
+						});
+						return t;
+					}
+					return t;
+				},
+				[]
+			);
 
-			// if (updateTransportServices.success) {
-			// 	const userServices: UserService = new UserService();
-			// 	const updateUserService = await userServices.updateInfo(idUser, {
-			// 		role: defaultRoleAccount.TRANSPORT_SUB
-			// 	});
-			// 	if (updateUserService.success) {
-			// 		return {
-			// 			message: 'Successful assign staff',
-			// 			success: true,
-			// 			data: {}
-			// 		};
-			// 	}
-			// 	return {
-			// 		message: updateUserService.message,
-			// 		success: false
-			// 	};
-			// } else {
-			// 	return {
-			// 		message: 'transport  already does not exists',
-			// 		success: false
-			// 	};
-			// }
+			const newGroup: any = [];
+			for(let i=0;i<startTransport.length;i++)
+			{
+				const findEndTransport = endTransport.find((ed: any) => {
+					return ed.FK_Transport === startTransport[i].FK_Transport;
+				});
+				if (findEndTransport) {
+					const transport = await Transport.findById(startTransport[i].FK_Transport,{_id:1,name:1,avatar:1,phone:1,typeSupport:1});
+					if (transport)
+						{
+							const location1=startTransport[i].transportSub.location.coordinate
+							const location2=findEndTransport.transportSub.location.coordinate
+							const km = getDistanceFromLatLonInKm(
+								+location1.lat,
+								+location1.lng,
+								+location2.lat,
+								+location2.lng
+							);
+							const typePrice = transport.typeSupport.find((tp: any) => {
+								return tp.title === 'Standard';
+							});
+							if(typePrice)
+							{
+								delete startTransport[i].transportSub.FK_Transport
+								delete findEndTransport.transportSub.FK_Transport
+
+								delete startTransport[i].transportSub.FK_CreateUser
+								delete findEndTransport.transportSub.FK_CreateUser
+
+								const distance=km.toFixed(0)
+								const price=+typePrice.price.km*+distance
+								newGroup.push({
+									FK_Transport:transport,
+									start: startTransport[i].transportSub,
+									end: findEndTransport.transportSub,
+									price:price.toFixed(2),
+									distance:distance
+								});
+							}
+								
+						
+						}
+               
+
+					
+				}
+			}
 			return {
 				message: 'Get All Success',
-				data: groupByTransport,
+				data: newGroup,
 				success: true
 			};
 		} catch (e) {

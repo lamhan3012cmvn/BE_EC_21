@@ -1,9 +1,6 @@
 import { Document } from 'mongoose';
 
 export interface ILocation {
-	city: string;
-	county: string;
-	ward: string;
 	address: string;
 	coordinate: { lat: string; lng: string };
 }

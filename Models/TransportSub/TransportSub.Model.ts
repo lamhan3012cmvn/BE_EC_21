@@ -3,9 +3,6 @@ import { defaultModel } from './../../common/constants';
 export default {
 	name:defaultModel.string,
   location:{
-    city:defaultModel.stringR,
-    county:defaultModel.stringR,
-    ward: defaultModel.stringR,
     address:defaultModel.stringR,
     coordinate:{
       lat: defaultModel.stringR,

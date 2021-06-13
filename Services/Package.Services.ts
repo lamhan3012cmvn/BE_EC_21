@@ -43,9 +43,6 @@ export default class PackageService {
 
 				recipientName,
 				recipientPhone,
-				recipientCity,
-				recipientCounty,
-				recipientWard,
 				recipientAddress,
 
 				recipientCoordinateLat,
@@ -65,9 +62,6 @@ export default class PackageService {
 			if (!currentTransport)
 				return { message: "Don't find transport", success: false };
 			const recipientLocation: ILocation = {
-				city: recipientCity,
-				county: recipientCounty,
-				ward: recipientWard,
 				address: recipientAddress,
 				coordinate: {
 					lat: recipientCoordinateLat,
@@ -82,9 +76,6 @@ export default class PackageService {
 			};
 
 			const senderLocation: ILocation = {
-				city: senderCity,
-				county: senderCounty,
-				ward: senderWard,
 				address: senderAddress,
 				coordinate: {
 					lat: senderCoordinateLat,

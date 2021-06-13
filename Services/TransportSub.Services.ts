@@ -54,16 +54,11 @@ export default class TransportSubServices {
 				locationCity,
 				locationCoordinateLat,
 				locationCoordinateLng,
-				locationCounty,
-				locationWard,
 				locationAddress,
 				phoneNumber
 			} = data;
 
 			const locationTransport: ILocation = {
-				city: locationCity,
-				county: locationCounty,
-				ward: locationWard,
 				address: locationAddress,
 				coordinate: {
 					lat: locationCoordinateLat,

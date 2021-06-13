@@ -160,7 +160,7 @@ export default class AdminController extends Controller {
       // const idUser = req.value.body.token.data;
       // const status = req.query.status;
       const transportService: TransportServices = new TransportServices();
-      const result = await transportService.getTransportByAddress("37.7858214","-122.4064015");
+      const result = await transportService.getTransportByAddress({lat:"21.016129",lng:"105.814519"},{lat:"10.777156",lng:"106.684832"});
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
