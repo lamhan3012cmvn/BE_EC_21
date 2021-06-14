@@ -167,7 +167,7 @@ export default class MerchantService {
       const convertPackage=JSON.parse(JSON.stringify(packages))
       const findMerchant=convertPackage.reduce((t:any,v:any)=>{
         const FK_Product=v.FK_Product
-        const res=FK_Product.find((merchant:any)=>merchant.FK_Merchant===idMerchant)
+        const res=FK_Product.find((merchant:any)=>merchant.FK_Merchant+""===idMerchant+"")
         if(res)
         {
           t.push(v)
@@ -177,7 +177,7 @@ export default class MerchantService {
       console.log(`LHA:  ===> file: Merchant.Services.ts ===> line 170 ===> findMerchant`, findMerchant)
 
 
-			const sortPackages=JSON.parse(JSON.stringify(packages)).sort(
+			const sortPackages=findMerchant.sort(
 				(a: any, b: any) =>
 				new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 			);
