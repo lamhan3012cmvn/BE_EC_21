@@ -5,6 +5,7 @@ export default {
   status:defaultModel.string,
   historyStatus:defaultModel.array,
   isDone:defaultModel.booleanFalse,
+  FK_CodeBill:defaultModel.string,
   FK_Transport:defaultModel.stringRef,
   FK_from:defaultModel.stringRef,
   FK_to:defaultModel.stringRef,

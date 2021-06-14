@@ -63,7 +63,7 @@ export default class AutomaticPackageServices {
 				current.forEach(async change=>{
 					change.isAwait=true
 					change.status=defaultStatusPackage.onGoing
-					// await change.save()
+					await change.save()
 				})
 
 				const obj={
@@ -75,7 +75,7 @@ export default class AutomaticPackageServices {
 				}
 				const newAwaitPackage=new AwaitTranPackage(obj)
 				newAwaitPackage.historyStatus.push(`Your order has arrived at transportsub 1`)
-				// newAwaitPackage.save()
+				newAwaitPackage.save()
 			})
 			return {
 				message: 'Successful updated transport',
