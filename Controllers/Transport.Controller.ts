@@ -96,7 +96,7 @@ export default class TransportController extends Controller {
 			handler: this.handleGetOrderByStatus,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.TRANSPORT])
+				RoleInstance.getInstance().isRole([Role.TRANSPORT,Role.TRANSPORT_SUB])
 			]
 		}
 		// getOrderByStatus
