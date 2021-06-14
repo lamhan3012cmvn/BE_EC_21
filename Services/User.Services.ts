@@ -335,10 +335,8 @@ export default class UserService {
 					isAwait: 0,
 					isMerchantSend: 0
 				}
-			).sort(
-				(a: any, b: any) =>
-					b.updatedAt.getTime() - a.updatedAt.getTime()
-			);
+			)
+			// s// );
 
 			return {
 				message: 'Get all order by Status',
