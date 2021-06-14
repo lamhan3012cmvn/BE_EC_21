@@ -1,7 +1,8 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultTypeOrders } from "../common/constants";
+import { defaultStatusPackage, defaultTypeOrders } from "../common/constants";
 import paypal from "paypal-rest-sdk";
 import { User } from "../Models";
+import { Package } from "../Models";
 
 export default class PaypalService {
   constructor() {}
@@ -19,7 +20,7 @@ export default class PaypalService {
     const return_url =
       body.typeOrders == defaultTypeOrders.POINT
         ? `?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-        : `?price=${formatTransactions}&idUser=${body.idUser}`;
+        : `?price=${formatTransactions}&idUser=${body.idUser}&idPackage=${body.idPackage}&typeOrders=${body.typeOrders}`;
     const create_payment_json = {
       intent: "sale",
       payer: {
@@ -87,7 +88,11 @@ export default class PaypalService {
               { new: true }
             );
           } else {
-            // Type ORDER
+            await Package.findOneAndUpdate(
+              { _id: body.idPackage, status: defaultStatusPackage.deleted },
+              { status: defaultStatusPackage.waitForConfirmation },
+              { new: true }
+            );
           }
         }
         next(error, payment);

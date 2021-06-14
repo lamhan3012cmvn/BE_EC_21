@@ -9,6 +9,13 @@ import ClientCartServices from "../Services/ClientCart.Services";
 import schemaClientCart from "../Validates/ClientCart.Validate";
 import UserService from "../Services/User.Services";
 import PackageService from "../Services/Package.Services";
+import {
+  defaultStatusPackage,
+  defaultTypeOrders,
+  defaultTypePayment,
+} from "../common/constants";
+import PaypalServices from "../Services/Paypal.Services";
+import VNPayServices from "../Services/VNPay.Services";
 export default class ClientCartController extends Controller {
   path = "/User/Client";
   routes = [
@@ -163,6 +170,7 @@ export default class ClientCartController extends Controller {
         senderAddress,
         senderLat,
         senderLng,
+        typePayment,
       } = req.value.body;
 
       //get user
@@ -172,15 +180,72 @@ export default class ClientCartController extends Controller {
         `LHA:  ===> file: MerchantCart.Controller.ts ===> line 167 ===> user`,
         user
       );
-      const converPriceToPoint = ~~+prices / 5000;
-      if (user.data.point > converPriceToPoint) {
-        user.data.point = user.data.point - 10;
-        await user.data.save();
+      if (typePayment == defaultTypePayment.POINT) {
+        const converPriceToPoint = ~~+prices / 100;
+        if (user.data.point > converPriceToPoint) {
+          user.data.point = user.data.point - converPriceToPoint;
+          await user.data.save();
 
+          const clientCartServices: ClientCartServices =
+            new ClientCartServices();
+          const resClientCart = await clientCartServices.paymentCart(idUser);
+
+          const obj: any = {
+            title,
+            description,
+            estimatedDate,
+            FK_Recipient: idUser,
+            FK_Transport,
+            FK_SubTransport,
+            FK_SubTransportAwait,
+            prices,
+            distance,
+            weight,
+            FK_Product: resClientCart.data.products, //Get from cart
+            FK_ProductType: "Standard", //Get from cart
+            recipient: {
+              name: recipientName,
+              location: {
+                address: recipientAddress,
+                coordinate: {
+                  lat: recipientLat,
+                  lng: recipientLng,
+                },
+              },
+              phone: recipientPhone,
+            },
+            sender: {
+              name: user.data.fullName,
+              location: {
+                address: senderAddress,
+                coordinate: {
+                  lat: senderLat,
+                  lng: senderLng,
+                },
+              },
+              phone: senderPhone,
+            },
+          };
+          const packageService: PackageService = new PackageService();
+          const result = await packageService.createPackage(obj, false);
+          if (result.success) {
+            super.sendSuccess(res, {}, result.message);
+            return;
+          } else {
+            super.sendError(res, result.message);
+          }
+        } else {
+          super.sendError(
+            res,
+            "Your points are not enough to pay for this order"
+          );
+        }
+      } else {
         const clientCartServices: ClientCartServices = new ClientCartServices();
         const resClientCart = await clientCartServices.paymentCart(idUser);
 
         const obj: any = {
+          status: defaultStatusPackage.deleted,
           title,
           description,
           estimatedDate,
@@ -219,13 +284,67 @@ export default class ClientCartController extends Controller {
         const packageService: PackageService = new PackageService();
         const result = await packageService.createPackage(obj, false);
         if (result.success) {
-          super.sendSuccess(res, {}, result.message);
-          return;
+          if (typePayment == defaultTypePayment.PAYPAL) {
+            const paypalServices: PaypalServices = new PaypalServices();
+            const transactionsInfo = {
+              idUser: idUser,
+              idPackage: result.data._id,
+              typeOrders: defaultTypeOrders.ORDER,
+            };
+            const transactions = ~~prices;
+            paypalServices.payment(
+              transactions,
+              transactionsInfo,
+              (error: any, payment: any) => {
+                if (error) {
+                  console.log(error);
+                  super.sendError(res, "Payment failure!");
+                } else {
+                  for (let i = 0; i < payment.links.length; i++) {
+                    if (payment.links[i].rel === "approval_url") {
+                      super.sendSuccess(
+                        res,
+                        payment.links[i].href,
+                        "Successfully create order"
+                      );
+                    }
+                  }
+                }
+              }
+            );
+          } else if (typePayment == defaultTypePayment.VNPAY) {
+            const vnpayServices: VNPayServices = new VNPayServices();
+            const transactionsInfo = {
+              idUser: idUser,
+              typeOrders: defaultTypeOrders.ORDER,
+              idPackage: result.data._id,
+              amount: `${~~prices}`,
+              bankCode: "NCB",
+              orderDescription: "Thanh toan hoa don mua hang Van Transport",
+              language: "vn",
+            };
+            const resultPayment = await vnpayServices.payment(
+              transactionsInfo,
+              req.headers,
+              req.connection,
+              req.socket
+            );
+            if (resultPayment.success) {
+              super.sendSuccess(
+                res,
+                resultPayment.data.url,
+                "Successfully create order"
+              );
+            } else {
+              super.sendError(res, result.message);
+            }
+          } else {
+            super.sendError(res);
+          }
         } else {
           super.sendError(res, result.message);
         }
       }
-      super.sendError(res, "Your points are not enough to pay for this order");
     } catch {
       super.sendError(res);
     }

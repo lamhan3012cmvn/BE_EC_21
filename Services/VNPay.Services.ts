@@ -1,6 +1,6 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultTypeOrders } from "../common/constants";
-import { User } from "../Models";
+import { defaultStatusPackage, defaultTypeOrders } from "../common/constants";
+import { User, Package } from "../Models";
 import dateFormat from "dateformat";
 
 export default class VNPayService {
@@ -22,7 +22,7 @@ export default class VNPayService {
       const external_return_url =
         body.typeOrders == defaultTypeOrders.POINT
           ? `?price=${transactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-          : `?price=${transactions}&idUser=${body.idUser}`;
+          : `?price=${transactions}&idUser=${body.idUser}&idPackage=${body.idPackage}&typeOrders=${body.typeOrders}`;
 
       var tmnCode = process.env.vnp_TmnCode;
       var secretKey = process.env.vnp_HashSecret;
@@ -128,6 +128,12 @@ export default class VNPayService {
             { new: true }
           );
         } else {
+          // Update Package
+          await Package.findOneAndUpdate(
+            { _id: body.idPackage, status: defaultStatusPackage.deleted },
+            { status: defaultStatusPackage.waitForConfirmation },
+            { new: true }
+          );
         }
         return {
           message: "Payment successfully",

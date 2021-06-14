@@ -45,6 +45,7 @@ const validate = {
     distance: joi.string().empty().required(),
     prices: joi.string().empty().required(),
     weight: joi.string().empty().required(),
+	typePayment: joi.string().empty().required(),
   }),
 };
 export default validate;

@@ -72,7 +72,8 @@ export const defaultTypeLogin={
 export const defaultStatusPackage={
   waitForConfirmation:"AWAIT_FOR_CONFIRMATION",
   onGoing:"ON_GOING",
-  delivered:"DELIVERED"
+  delivered:"DELIVERED",
+  deleted: "DELETED",
 }
 
 export const defaultStatusAwaitPackage={
