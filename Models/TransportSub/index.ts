@@ -10,6 +10,7 @@ const schemaTransportSub = createSchema(model);
 schemaTransportSub.pre<ITransportSubDocument>('save', function (next: any) {
 	try {
 		const current = this;
+    console.log(`LHA:  ===> file: index.ts ===> line 13 ===> current`, current)
 		if (current.FK_CreateUser==="")
 			current.status = defaultTypeStatus.inActive;
 		else current.status = defaultTypeStatus.active;

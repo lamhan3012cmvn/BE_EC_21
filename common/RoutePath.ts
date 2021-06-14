@@ -22,7 +22,8 @@ export const TransportSubPath = {
   CREATE: "Create",
   GET_INFO: "GetInfo",
   UPDATE: "Update",
-  CHANGE_STATUS:"ChangeStatus"
+  CHANGE_STATUS:"ChangeStatus",
+  GET_ORDER:"OrderByStatus"
 };
 
 export const TransportSubCityPath = {

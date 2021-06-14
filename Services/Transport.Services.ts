@@ -337,14 +337,16 @@ export default class TransportServices {
 			const updateTransportServices = await subServices.updateTransportSub(
 				idSub,
 				{
-					FK_CreateUser: idUser
+					FK_CreateUser: idUser,
+					status:defaultTypeStatus.active
 				}
 			);
 
 			if (updateTransportServices.success) {
 				const userServices: UserService = new UserService();
 				const updateUserService = await userServices.updateInfo(idUser, {
-					role: defaultRoleAccount.TRANSPORT_SUB
+					role: defaultRoleAccount.TRANSPORT_SUB,
+					
 				});
 				if (updateUserService.success) {
 					return {
@@ -396,7 +398,7 @@ export default class TransportServices {
 	): Promise<ReturnServices> => {
 		try {
 			const transportSub = await TransportSub.find(
-				{},
+				{status:defaultTypeStatus.active},
 				{
 					_id: 1,
 					__v: 0,

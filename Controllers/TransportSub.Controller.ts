@@ -49,7 +49,17 @@ export default class TransportSubController extends Controller {
 				RoleInstance.getInstance().isRole([Role.TRANSPORT, Role.TRANSPORT_SUB]),
 				Validate.body(schemaTransport.changeStatusTransportSub)
 			]
-		}
+		},
+		{
+			path: `/${TransportSubPath.GET_ORDER}`,
+			method: Methods.GET,
+			handler: this.handleGetOrderByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT, Role.TRANSPORT_SUB]),
+			]
+		},
+		// handleGetOrderByStatus
 	];
 	constructor() {
 		super();
@@ -82,11 +92,30 @@ export default class TransportSubController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err){
 			super.sendError(res);
 		}
 	}
-
+	async handleGetOrderByStatus(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+    try {
+			const {status}=req.query
+			const idUser = req.value.body.token.data;
+			const transportsub: TransportSubServices = new TransportSubServices();
+			const result = await transportsub.getOrderByStatus(idUser, status);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (e) {
+			console.log(e);
+			super.sendError(res);
+		}
+  }
 	async handleUpdateTransportSub(
 		req: IValidateRequest | any,
 		res: Response,
@@ -101,7 +130,7 @@ export default class TransportSubController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err){
 			super.sendError(res);
 		}
 	}
@@ -120,7 +149,7 @@ export default class TransportSubController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err){
 			super.sendError(res);
 		}
 	}
@@ -138,7 +167,7 @@ export default class TransportSubController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch (err) {
 			super.sendError(res);
 		}
 	}
