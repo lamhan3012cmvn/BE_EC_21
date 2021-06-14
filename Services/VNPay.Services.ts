@@ -146,7 +146,7 @@ export default class VNPayService {
     }
   };
 
-  sortObject = (o: any) => {
+  private sortObject = (o: any) => {
     var sorted: any = {},
       key,
       a = [];
