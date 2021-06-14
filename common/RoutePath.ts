@@ -40,6 +40,7 @@ export const MerchantPath = {
   CREATE: "Create",
   UPDATE: "Update",
   GET_INFO: "GetInfo",
+  GET_ORDER:"OrderByStatus"
 };
 
 export const CategoryPath = {

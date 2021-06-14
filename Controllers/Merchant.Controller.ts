@@ -6,6 +6,8 @@ import Validate from "../Validates/Validate";
 import schemaMerchant from "../Validates/Merchant.Validate";
 import { IValidateRequest } from "../common/DefineRequest";
 import MerchantServices from "../Services/Merchant.Services";
+import { defaultRoleAccount as Role } from '../common/constants';
+import RoleInstance from "../common/RoleInstance";
 export default class MerchantController extends Controller {
   path = "/Merchant";
   routes = [
@@ -33,11 +35,38 @@ export default class MerchantController extends Controller {
       handler: this.handleGet,
       localMiddleware: [TokenServices.verify],
     },
+    {
+      path: `/${MerchantPath.GET_ORDER}`,
+      method: Methods.GET,
+      handler: this.handleGetOrderByStatus,
+      localMiddleware: [TokenServices.verify,
+      	RoleInstance.getInstance().isRole([Role.MERCHANT])],
+
+    },
   ];
   constructor() {
     super();
   }
-
+  async handleGetOrderByStatus(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+    try {
+			const {status}=req.query
+			const idUser = req.value.body.token.data;
+			const merchantService: MerchantServices = new MerchantServices();
+			const result = await merchantService.getOrderByStatus(idUser, status);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (e) {
+			console.log(e);
+			super.sendError(res);
+		}
+  }
   async handleCreate(
     req: IValidateRequest | any,
     res: Response,
