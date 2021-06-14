@@ -2,10 +2,12 @@ import { ITransportSub } from './../Models/TransportSub/TransportSub.Interface';
 import {
 	defaultRoleAccount,
 	defaultTypeSupport,
-	defaultTypeStatus
+	defaultTypeStatus,
+	defaultStatusPackage
 } from './../common/constants';
 import { ITransport } from '../Models/Transport/Transport.interface';
 import {
+	Package,
 	Transport,
 	TransportSub,
 	User
@@ -18,11 +20,58 @@ import { getDistanceFromLatLonInKm } from '../common/helper';
 export default class TransportServices {
 	constructor() {}
 
-	public getPrice = async (): Promise<ReturnServices> => {
-		return {
-			message: 'Can not find a user to create transport',
-			success: false
-		};
+	public getOrderByStatus = async (idUser:string,status:string): Promise<ReturnServices> => {
+		try {
+			const currentTransport= await Transport.findOne({FK_createUser:idUser,status:defaultTypeStatus.active})
+      if(!currentTransport)
+      return {
+				message: 'Dont fine transport',
+				success: false,
+			};
+			const packages = await Package.find(
+				{
+					FK_Transport:currentTransport._id,
+					status: status
+				},
+				{
+					_id: 1,
+					status: 0,
+					FK_SubTransport: 0,
+					FK_SubTransportAwait: 0
+				}
+			)
+      
+			const sortPackages=JSON.parse(JSON.stringify(packages)).sort(
+				(a: any, b: any) =>
+				new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+			);
+			let canReceive=false
+			let canDelete=false
+			if(status===defaultStatusPackage.waitForConfirmation)
+			{
+				canDelete=true
+			}
+			if(status===defaultStatusPackage.onGoing)
+			{
+				canReceive=true
+			}
+			const resData=sortPackages.map((pack:any)=>{
+				console.log("canReceive",canReceive)
+				console.log("not is Await",pack.isAwait)
+				console.log("=======================================")
+				return Object.assign(pack,{canReceive:canReceive&&(!pack.isAwait),canDelete})
+			})
+			// 	//canReceive
+				// canDelete
+			return {
+				message: 'Get all order by Status',
+				success: true,
+				data: resData
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
 	};
 
 	public removeStaffTransport = async (

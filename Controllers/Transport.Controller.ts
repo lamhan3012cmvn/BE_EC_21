@@ -9,6 +9,7 @@ import TransportServices from '../Services/Transport.Services';
 import RoleInstance from '../common/RoleInstance';
 
 import { defaultRoleAccount as Role } from './../common/constants';
+import TransportSubServices from '../Services/TransportSub.Services';
 export default class TransportController extends Controller {
 	path = '/Transport';
 	routes = [
@@ -88,12 +89,42 @@ export default class TransportController extends Controller {
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([Role.TRANSPORT])
 			]
+		},
+		{
+			path: `/${TransportPath.GET_ORDER}`,
+			method: Methods.GET,
+			handler: this.handleGetOrderByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT])
+			]
 		}
+		// getOrderByStatus
 	];
 	constructor() {
 		super();
 	}
 
+	async	 handleGetOrderByStatus(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	):Promise<void>{
+		try {
+			const {status}=req.query
+			const idUser = req.value.body.token.data;
+			const transport: TransportServices = new TransportServices();
+			const result = await transport.getOrderByStatus(idUser, status);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (e) {
+			console.log(e);
+			super.sendError(res);
+		}
+	}
 	async handleCreate(
 		req: IValidateRequest | any,
 		res: Response,

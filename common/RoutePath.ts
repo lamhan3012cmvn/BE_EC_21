@@ -15,7 +15,8 @@ export const TransportPath = {
   GET_ASSIGN_STAFF:"GetAssignStaff",
   UPDATE_PRICE_TYPE:"UpdatePriceType",
   REMOVE_STAFF_TRANSPORT:"RemoveStaffTransport",
-  GET_ALL_TRANSPORT_SUB:"GetAllTransportSub"
+  GET_ALL_TRANSPORT_SUB:"GetAllTransportSub",
+  GET_ORDER:"OrderByStatus"
 };
 
 export const TransportSubPath = {
