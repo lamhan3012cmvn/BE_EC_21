@@ -208,7 +208,6 @@ export default class MerchantCartController extends Controller {
 	
 				const merchantCartServices:MerchantCartServices=new MerchantCartServices();
 				const resMerchantCart=await merchantCartServices.paymentCart(idUser)
-        console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 212 ===> resMerchantCart`, resMerchantCart)
 	
 				const obj: any = {
 					title,
@@ -249,13 +248,13 @@ export default class MerchantCartController extends Controller {
 				
 				console.log(`LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`, obj)
 				const packageService: PackageService = new PackageService();
-				// const result=await packageService.createPackage(obj)
-				// if (result.success) {
-				// 	super.sendSuccess(res,{}, result.message);
-				// 	return;
-				// } else {
-				// 	super.sendError(res, result.message);
-				// }
+				const result=await packageService.createPackage(obj)
+				if (result.success) {
+					super.sendSuccess(res,{}, result.message);
+					return;
+				} else {
+					super.sendError(res, result.message);
+				}
 			}
 			super.sendError(res, "Your points are not enough to pay for this order");
 			// if (result.success) {
