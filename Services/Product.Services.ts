@@ -83,18 +83,37 @@ export default class ProductService {
     try {
       let perPage = ~~body.perPage || 12;
       let page = ~~body.page || 1;
-      const products = await ProductInfo.find({
+      const productInfos: any = await ProductInfo.find({
         FK_merchant: body.id,
         status: defaultTypeStatus.active,
       })
         .skip(perPage * page - perPage)
         .limit(perPage);
 
-      return {
-        message: "Successfully get product",
-        success: true,
-        data: products,
-      };
+      if (!productInfos) {
+        return {
+          message: "Get products successfully",
+          success: true,
+          data: [],
+        };
+      } else {
+        let products = JSON.parse(JSON.stringify(productInfos));
+        for (let i = 0; i < products.length; i++) {
+          let FK_product = await Product.findOne({
+            FK_currentInfo: products[i]._id,
+          });
+          if (!FK_product) {
+          } else {
+            products[i].FK_product = FK_product["_id"];
+          }
+        }
+
+        return {
+          message: "Successfully get product",
+          success: true,
+          data: products,
+        };
+      }
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };
@@ -105,18 +124,37 @@ export default class ProductService {
     try {
       let perPage = ~~body.perPage || 12;
       let page = ~~body.page || 1;
-      const products = await ProductInfo.find({
+      const productInfos: Array<any> = await ProductInfo.find({
         FK_groupProduct: body.id,
         status: defaultTypeStatus.active,
       })
         .skip(perPage * page - perPage)
         .limit(perPage);
 
-      return {
-        message: "Successfully get product",
-        success: true,
-        data: products,
-      };
+      if (!productInfos) {
+        return {
+          message: "Get products successfully",
+          success: true,
+          data: [],
+        };
+      } else {
+        let products = JSON.parse(JSON.stringify(productInfos));
+        for (let i = 0; i < products.length; i++) {
+          let FK_product = await Product.findOne({
+            FK_currentInfo: products[i]._id,
+          });
+          if (!FK_product) {
+          } else {
+            products[i].FK_product = FK_product["_id"];
+          }
+        }
+
+        return {
+          message: "Successfully get product",
+          success: true,
+          data: products,
+        };
+      }
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };
@@ -126,17 +164,37 @@ export default class ProductService {
     try {
       let perPage = ~~body.perPage || 12;
       let page = ~~body.page || 1;
-      const products = await ProductInfo.find({
+      const productInfos: Array<any> = await ProductInfo.find({
         status: defaultTypeStatus.active,
       })
         .skip(perPage * page - perPage)
+        .sort({ createdAt: -1 })
         .limit(perPage);
 
-      return {
-        message: "Successfully get product",
-        success: true,
-        data: products,
-      };
+      if (!productInfos) {
+        return {
+          message: "Get products successfully",
+          success: true,
+          data: [],
+        };
+      } else {
+        let products = JSON.parse(JSON.stringify(productInfos));
+        for (let i = 0; i < products.length; i++) {
+          let FK_product = await Product.findOne({
+            FK_currentInfo: products[i]._id,
+          });
+          if (!FK_product) {
+          } else {
+            products[i].FK_product = FK_product["_id"];
+          }
+        }
+
+        return {
+          message: "Successfully get product",
+          success: true,
+          data: products,
+        };
+      }
     } catch (e) {
       console.log(e);
       return { message: "An error occurred", success: false };
@@ -181,11 +239,11 @@ export default class ProductService {
 
   public filterAllProducts = async (body: any): Promise<ReturnServices> => {
     try {
-      let search = body.search || '';
+      let search = body.search || "";
       let perPage = ~~body.perPage || 12;
       let page = ~~body.page || 1;
       const products = await ProductInfo.find({
-        name: new RegExp('/' + search + '/'),
+        name: new RegExp("/" + search + "/"),
         status: defaultTypeStatus.active,
       })
         .skip(perPage * page - perPage)
@@ -206,7 +264,7 @@ export default class ProductService {
     body: any
   ): Promise<ReturnServices> => {
     try {
-      let search = body.search || '';
+      let search = body.search || "";
       let idCategory = body.idCategory;
       let perPage = ~~body.perPage || 12;
       let page = ~~body.page || 1;
@@ -220,7 +278,7 @@ export default class ProductService {
       } else {
         for (let i = 0; i < merchants.length; i++) {
           const products = await ProductInfo.find({
-            name: new RegExp('/' + search + '/'),
+            name: new RegExp("/" + search + "/"),
             FK_merchant: body.id,
             status: defaultTypeStatus.active,
           })

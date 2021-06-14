@@ -36,6 +36,12 @@ export default class MerchantController extends Controller {
       localMiddleware: [TokenServices.verify],
     },
     {
+      path: `/${MerchantPath.GET_BY_ID}`,
+      method: Methods.GET,
+      handler: this.handleGetById,
+      localMiddleware: [],
+    },
+    {
       path: `/${MerchantPath.GET_ORDER}`,
       method: Methods.GET,
       handler: this.handleGetOrderByStatus,
@@ -118,6 +124,25 @@ export default class MerchantController extends Controller {
       const idUser = req.value.body.token.data;
       const merchantServices: MerchantServices = new MerchantServices();
       const result = await merchantServices.getMerchant(idUser);
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleGetById(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const idMerchant = req.query.id;
+      const merchantServices: MerchantServices = new MerchantServices();
+      const result = await merchantServices.getMerchantInfoById(idMerchant);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
