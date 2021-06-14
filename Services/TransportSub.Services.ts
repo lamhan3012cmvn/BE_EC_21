@@ -1,7 +1,8 @@
+import { defaultStatusPackage } from './../common/constants';
 import { ILocation } from './../Models/Package/Package.Interface';
 import { ITransportSubCity } from './../Models/TransportSubCity/TransportSubCity.Interface';
 import { ITransportSub } from './../Models/TransportSub/TransportSub.Interface';
-import { Transport, TransportSub, User } from '../Models/index';
+import { Package, Transport, TransportSub, User } from '../Models/index';
 import { ReturnServices } from '../Interfaces/Services';
 import { defaultTypeStatus } from '../common/constants';
 
@@ -172,6 +173,61 @@ export default class TransportSubServices {
 			return { message: 'An error occurred', success: false };
 		}
 	};
+
+	public getOrderByStatus=async (idUser:string,status:string):Promise<ReturnServices>=>{
+		try {
+			const currentTransportSub= await TransportSub.findOne({FK_CreateUser:idUser})
+      console.log(`LHA:  ===> file: TransportSub.Services.ts ===> line 180 ===> currentTransportSub`, currentTransportSub)
+      if(!currentTransportSub)
+      return {
+				message: 'Dont fine transport sub',
+				success: false,
+			};
+			const packages = await Package.find(
+				{
+					FK_SubTransport:currentTransportSub._id,
+					status: status
+				},
+				{
+					_id: 1,
+					status: 0,
+					FK_SubTransport: 0,
+					FK_SubTransportAwait: 0
+				}
+			)
+      
+			const sortPackages=JSON.parse(JSON.stringify(packages)).sort(
+				(a: any, b: any) =>
+				new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+			);
+			let canReceive=false
+			let canDelete=false
+			if(status===defaultStatusPackage.waitForConfirmation)
+			{
+				canDelete=true
+			}
+			if(status===defaultStatusPackage.onGoing)
+			{
+				canReceive=true
+			}
+			const resData=sortPackages.map((pack:any)=>{
+				console.log("canReceive",canReceive)
+				console.log("not is Await",pack.isAwait)
+				console.log("=======================================")
+				return Object.assign(pack,{canReceive:canReceive&&(!pack.isAwait),canDelete})
+			})
+			// 	//canReceive
+				// canDelete
+			return {
+				message: 'Get all order by Status',
+				success: true,
+				data: resData
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+  }
 
 	public changeStatusTransportSub = async (
 		id: string,
