@@ -78,7 +78,7 @@ export default class ClientCartServices {
 
 			
 			cart.status = defaultTypeStatus.inActive;
-			// await cart.save()
+			await cart.save()
 			return {
 				message: 'Get success my cart',
 				success: true,

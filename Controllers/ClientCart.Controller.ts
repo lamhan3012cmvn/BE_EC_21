@@ -216,20 +216,6 @@ export default class ClientCartController extends Controller {
             phone: senderPhone,
           },
         };
-        console.log(
-          `LHA:  ===> file: ClientCart.Controller.ts ===> line 183 ===> obj`,
-          obj
-        );
-        super.sendSuccess(
-          res,
-          obj,
-          "Your points are not enough to pay for this order"
-        );
-        return;
-        console.log(
-          `LHA:  ===> file: MerchantCart.Controller.ts ===> line 192 ===> obj`,
-          obj
-        );
         const packageService: PackageService = new PackageService();
         const result = await packageService.createPackage(obj, false);
         if (result.success) {
