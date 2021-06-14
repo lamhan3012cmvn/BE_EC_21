@@ -197,7 +197,7 @@ export default class MerchantService {
 
   public getMerchantInfoById = async (idMerchant:string): Promise<ReturnServices> => {
     try {
-      const merchant=await Merchant.findById(idMerchant)
+      const merchant= await Merchant.findById(idMerchant);
       return {
         message: 'Get merchant successfully',
         success: true,

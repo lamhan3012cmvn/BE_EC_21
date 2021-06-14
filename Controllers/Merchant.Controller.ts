@@ -36,7 +36,7 @@ export default class MerchantController extends Controller {
     {
       path: `/${MerchantPath.GET_BY_ID}`,
       method: Methods.GET,
-      handler: this.handleGet,
+      handler: this.handleGetById,
       localMiddleware: [],
     },
   ];
