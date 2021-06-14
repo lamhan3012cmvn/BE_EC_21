@@ -202,7 +202,7 @@ export default class MerchantService {
 			return {
 				message: 'Get all order by Status',
 				success: true,
-				data: packages
+				data: resData
 			};
 		} catch (e) {
 			console.log(e);
