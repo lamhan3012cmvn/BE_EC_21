@@ -207,13 +207,12 @@ export default class MerchantCartServices {
 				newCart.save();
 				return { message: 'Get success my cart', success: true, data: newCart };
 			}
-
 			const cartFindProduct = cart.toObject();
 			cartFindProduct.products = await Promise.all(
 				cartFindProduct.products.map(async (p: any) => {
 					const currentProduct = await Product.findOne(
 						{ _id: p.idProduct, status: defaultTypeStatus.active },
-						{ _id: 1, name: 1, FK_merchant: 1 }
+						{ _id: 1, FK_currentInfo: 1, FK_merchant: 1 }
 					);
 					if (!currentProduct) return { product: null, quantity: p.quantity };
 					const product = await ProductInfo.findOne(
@@ -235,6 +234,7 @@ export default class MerchantCartServices {
 					};
 				})
 			);
+      // console.log(`LHA:  ===> file: MerchantCart.Services.ts ===> line 238 ===> cartFindProduct`, cartFindProduct)
 
 			// console.log(cartFindProduct.products)
 			cartFindProduct.products = cartFindProduct.products.reduce(
@@ -260,7 +260,7 @@ export default class MerchantCartServices {
 				[]
 			);
 			cart.status = defaultTypeStatus.inActive;
-			// await cart.save()
+			await cart.save()
 			return {
 				message: 'Get success my cart',
 				success: true,
@@ -272,3 +272,4 @@ export default class MerchantCartServices {
 		}
 	};
 }
+ 
