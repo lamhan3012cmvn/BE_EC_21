@@ -1,3 +1,4 @@
+import { defaultStatusAwaitPackage, defaultStatusPackage } from './../common/constants';
 import {
 	IPackage,
 	IPackageDocument
@@ -331,17 +332,35 @@ export default class UserService {
 					_id: 1,
 					status: 0,
 					FK_SubTransport: 0,
-					FK_SubTransportAwait: 0,
-					isAwait: 0,
-					isMerchantSend: 0
+					FK_SubTransportAwait: 0
 				}
 			)
-			// s// );
-
+			const sortPackages=JSON.parse(JSON.stringify(packages)).sort(
+				(a: any, b: any) =>
+				new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+			);
+			let canReceive=false
+			let canDelete=false
+			if(status===defaultStatusPackage.waitForConfirmation)
+			{
+				canDelete=true
+			}
+			if(status===defaultStatusPackage.onGoing)
+			{
+				canReceive=true
+			}
+			const resData=sortPackages.map((pack:any)=>{
+				console.log("canReceive",canReceive)
+				console.log("not is Await",pack.isAwait)
+				console.log("=======================================")
+				return Object.assign(pack,{canReceive:canReceive&&(!pack.isAwait),canDelete})
+			})
+				//canReceive
+				// canDelete
 			return {
 				message: 'Get all order by Status',
 				success: true,
-				data: packages
+				data: resData
 			};
 		} catch (e) {
 			console.log(e);
