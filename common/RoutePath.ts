@@ -41,6 +41,7 @@ export const MerchantPath = {
   UPDATE: "Update",
   GET_INFO: "GetInfo",
   GET_BY_ID: "GetById",
+  GET_ORDER:"OrderByStatus"
 };
 
 export const CategoryPath = {

@@ -114,13 +114,14 @@ export default class MerchantCartServices {
 			const newArr = JSON.parse(JSON.stringify(cart.products));
 			const filterProduct = [];
 			for (let i = 0; i < newArr.length; i++) {
-				const groupProduct = await GroupProduct.findOne({
+				const currentProduct = await Product.findOne({
 					_id: newArr[i].idProduct,
 					status: defaultTypeStatus.active
 				});
-				if (groupProduct) {
+				if (currentProduct) {
+						
 					const product = await ProductInfo.findOne({
-						FK_groupProduct: groupProduct._id,
+						_id: currentProduct.FK_currentInfo,
 						status: defaultTypeStatus.active
 					});
 					if (product) {
