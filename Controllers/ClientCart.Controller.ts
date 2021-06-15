@@ -242,108 +242,65 @@ export default class ClientCartController extends Controller {
           );
         }
       } else {
-        const clientCartServices: ClientCartServices = new ClientCartServices();
-        const resClientCart = await clientCartServices.paymentCart(idUser);
-
-        const obj: any = {
-          status: defaultStatusPackage.deleted,
-          title,
-          description,
-          estimatedDate,
-          FK_Recipient: idUser,
-          FK_Transport,
-          FK_SubTransport,
-          FK_SubTransportAwait,
-          prices,
-          distance,
-          weight,
-          FK_Product: resClientCart.data.products, //Get from cart
-          FK_ProductType: "Standard", //Get from cart
-          recipient: {
-            name: recipientName,
-            location: {
-              address: recipientAddress,
-              coordinate: {
-                lat: recipientLat,
-                lng: recipientLng,
-              },
-            },
-            phone: recipientPhone,
-          },
-          sender: {
-            name: user.data.fullName,
-            location: {
-              address: senderAddress,
-              coordinate: {
-                lat: senderLat,
-                lng: senderLng,
-              },
-            },
-            phone: senderPhone,
-          },
-        };
-        const packageService: PackageService = new PackageService();
-        const result = await packageService.createPackage(obj, false);
-        if (result.success) {
-          if (typePayment == defaultTypePayment.PAYPAL) {
-            const paypalServices: PaypalServices = new PaypalServices();
-            const transactionsInfo = {
-              idUser: idUser,
-              idPackage: result.data._id,
-              typeOrders: defaultTypeOrders.ORDER,
-            };
-            const transactions = ~~prices;
-            paypalServices.payment(
-              transactions,
-              transactionsInfo,
-              (error: any, payment: any) => {
-                if (error) {
-                  console.log(error);
-                  super.sendError(res, "Payment failure!");
-                } else {
-                  for (let i = 0; i < payment.links.length; i++) {
-                    if (payment.links[i].rel === "approval_url") {
-                      super.sendSuccess(
-                        res,
-                        payment.links[i].href,
-                        "Successfully create order"
-                      );
-                    }
+        if (typePayment == defaultTypePayment.PAYPAL) {
+          const paypalServices: PaypalServices = new PaypalServices();
+          const transactionsInfo = {
+            idUser: idUser,
+            typeCart: 'CLIENT',
+            typeOrders: defaultTypeOrders.ORDER,
+          };
+          const transactions = ~~prices;
+          paypalServices.payment(
+            transactions,
+            transactionsInfo,
+            req.value.body,
+            (error: any, payment: any) => {
+              if (error) {
+                console.log(error);
+                super.sendError(res, "Payment failure!");
+              } else {
+                for (let i = 0; i < payment.links.length; i++) {
+                  if (payment.links[i].rel === "approval_url") {
+                    super.sendSuccess(
+                      res,
+                      payment.links[i].href,
+                      "Successfully create order"
+                    );
                   }
                 }
               }
-            );
-          } else if (typePayment == defaultTypePayment.VNPAY) {
-            const vnpayServices: VNPayServices = new VNPayServices();
-            const transactionsInfo = {
-              idUser: idUser,
-              typeOrders: defaultTypeOrders.ORDER,
-              idPackage: result.data._id,
-              amount: `${~~prices}`,
-              bankCode: "NCB",
-              orderDescription: "Thanh toan hoa don mua hang Van Transport",
-              language: "vn",
-            };
-            const resultPayment = await vnpayServices.payment(
-              transactionsInfo,
-              req.headers,
-              req.connection,
-              req.socket
-            );
-            if (resultPayment.success) {
-              super.sendSuccess(
-                res,
-                resultPayment.data.url,
-                "Successfully create order"
-              );
-            } else {
-              super.sendError(res, result.message);
             }
+          );
+        } else if (typePayment == defaultTypePayment.VNPAY) {
+          const vnpayServices: VNPayServices = new VNPayServices();
+          const transactionsInfo = {
+            idUser: idUser,
+            typeOrders: defaultTypeOrders.ORDER,
+            data: req.value.body,
+            amount: `${~~prices}`,
+            bankCode: "NCB",
+            orderDescription: "Thanh toan hoa don mua hang Van Transport",
+            language: "vn",
+            typeCart: 'CLIENT',
+          };
+          const resultPayment = await vnpayServices.payment(
+            transactionsInfo,
+            req.value.body,
+            req.headers,
+            req.connection,
+            req.socket
+          );
+          if (resultPayment.success) {
+            super.sendSuccess(
+              res,
+              resultPayment.data.url,
+              "Successfully create order"
+            );
           } else {
             super.sendError(res);
           }
         } else {
-          super.sendError(res, result.message);
+          super.sendError(res);
         }
       }
     } catch {
