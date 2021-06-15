@@ -120,7 +120,7 @@ export const AdminPath = {
   REJECT_MERCHANT: "RejectMerchant",
   REJECT_TRANSPORT: "RejectTransport",
   CANCEL_MERCHANT: "CancelMerchant",
-  CANCEL_TRANSPORT: "CancelMerchant",
+  CANCEL_TRANSPORT: "CancelTransport",
   GET_MERCHANT_BY_STATUS: "GetMerchantByStatus",
   GET_TRANSPORT_BY_STATUS: "GetTransportByStatus",
   GET_TRANSPORT_BY_ADDRESS:"GetTransportByAddress",

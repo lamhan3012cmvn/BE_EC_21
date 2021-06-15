@@ -28,7 +28,7 @@ export default class VNPayService {
       const external_return_url =
         body.typeOrders == defaultTypeOrders.POINT
           ? `?price=${transactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-          : `?price=${transactions}&idUser=${body.idUser}&data=${encodeData}&typeOrders=${body.typeOrders}&typeCart=${body.typeCart}`;
+          : `?price=${transactions}&idUser=${body.idUser}&data=${encodeData}&typeOrders=${body.typeOrders}&typeCart=${body.typeCart}&fullName=${body.fullName}`;
 
       var tmnCode = process.env.vnp_TmnCode;
       var secretKey = process.env.vnp_HashSecret;

@@ -30,7 +30,7 @@ export default class PaypalService {
     const return_url =
       body.typeOrders == defaultTypeOrders.POINT
         ? `?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-        : `?price=${formatTransactions}&idUser=${body.idUser}&data=${encodeData}&typeOrders=${body.typeOrders}&cartType=${body.cartType}`;
+        : `?price=${formatTransactions}&idUser=${body.idUser}&fullName=${body.fullName}&data=${encodeData}&typeOrders=${body.typeOrders}&cartType=${body.cartType}`;
     const create_payment_json = {
       intent: "sale",
       payer: {

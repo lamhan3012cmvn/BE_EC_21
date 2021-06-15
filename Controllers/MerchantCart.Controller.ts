@@ -277,12 +277,17 @@ export default class MerchantCartController extends Controller {
           );
         }
       } else {
+        const user = await userService.getInfo(idUser);
+        if (!user) {
+          this.sendError(res);
+        }
         if (typePayment == defaultTypePayment.PAYPAL) {
           const paypalServices: PaypalServices = new PaypalServices();
           const transactionsInfo = {
             idUser: idUser,
             typeOrders: defaultTypeOrders.ORDER,
             typeCart: 'MERCHANT',
+            fullName: user.data.fullName,
           };
           const transactions = ~~prices;
           paypalServices.payment(
@@ -316,6 +321,7 @@ export default class MerchantCartController extends Controller {
             orderDescription: "Thanh toan hoa don mua hang Van Transport",
             language: "vn",
             typeCart: 'MERCHANT',
+            fullName: user.data.fullName,
           };
           const resultPayment = await vnpayServices.payment(
             transactionsInfo,
