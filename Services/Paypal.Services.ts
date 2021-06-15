@@ -1,22 +1,21 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultStatusPackage, defaultTypeOrders } from "../common/constants";
+import {
+  defaultStatusPackage,
+  defaultTypeOrders,
+  defaultTypeStatus,
+} from "../common/constants";
 import paypal from "paypal-rest-sdk";
 import { User } from "../Models";
-import { Package } from "../Models";
-import StringifySafe from "json-stringify-safe";
 import MerchantCartServices from "./MerchantCart.Services";
 import PackageService from "./Package.Services";
 import ClientCartServices from "./ClientCart.Services";
+import PackageClientTemp from "../Models/PackageClientTemp";
+import PackageMerchantTemp from "../Models/PackageMerchantTemp";
 
 export default class PaypalService {
   constructor() {}
 
-  public payment = async (
-    transactions: number,
-    body: any,
-    data: any,
-    next: any
-  ) => {
+  public payment = async (transactions: number, body: any, next: any) => {
     const dollar = transactions / 23050;
     const dollar2f = parseFloat(dollar.toFixed(2));
     const dollar3f = parseFloat(dollar.toFixed(3));
@@ -25,12 +24,12 @@ export default class PaypalService {
         ? dollar2f
         : dollar2f >= dollar3f
         ? dollar2f
-        : dollar3f + 0.01;
-    const encodeData = this.encodeQueryParameter(data);
+        : dollar2f + 0.01;
+    console.log(formatTransactions + ' PAYPAL');
     const return_url =
       body.typeOrders == defaultTypeOrders.POINT
         ? `?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-        : `?price=${formatTransactions}&idUser=${body.idUser}&fullName=${body.fullName}&data=${encodeData}&typeOrders=${body.typeOrders}&cartType=${body.cartType}`;
+        : `?price=${formatTransactions}&idUser=${body.idUser}&typeOrders=${body.typeOrders}&cartType=${body.cartType}&idPackageTemp${body.idPackageTemp}`;
     const create_payment_json = {
       intent: "sale",
       payer: {
@@ -45,7 +44,10 @@ export default class PaypalService {
           item_list: {
             items: [
               {
-                name: "Phí vận chuyển",
+                name:
+                  body.typeOrders == defaultTypeOrders.POINT
+                    ? "Phi mua point"
+                    : "Phi van chuyen",
                 sku: "001",
                 price: `${formatTransactions}`,
                 currency: "USD",
@@ -57,7 +59,10 @@ export default class PaypalService {
             currency: "USD",
             total: `${formatTransactions}`,
           },
-          description: "Phí vận chuyển Van Transport",
+          description:
+            body.typeOrders == defaultTypeOrders.POINT
+              ? "Phi mua point Van Transport"
+              : "Phi van chuyen Van Transport",
         },
       ],
     };
@@ -75,8 +80,8 @@ export default class PaypalService {
     const payerId = body.PayerID;
     const paymentId = body.paymentId;
     const price = body.price;
-    const data = this.decodeQueryParameter(body.data);
     const typeCart = body.typeCart;
+    const idPackageTemp = body.idPackageTemp;
 
     const execute_payment_json = {
       payer_id: payerId,
@@ -106,7 +111,29 @@ export default class PaypalService {
             //   { status: defaultStatusPackage.waitForConfirmation },
             //   { new: true }
             // );
+            const user = await User.findById(body.idUser);
+            if (!user) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            }
             if (typeCart == "MERCHANT") {
+              const packageMerchantTemp =
+                await PackageMerchantTemp.findOneAndUpdate(
+                  { _id: idPackageTemp, status: defaultTypeStatus.active },
+                  { status: defaultTypeStatus.deleted },
+                  { new: true }
+                );
+              if (!packageMerchantTemp) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              }
+              const dataPackage = JSON.parse(
+                JSON.stringify(packageMerchantTemp)
+              );
               const {
                 title,
                 description,
@@ -128,7 +155,7 @@ export default class PaypalService {
                 senderAddress,
                 senderLat,
                 senderLng,
-              } = data;
+              } = dataPackage;
               const merchantCartServices: MerchantCartServices =
                 new MerchantCartServices();
               const resMerchantCart = await merchantCartServices.paymentCart(
@@ -150,7 +177,7 @@ export default class PaypalService {
                 FK_Product: resMerchantCart.data.products, //Get from cart
                 FK_ProductType: "Standard", //Get from cart
                 recipient: {
-                  name: body.fullName,
+                  name: user.fullName,
                   location: {
                     address: recipientAddress,
                     coordinate: {
@@ -173,8 +200,32 @@ export default class PaypalService {
                 },
               };
               const packageService: PackageService = new PackageService();
-              await packageService.createPackage(obj);
+              var result = await packageService.createPackage(obj);
+              if (!result) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              } else {
+                return {
+                  message: "Payment successfully",
+                  success: true,
+                };
+              }
             } else {
+              const packageClientTemp =
+                await PackageClientTemp.findOneAndUpdate(
+                  { _id: idPackageTemp, status: defaultTypeStatus.active },
+                  { status: defaultTypeStatus.deleted },
+                  { new: true }
+                );
+              if (!packageClientTemp) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              }
+              const dataPackage = JSON.parse(JSON.stringify(packageClientTemp));
               const {
                 title,
                 description,
@@ -198,7 +249,7 @@ export default class PaypalService {
                 senderLat,
                 senderLng,
                 typePayment,
-              } = data;
+              } = dataPackage;
               const clientCartServices: ClientCartServices =
                 new ClientCartServices();
               const resClientCart = await clientCartServices.paymentCart(
@@ -231,7 +282,7 @@ export default class PaypalService {
                   phone: recipientPhone,
                 },
                 sender: {
-                  name: body.fullName,
+                  name: user.fullName,
                   location: {
                     address: senderAddress,
                     coordinate: {
@@ -243,7 +294,18 @@ export default class PaypalService {
                 },
               };
               const packageService: PackageService = new PackageService();
-              await packageService.createPackage(obj, false);
+              var result = await packageService.createPackage(obj, false);
+              if (!result) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              } else {
+                return {
+                  message: "Payment successfully",
+                  success: true,
+                };
+              }
             }
           }
         }
@@ -271,14 +333,6 @@ export default class PaypalService {
       console.log(e);
       return { message: "An error occurred", success: false };
     }
-  };
-
-  encodeQueryParameter = (data: object): any => {
-    return encodeURIComponent(StringifySafe(data)); // Use StringifySafe to avoid crash on circular dependencies
-  };
-
-  decodeQueryParameter = (query: string): any => {
-    return JSON.parse(decodeURIComponent(query));
   };
 
   public functionInit = async (): Promise<ReturnServices> => {

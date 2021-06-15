@@ -1,18 +1,22 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultStatusPackage, defaultTypeOrders } from "../common/constants";
-import { User, Package } from "../Models";
+import {
+  defaultStatusPackage,
+  defaultTypeOrders,
+  defaultTypeStatus,
+} from "../common/constants";
+import { User } from "../Models";
 import dateFormat from "dateformat";
-import StringifySafe from "json-stringify-safe";
 import PackageService from "./Package.Services";
 import ClientCartServices from "./ClientCart.Services";
 import MerchantCartServices from "./MerchantCart.Services";
+import PackageMerchantTemp from "../Models/PackageMerchantTemp";
+import PackageClientTemp from "../Models/PackageClientTemp";
 
 export default class VNPayService {
   constructor() {}
 
   public payment = async (
     body: any,
-    data: any,
     headers: any,
     connection: any,
     socket: any
@@ -24,11 +28,10 @@ export default class VNPayService {
         socket.remoteAddress ||
         connection.socket.remoteAddress;
       const transactions = body.amount * 100;
-      const encodeData = this.encodeQueryParameter(data);
       const external_return_url =
         body.typeOrders == defaultTypeOrders.POINT
           ? `?price=${transactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-          : `?price=${transactions}&idUser=${body.idUser}&data=${encodeData}&typeOrders=${body.typeOrders}&typeCart=${body.typeCart}&fullName=${body.fullName}`;
+          : `?price=${transactions}&idUser=${body.idUser}&idPackageTemp=${body.idPackageTemp}&typeOrders=${body.typeOrders}&typeCart=${body.typeCart}`;
 
       var tmnCode = process.env.vnp_TmnCode;
       var secretKey = process.env.vnp_HashSecret;
@@ -108,7 +111,7 @@ export default class VNPayService {
         vnp_SecureHash: body.vnp_SecureHash,
       };
 
-      const data = this.decodeQueryParameter(body.data);
+      const idPackageTemp = body.idPackageTemp;
       const typeCart = body.typeCart;
 
       var secureHash = vnp_Params["vnp_SecureHash"];
@@ -142,7 +145,27 @@ export default class VNPayService {
           //   { status: defaultStatusPackage.waitForConfirmation },
           //   { new: true }
           // );
+          const user = await User.findById(body.idUser);
+          if (!user) {
+            return {
+              message: "Payment failure",
+              success: false,
+            };
+          }
           if (typeCart == "MERCHANT") {
+            const packageMerchantTemp = await PackageMerchantTemp.findOneAndUpdate(
+              { _id: idPackageTemp, status: defaultTypeStatus.active },
+              { status: defaultTypeStatus.deleted },
+              {new: true},
+            );
+            if (!packageMerchantTemp) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            }
+            const dataPackage = JSON.parse(JSON.stringify(packageMerchantTemp));
+            console.log(dataPackage);
             const {
               title,
               description,
@@ -164,7 +187,7 @@ export default class VNPayService {
               senderAddress,
               senderLat,
               senderLng,
-            } = data;
+            } = dataPackage;
             const merchantCartServices: MerchantCartServices =
               new MerchantCartServices();
             const resMerchantCart = await merchantCartServices.paymentCart(
@@ -186,7 +209,7 @@ export default class VNPayService {
               FK_Product: resMerchantCart.data.products, //Get from cart
               FK_ProductType: "Standard", //Get from cart
               recipient: {
-                name: body.fullName,
+                name: user.fullName,
                 location: {
                   address: recipientAddress,
                   coordinate: {
@@ -209,8 +232,33 @@ export default class VNPayService {
               },
             };
             const packageService: PackageService = new PackageService();
-            await packageService.createPackage(obj);
+            var result = await packageService.createPackage(obj);
+            if (!result) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            } else {
+              return {
+                message: "Payment successfully",
+                success: true,
+                data: { responseCode: vnp_Params["vnp_ResponseCode"] },
+              };
+            }
           } else {
+            const packageClientTemp = await PackageClientTemp.findOneAndUpdate(
+              { _id: idPackageTemp, status: defaultTypeStatus.active },
+              { status: "DELETED" },
+              { new: true }
+            );
+            if (!packageClientTemp) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            }
+            const dataPackage = JSON.parse(JSON.stringify(packageClientTemp));
+            console.log(dataPackage);
             const {
               title,
               description,
@@ -234,7 +282,7 @@ export default class VNPayService {
               senderLat,
               senderLng,
               typePayment,
-            } = data;
+            } = dataPackage;
             const clientCartServices: ClientCartServices =
               new ClientCartServices();
             const resClientCart = await clientCartServices.paymentCart(
@@ -267,7 +315,7 @@ export default class VNPayService {
                 phone: recipientPhone,
               },
               sender: {
-                name: body.fullName,
+                name: user.fullName,
                 location: {
                   address: senderAddress,
                   coordinate: {
@@ -279,7 +327,19 @@ export default class VNPayService {
               },
             };
             const packageService: PackageService = new PackageService();
-            await packageService.createPackage(obj, false);
+            var result = await packageService.createPackage(obj, false);
+            if (!result) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            } else {
+              return {
+                message: "Payment successfully",
+                success: true,
+                data: { responseCode: vnp_Params["vnp_ResponseCode"] },
+              };
+            }
           }
         }
         return {
@@ -297,14 +357,6 @@ export default class VNPayService {
       console.log(e);
       return { message: "An error occurred", success: false };
     }
-  };
-
-  encodeQueryParameter = (data: object): any => {
-    return encodeURIComponent(StringifySafe(data)); // Use StringifySafe to avoid crash on circular dependencies
-  };
-
-  decodeQueryParameter = (query: string): any => {
-    return JSON.parse(decodeURIComponent(query));
   };
 
   private sortObject = (o: any) => {

@@ -18,6 +18,8 @@ import {
 } from "../common/constants";
 import PaypalServices from "../Services/Paypal.Services";
 import VNPayServices from "../Services/VNPay.Services";
+import PackageMerchantTempModel from "../Models/PackageMerchantTemp/PackageMerchantTemp.Model";
+import PackageMerchantTemp from "../Models/PackageMerchantTemp";
 export default class MerchantCartController extends Controller {
   path = "/User/Merchant";
   routes = [
@@ -281,19 +283,23 @@ export default class MerchantCartController extends Controller {
         if (!user) {
           this.sendError(res);
         }
+        const packageMerchantTemp = await PackageMerchantTemp.create(req.value.body);
+        if (!packageMerchantTemp) {
+          super.sendError(res);
+        }
         if (typePayment == defaultTypePayment.PAYPAL) {
           const paypalServices: PaypalServices = new PaypalServices();
           const transactionsInfo = {
             idUser: idUser,
             typeOrders: defaultTypeOrders.ORDER,
-            typeCart: 'MERCHANT',
+            typeCart: "MERCHANT",
             fullName: user.data.fullName,
+            idPackageTemp: packageMerchantTemp._id,
           };
           const transactions = ~~prices;
           paypalServices.payment(
             transactions,
             transactionsInfo,
-            req.value.body,
             (error: any, payment: any) => {
               if (error) {
                 console.log(error);
@@ -320,12 +326,12 @@ export default class MerchantCartController extends Controller {
             bankCode: "NCB",
             orderDescription: "Thanh toan hoa don mua hang Van Transport",
             language: "vn",
-            typeCart: 'MERCHANT',
+            typeCart: "MERCHANT",
             fullName: user.data.fullName,
+            idPackageTemp: packageMerchantTemp._id,
           };
           const resultPayment = await vnpayServices.payment(
             transactionsInfo,
-            req.value.body,
             req.headers,
             req.connection,
             req.socket

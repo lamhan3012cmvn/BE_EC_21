@@ -16,6 +16,7 @@ import {
 } from '../common/constants';
 import PaypalServices from '../Services/Paypal.Services';
 import VNPayServices from '../Services/VNPay.Services';
+import PackageClientTemp from '../Models/PackageClientTemp';
 export default class ClientCartController extends Controller {
 	path = '/User/Client';
 	routes = [
@@ -247,6 +248,10 @@ export default class ClientCartController extends Controller {
             super.sendError(res);
           }
         }
+        const packageClientTemp = await PackageClientTemp.create(req.value.body);
+        if (!packageClientTemp) {
+          super.sendError(res);
+        }
         if (typePayment == defaultTypePayment.PAYPAL) {
           const paypalServices: PaypalServices = new PaypalServices();
           const transactionsInfo = {
@@ -254,12 +259,12 @@ export default class ClientCartController extends Controller {
             typeCart: 'CLIENT',
             typeOrders: defaultTypeOrders.ORDER,
             fullName: user.data.fullName,
+            idPackageTemp: packageClientTemp._id,
           };
           const transactions = ~~prices;
           paypalServices.payment(
             transactions,
             transactionsInfo,
-            req.value.body,
             (error: any, payment: any) => {
               if (error) {
                 console.log(error);
@@ -282,20 +287,19 @@ export default class ClientCartController extends Controller {
           const transactionsInfo = {
             idUser: idUser,
             typeOrders: defaultTypeOrders.ORDER,
-            data: req.value.body,
             amount: `${~~prices}`,
             bankCode: "NCB",
             orderDescription: "Thanh toan hoa don mua hang Van Transport",
             language: "vn",
             typeCart: 'CLIENT',
             fullName: user.data.fullName,
+            idPackageTemp: packageClientTemp._id,
           };
           const resultPayment = await vnpayServices.payment(
             transactionsInfo,
-            req.value.body,
             req.headers,
             req.connection,
-            req.socket
+            req.socket,
           );
           if (resultPayment.success) {
             super.sendSuccess(

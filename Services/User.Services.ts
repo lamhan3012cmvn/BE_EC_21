@@ -282,7 +282,7 @@ export default class UserService {
 					typeOrders: defaultTypeOrders.POINT
 				};
 				const transactions = ~~body.point * 100;
-				paypalServices.payment(transactions, transactionsInfo, null, next);
+				paypalServices.payment(transactions, transactionsInfo, next);
 			} else {
 				const vnpayServices: VNPayServices = new VNPayServices();
 				const transactionsInfo = {
@@ -295,7 +295,6 @@ export default class UserService {
 					language: 'vn'
 				};
 				const result = await vnpayServices.payment(
-					null,
 					transactionsInfo,
 					req.headers,
 					req.connection,
