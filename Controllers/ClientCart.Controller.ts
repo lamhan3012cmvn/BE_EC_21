@@ -16,6 +16,7 @@ import {
 } from '../common/constants';
 import PaypalServices from '../Services/Paypal.Services';
 import VNPayServices from '../Services/VNPay.Services';
+import PackageClientTemp from '../Models/PackageClientTemp';
 export default class ClientCartController extends Controller {
 	path = '/User/Client';
 	routes = [
@@ -190,197 +191,159 @@ export default class ClientCartController extends Controller {
 						new ClientCartServices();
 					const resClientCart = await clientCartServices.paymentCart(idUser);
 
-					if (resClientCart.data.products.length <= 0) {
-						super.sendError(res, 'Your current shopping cart is empty');
-					}
-					const obj: any = {
-						status: defaultStatusPackage.waitForConfirmation,
-						title,
-						description,
-						estimatedDate,
-						FK_Recipient: idUser,
-						FK_Transport,
-						FK_SubTransport,
-						FK_SubTransportAwait,
-						prices,
-						distance,
-						weight,
-						FK_Product: resClientCart.data.products, //Get from cart
-						FK_ProductType: 'Standard', //Get from cart
-						recipient: {
-							name: recipientName,
-							location: {
-								address: recipientAddress,
-								coordinate: {
-									lat: recipientLat,
-									lng: recipientLng
-								}
-							},
-							phone: recipientPhone
-						},
-						sender: {
-							name: user.data.fullName,
-							location: {
-								address: senderAddress,
-								coordinate: {
-									lat: senderLat,
-									lng: senderLng
-								}
-							},
-							phone: senderPhone
-						}
-					};
-					const packageService: PackageService = new PackageService();
-					const result = await packageService.createPackage(obj, false);
-					if (result.success) {
-						super.sendSuccess(res, {}, result.message);
-						return;
-					} else {
-						super.sendError(res, result.message);
-					}
-				} else {
-					super.sendError(
-						res,
-						'Your points are not enough to pay for this order'
-					);
-				}
-			} else {
-				const clientCartServices: ClientCartServices = new ClientCartServices();
-				const resClientCart = await clientCartServices.paymentCart(idUser);
-				if (resClientCart.data.products.length <= 0) {
-					super.sendError(res, 'Your current shopping cart is empty');
-				}
-				const obj: any = {
-					status: defaultStatusPackage.deleted,
-					title,
-					description,
-					estimatedDate,
-					FK_Recipient: idUser,
-					FK_Transport,
-					FK_SubTransport,
-					FK_SubTransportAwait,
-					prices,
-					distance,
-					weight,
-					FK_Product: resClientCart.data.products, //Get from cart
-					FK_ProductType: 'Standard', //Get from cart
-					recipient: {
-						name: recipientName,
-						location: {
-							address: recipientAddress,
-							coordinate: {
-								lat: recipientLat,
-								lng: recipientLng
-							}
-						},
-						phone: recipientPhone
-					},
-					sender: {
-						name: user.data.fullName,
-						location: {
-							address: senderAddress,
-							coordinate: {
-								lat: senderLat,
-								lng: senderLng
-							}
-						},
-						phone: senderPhone
-					}
-				};
-				const packageService: PackageService = new PackageService();
-				const result = await packageService.createPackage(obj, false);
-				if (result.success) {
-					if (typePayment == defaultTypePayment.PAYPAL) {
-						const paypalServices: PaypalServices = new PaypalServices();
-						const transactionsInfo = {
-							idUser: idUser,
-							idPackage: result.data._id,
-							typeOrders: defaultTypeOrders.ORDER
-						};
-						const transactions = ~~prices;
-						paypalServices.payment(
-							transactions,
-							transactionsInfo,
-							(error: any, payment: any) => {
-								if (error) {
-									console.log(error);
-									super.sendError(res, 'Payment failure!');
-								} else {
-									for (let i = 0; i < payment.links.length; i++) {
-										if (payment.links[i].rel === 'approval_url') {
-											super.sendSuccess(
-												res,
-												payment.links[i].href,
-												'Successfully create order'
-											);
-										}
-									}
-								}
-							}
-						);
-					} else if (typePayment == defaultTypePayment.VNPAY) {
-						const vnpayServices: VNPayServices = new VNPayServices();
-						const transactionsInfo = {
-							idUser: idUser,
-							typeOrders: defaultTypeOrders.ORDER,
-							idPackage: result.data._id,
-							amount: `${~~prices}`,
-							bankCode: 'NCB',
-							orderDescription: 'Thanh toan hoa don mua hang Van Transport',
-							language: 'vn'
-						};
-						const resultPayment = await vnpayServices.payment(
-							transactionsInfo,
-							req.headers,
-							req.connection,
-							req.socket
-						);
-						if (resultPayment.success) {
-							super.sendSuccess(
-								res,
-								resultPayment.data.url,
-								'Successfully create order'
-							);
-						} else {
-							super.sendError(res, result.message);
-						}
-					} else {
-						super.sendError(res);
-					}
-				} else {
-					super.sendError(res, result.message);
-				}
-			}
-		} catch {
-			super.sendError(res);
-		}
-	}
-	async handleUpdateProductFromCart(
-		req: IValidateRequest | any,
-		res: Response,
-		next: NextFunction
-	): Promise<void> {
-		try {
-			const idUser = req.value.body.token.data;
-			const objData: any = {
-				idProduct: req.value.body.idProduct,
-				name: req.value.body.name,
-				weight: req.value.body.weight,
-				type: req.value.body.type,
-				image: req.value.body.image.split(' ')
-			};
-			const clientCartServices: ClientCartServices = new ClientCartServices();
-			const result = await clientCartServices.updateProductFromCart(
-				idUser,
-				objData
-			);
-			if (result.success) {
-				super.sendSuccess(res, result.data, result.message);
-			} else {
-				super.sendError(res, result.message);
-			}
-		} catch {
-			super.sendError(res);
-		}
-	}
+          const obj: any = {
+            status: defaultStatusPackage.waitForConfirmation,
+            title,
+            description,
+            estimatedDate,
+            FK_Recipient: idUser,
+            FK_Transport,
+            FK_SubTransport,
+            FK_SubTransportAwait,
+            prices,
+            distance,
+            weight,
+            FK_Product: resClientCart.data.products, //Get from cart
+            FK_ProductType: "Standard", //Get from cart
+            recipient: {
+              name: recipientName,
+              location: {
+                address: recipientAddress,
+                coordinate: {
+                  lat: recipientLat,
+                  lng: recipientLng,
+                },
+              },
+              phone: recipientPhone,
+            },
+            sender: {
+              name: user.data.fullName,
+              location: {
+                address: senderAddress,
+                coordinate: {
+                  lat: senderLat,
+                  lng: senderLng,
+                },
+              },
+              phone: senderPhone,
+            },
+          };
+          const packageService: PackageService = new PackageService();
+          const result = await packageService.createPackage(obj, false);
+          if (result.success) {
+            super.sendSuccess(res, {}, result.message);
+            return;
+          } else {
+            super.sendError(res, result.message);
+          }
+        } else {
+          super.sendError(
+            res,
+            "Your points are not enough to pay for this order"
+          );
+        }
+      } else {
+        const user = await userService.getInfo(idUser); {
+          if (!user) {
+            super.sendError(res);
+          }
+        }
+        const packageClientTemp = await PackageClientTemp.create(req.value.body);
+        if (!packageClientTemp) {
+          super.sendError(res);
+        }
+        if (typePayment == defaultTypePayment.PAYPAL) {
+          const paypalServices: PaypalServices = new PaypalServices();
+          const transactionsInfo = {
+            idUser: idUser,
+            typeCart: 'CLIENT',
+            typeOrders: defaultTypeOrders.ORDER,
+            fullName: user.data.fullName,
+            idPackageTemp: packageClientTemp._id,
+          };
+          const transactions = ~~prices;
+          paypalServices.payment(
+            transactions,
+            transactionsInfo,
+            (error: any, payment: any) => {
+              if (error) {
+                console.log(error);
+                super.sendError(res, "Payment failure!");
+              } else {
+                for (let i = 0; i < payment.links.length; i++) {
+                  if (payment.links[i].rel === "approval_url") {
+                    super.sendSuccess(
+                      res,
+                      payment.links[i].href,
+                      "Successfully create order"
+                    );
+                  }
+                }
+              }
+            }
+          );
+        } else if (typePayment == defaultTypePayment.VNPAY) {
+          const vnpayServices: VNPayServices = new VNPayServices();
+          const transactionsInfo = {
+            idUser: idUser,
+            typeOrders: defaultTypeOrders.ORDER,
+            amount: `${~~prices}`,
+            bankCode: "NCB",
+            orderDescription: "Thanh toan hoa don mua hang Van Transport",
+            language: "vn",
+            typeCart: 'CLIENT',
+            fullName: user.data.fullName,
+            idPackageTemp: packageClientTemp._id,
+          };
+          const resultPayment = await vnpayServices.payment(
+            transactionsInfo,
+            req.headers,
+            req.connection,
+            req.socket,
+          );
+          if (resultPayment.success) {
+            super.sendSuccess(
+              res,
+              resultPayment.data.url,
+              "Successfully create order"
+            );
+          } else {
+            super.sendError(res);
+          }
+        } else {
+          super.sendError(res);
+        }
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+  async handleUpdateProductFromCart(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const idUser = req.value.body.token.data;
+      const objData: any = {
+        idProduct: req.value.body.idProduct,
+        name: req.value.body.name,
+        weight: req.value.body.weight,
+        type: req.value.body.type,
+        image: req.value.body.image.split(" "),
+      };
+      const clientCartServices: ClientCartServices = new ClientCartServices();
+      const result = await clientCartServices.updateProductFromCart(
+        idUser,
+        objData
+      );
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
 }

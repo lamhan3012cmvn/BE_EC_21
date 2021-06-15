@@ -1,7 +1,16 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultStatusPackage, defaultTypeOrders } from "../common/constants";
-import { User, Package } from "../Models";
+import {
+  defaultStatusPackage,
+  defaultTypeOrders,
+  defaultTypeStatus,
+} from "../common/constants";
+import { User } from "../Models";
 import dateFormat from "dateformat";
+import PackageService from "./Package.Services";
+import ClientCartServices from "./ClientCart.Services";
+import MerchantCartServices from "./MerchantCart.Services";
+import PackageMerchantTemp from "../Models/PackageMerchantTemp";
+import PackageClientTemp from "../Models/PackageClientTemp";
 
 export default class VNPayService {
   constructor() {}
@@ -22,7 +31,7 @@ export default class VNPayService {
       const external_return_url =
         body.typeOrders == defaultTypeOrders.POINT
           ? `?price=${transactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-          : `?price=${transactions}&idUser=${body.idUser}&idPackage=${body.idPackage}&typeOrders=${body.typeOrders}`;
+          : `?price=${transactions}&idUser=${body.idUser}&idPackageTemp=${body.idPackageTemp}&typeOrders=${body.typeOrders}&typeCart=${body.typeCart}`;
 
       var tmnCode = process.env.vnp_TmnCode;
       var secretKey = process.env.vnp_HashSecret;
@@ -102,6 +111,9 @@ export default class VNPayService {
         vnp_SecureHash: body.vnp_SecureHash,
       };
 
+      const idPackageTemp = body.idPackageTemp;
+      const typeCart = body.typeCart;
+
       var secureHash = vnp_Params["vnp_SecureHash"];
 
       delete vnp_Params["vnp_SecureHash"];
@@ -109,7 +121,6 @@ export default class VNPayService {
 
       vnp_Params = this.sortObject(vnp_Params);
 
-      var tmnCode = process.env.vnp_TmnCode;
       var secretKey = process.env.vnp_HashSecret;
 
       var querystring = require("qs");
@@ -129,11 +140,207 @@ export default class VNPayService {
           );
         } else {
           // Update Package
-          await Package.findOneAndUpdate(
-            { _id: body.idPackage, status: defaultStatusPackage.deleted },
-            { status: defaultStatusPackage.waitForConfirmation },
-            { new: true }
-          );
+          // await Package.findOneAndUpdate(
+          //   { _id: body.idPackage, status: defaultStatusPackage.deleted },
+          //   { status: defaultStatusPackage.waitForConfirmation },
+          //   { new: true }
+          // );
+          const user = await User.findById(body.idUser);
+          if (!user) {
+            return {
+              message: "Payment failure",
+              success: false,
+            };
+          }
+          if (typeCart == "MERCHANT") {
+            const packageMerchantTemp = await PackageMerchantTemp.findOneAndUpdate(
+              { _id: idPackageTemp, status: defaultTypeStatus.active },
+              { status: defaultTypeStatus.deleted },
+              {new: true},
+            );
+            if (!packageMerchantTemp) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            }
+            const dataPackage = JSON.parse(JSON.stringify(packageMerchantTemp));
+            console.log(dataPackage);
+            const {
+              title,
+              description,
+              estimatedDate,
+              FK_Address,
+              FK_Transport,
+              FK_SubTransport,
+              FK_SubTransportAwait,
+              recipientAddress,
+              recipientLat,
+              recipientLng,
+              recipientPhone,
+              prices,
+              distance,
+              weight,
+
+              senderName,
+              senderPhone,
+              senderAddress,
+              senderLat,
+              senderLng,
+            } = dataPackage;
+            const merchantCartServices: MerchantCartServices =
+              new MerchantCartServices();
+            const resMerchantCart = await merchantCartServices.paymentCart(
+              body.idUser
+            );
+
+            const obj: any = {
+              status: defaultStatusPackage.waitForConfirmation,
+              title,
+              description,
+              estimatedDate,
+              FK_Recipient: body.idUser,
+              FK_Transport,
+              FK_SubTransport,
+              FK_SubTransportAwait,
+              prices,
+              distance,
+              weight,
+              FK_Product: resMerchantCart.data.products, //Get from cart
+              FK_ProductType: "Standard", //Get from cart
+              recipient: {
+                name: user.fullName,
+                location: {
+                  address: recipientAddress,
+                  coordinate: {
+                    lat: recipientLat,
+                    lng: recipientLng,
+                  },
+                },
+                phone: recipientPhone,
+              },
+              sender: {
+                name: senderName,
+                location: {
+                  address: senderAddress,
+                  coordinate: {
+                    lat: senderLat,
+                    lng: senderLng,
+                  },
+                },
+                phone: senderPhone,
+              },
+            };
+            const packageService: PackageService = new PackageService();
+            var result = await packageService.createPackage(obj);
+            if (!result) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            } else {
+              return {
+                message: "Payment successfully",
+                success: true,
+                data: { responseCode: vnp_Params["vnp_ResponseCode"] },
+              };
+            }
+          } else {
+            const packageClientTemp = await PackageClientTemp.findOneAndUpdate(
+              { _id: idPackageTemp, status: defaultTypeStatus.active },
+              { status: "DELETED" },
+              { new: true }
+            );
+            if (!packageClientTemp) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            }
+            const dataPackage = JSON.parse(JSON.stringify(packageClientTemp));
+            console.log(dataPackage);
+            const {
+              title,
+              description,
+              estimatedDate,
+
+              FK_Transport,
+              FK_SubTransport,
+              FK_SubTransportAwait,
+
+              recipientName,
+              recipientAddress,
+              recipientLat,
+              recipientLng,
+              recipientPhone,
+              prices,
+              distance,
+              weight,
+
+              senderPhone,
+              senderAddress,
+              senderLat,
+              senderLng,
+              typePayment,
+            } = dataPackage;
+            const clientCartServices: ClientCartServices =
+              new ClientCartServices();
+            const resClientCart = await clientCartServices.paymentCart(
+              body.idUser
+            );
+
+            const obj: any = {
+              status: defaultStatusPackage.waitForConfirmation,
+              title,
+              description,
+              estimatedDate,
+              FK_Recipient: body.idUser,
+              FK_Transport,
+              FK_SubTransport,
+              FK_SubTransportAwait,
+              prices,
+              distance,
+              weight,
+              FK_Product: resClientCart.data.products, //Get from cart
+              FK_ProductType: "Standard", //Get from cart
+              recipient: {
+                name: recipientName,
+                location: {
+                  address: recipientAddress,
+                  coordinate: {
+                    lat: recipientLat,
+                    lng: recipientLng,
+                  },
+                },
+                phone: recipientPhone,
+              },
+              sender: {
+                name: user.fullName,
+                location: {
+                  address: senderAddress,
+                  coordinate: {
+                    lat: senderLat,
+                    lng: senderLng,
+                  },
+                },
+                phone: senderPhone,
+              },
+            };
+            const packageService: PackageService = new PackageService();
+            var result = await packageService.createPackage(obj, false);
+            if (!result) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            } else {
+              return {
+                message: "Payment successfully",
+                success: true,
+                data: { responseCode: vnp_Params["vnp_ResponseCode"] },
+              };
+            }
+          }
         }
         return {
           message: "Payment successfully",

@@ -1,8 +1,16 @@
 import { ReturnServices } from "../Interfaces/Services";
-import { defaultStatusPackage, defaultTypeOrders } from "../common/constants";
+import {
+  defaultStatusPackage,
+  defaultTypeOrders,
+  defaultTypeStatus,
+} from "../common/constants";
 import paypal from "paypal-rest-sdk";
 import { User } from "../Models";
-import { Package } from "../Models";
+import MerchantCartServices from "./MerchantCart.Services";
+import PackageService from "./Package.Services";
+import ClientCartServices from "./ClientCart.Services";
+import PackageClientTemp from "../Models/PackageClientTemp";
+import PackageMerchantTemp from "../Models/PackageMerchantTemp";
 
 export default class PaypalService {
   constructor() {}
@@ -16,11 +24,12 @@ export default class PaypalService {
         ? dollar2f
         : dollar2f >= dollar3f
         ? dollar2f
-        : dollar3f + 0.01;
+        : dollar2f + 0.01;
+    console.log(formatTransactions + ' PAYPAL');
     const return_url =
       body.typeOrders == defaultTypeOrders.POINT
         ? `?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
-        : `?price=${formatTransactions}&idUser=${body.idUser}&idPackage=${body.idPackage}&typeOrders=${body.typeOrders}`;
+        : `?price=${formatTransactions}&idUser=${body.idUser}&typeOrders=${body.typeOrders}&cartType=${body.cartType}&idPackageTemp${body.idPackageTemp}`;
     const create_payment_json = {
       intent: "sale",
       payer: {
@@ -35,7 +44,10 @@ export default class PaypalService {
           item_list: {
             items: [
               {
-                name: "Phí vận chuyển",
+                name:
+                  body.typeOrders == defaultTypeOrders.POINT
+                    ? "Phi mua point"
+                    : "Phi van chuyen",
                 sku: "001",
                 price: `${formatTransactions}`,
                 currency: "USD",
@@ -47,7 +59,10 @@ export default class PaypalService {
             currency: "USD",
             total: `${formatTransactions}`,
           },
-          description: "Phí vận chuyển Van Transport",
+          description:
+            body.typeOrders == defaultTypeOrders.POINT
+              ? "Phi mua point Van Transport"
+              : "Phi van chuyen Van Transport",
         },
       ],
     };
@@ -65,6 +80,9 @@ export default class PaypalService {
     const payerId = body.PayerID;
     const paymentId = body.paymentId;
     const price = body.price;
+    const typeCart = body.typeCart;
+    const idPackageTemp = body.idPackageTemp;
+
     const execute_payment_json = {
       payer_id: payerId,
       transactions: [
@@ -88,11 +106,207 @@ export default class PaypalService {
               { new: true }
             );
           } else {
-            await Package.findOneAndUpdate(
-              { _id: body.idPackage, status: defaultStatusPackage.deleted },
-              { status: defaultStatusPackage.waitForConfirmation },
-              { new: true }
-            );
+            // await Package.findOneAndUpdate(
+            //   { _id: body.idPackage, status: defaultStatusPackage.deleted },
+            //   { status: defaultStatusPackage.waitForConfirmation },
+            //   { new: true }
+            // );
+            const user = await User.findById(body.idUser);
+            if (!user) {
+              return {
+                message: "Payment failure",
+                success: false,
+              };
+            }
+            if (typeCart == "MERCHANT") {
+              const packageMerchantTemp =
+                await PackageMerchantTemp.findOneAndUpdate(
+                  { _id: idPackageTemp, status: defaultTypeStatus.active },
+                  { status: defaultTypeStatus.deleted },
+                  { new: true }
+                );
+              if (!packageMerchantTemp) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              }
+              const dataPackage = JSON.parse(
+                JSON.stringify(packageMerchantTemp)
+              );
+              const {
+                title,
+                description,
+                estimatedDate,
+                FK_Address,
+                FK_Transport,
+                FK_SubTransport,
+                FK_SubTransportAwait,
+                recipientAddress,
+                recipientLat,
+                recipientLng,
+                recipientPhone,
+                prices,
+                distance,
+                weight,
+
+                senderName,
+                senderPhone,
+                senderAddress,
+                senderLat,
+                senderLng,
+              } = dataPackage;
+              const merchantCartServices: MerchantCartServices =
+                new MerchantCartServices();
+              const resMerchantCart = await merchantCartServices.paymentCart(
+                body.idUser
+              );
+
+              const obj: any = {
+                status: defaultStatusPackage.waitForConfirmation,
+                title,
+                description,
+                estimatedDate,
+                FK_Recipient: body.idUser,
+                FK_Transport,
+                FK_SubTransport,
+                FK_SubTransportAwait,
+                prices,
+                distance,
+                weight,
+                FK_Product: resMerchantCart.data.products, //Get from cart
+                FK_ProductType: "Standard", //Get from cart
+                recipient: {
+                  name: user.fullName,
+                  location: {
+                    address: recipientAddress,
+                    coordinate: {
+                      lat: recipientLat,
+                      lng: recipientLng,
+                    },
+                  },
+                  phone: recipientPhone,
+                },
+                sender: {
+                  name: senderName,
+                  location: {
+                    address: senderAddress,
+                    coordinate: {
+                      lat: senderLat,
+                      lng: senderLng,
+                    },
+                  },
+                  phone: senderPhone,
+                },
+              };
+              const packageService: PackageService = new PackageService();
+              var result = await packageService.createPackage(obj);
+              if (!result) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              } else {
+                return {
+                  message: "Payment successfully",
+                  success: true,
+                };
+              }
+            } else {
+              const packageClientTemp =
+                await PackageClientTemp.findOneAndUpdate(
+                  { _id: idPackageTemp, status: defaultTypeStatus.active },
+                  { status: defaultTypeStatus.deleted },
+                  { new: true }
+                );
+              if (!packageClientTemp) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              }
+              const dataPackage = JSON.parse(JSON.stringify(packageClientTemp));
+              const {
+                title,
+                description,
+                estimatedDate,
+
+                FK_Transport,
+                FK_SubTransport,
+                FK_SubTransportAwait,
+
+                recipientName,
+                recipientAddress,
+                recipientLat,
+                recipientLng,
+                recipientPhone,
+                prices,
+                distance,
+                weight,
+
+                senderPhone,
+                senderAddress,
+                senderLat,
+                senderLng,
+                typePayment,
+              } = dataPackage;
+              const clientCartServices: ClientCartServices =
+                new ClientCartServices();
+              const resClientCart = await clientCartServices.paymentCart(
+                body.idUser
+              );
+
+              const obj: any = {
+                status: defaultStatusPackage.waitForConfirmation,
+                title,
+                description,
+                estimatedDate,
+                FK_Recipient: body.idUser,
+                FK_Transport,
+                FK_SubTransport,
+                FK_SubTransportAwait,
+                prices,
+                distance,
+                weight,
+                FK_Product: resClientCart.data.products, //Get from cart
+                FK_ProductType: "Standard", //Get from cart
+                recipient: {
+                  name: recipientName,
+                  location: {
+                    address: recipientAddress,
+                    coordinate: {
+                      lat: recipientLat,
+                      lng: recipientLng,
+                    },
+                  },
+                  phone: recipientPhone,
+                },
+                sender: {
+                  name: user.fullName,
+                  location: {
+                    address: senderAddress,
+                    coordinate: {
+                      lat: senderLat,
+                      lng: senderLng,
+                    },
+                  },
+                  phone: senderPhone,
+                },
+              };
+              const packageService: PackageService = new PackageService();
+              var result = await packageService.createPackage(obj, false);
+              if (!result) {
+                return {
+                  message: "Payment failure",
+                  success: false,
+                };
+              } else {
+                return {
+                  message: "Payment successfully",
+                  success: true,
+                };
+              }
+            }
           }
         }
         next(error, payment);
