@@ -155,7 +155,7 @@ export default class TransportSubServices {
 	};
 	public getTransportSub = async (id: string): Promise<ReturnServices> => {
 		try {
-			const transportSub = await TransportSub.findById(id);
+			const transportSub = await TransportSub.findOne({FK_CreateUser:id});
 			if (transportSub) {
 				return {
 					message: 'Successful data retrieval',

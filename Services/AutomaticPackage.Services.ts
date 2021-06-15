@@ -86,25 +86,22 @@ export default class AutomaticPackageServices {
 
 	public automaticSubToSub = async (): Promise<ReturnServices> => {
 		try {
-
-			const newPackage:any=await Package.find({status:defaultStatusPackage.onGoing})
-			newPackage.forEach(async (p:any)=>{
-				p.status=defaultStatusPackage.waitForConfirmation
-				p.isAwait=false
-				await p.save()
-			})
 			const awaitPackages=await AwaitTranPackage.find({
 				status:defaultStatusAwaitPackage.goingClientToSub,
 			})
 			awaitPackages.forEach(async currentPackage=>{
 				currentPackage.packages.forEach(async change=>{
-					change.isAwait=true
-					change.status=defaultStatusPackage.onGoing
-					const findTransportSub= await TransportSub.findById(change.FK_SubTransportAwait)
-					if(findTransportSub)
-					change.historyStatus&&change.historyStatus.push({createAt:new Date(),title:`Your order has arrived at transportsub: ${findTransportSub.name}`})
-					await change.save()
+					const prePackage=await Package.findById(change._id)
+          console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 102 ===> prePackage`, prePackage)
+					if(prePackage)
+					{
+						const findTransportSub= await TransportSub.findById(change.FK_SubTransportAwait)
+            console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 106 ===> findTransportSub`, findTransportSub)
+						prePackage.historyStatus&&prePackage.historyStatus.push({createAt:new Date(),title:`Your order has arrived at transportsub: ${findTransportSub&&findTransportSub.name}`})
+						await prePackage.save()
+					}
 				})
+				currentPackage.status=defaultStatusAwaitPackage.goingSubToSub
 				await currentPackage.save()
 			})
 
@@ -133,7 +130,7 @@ export default class AutomaticPackageServices {
 						prePackage.isAwait=false
 						const findTransportSub= await TransportSub.findById(element.FK_SubTransportAwait)
 						if(findTransportSub)
-						element.historyStatus&&element.historyStatus.push({createAt:new Date(),title:`Your order is being delivered to you: ${findTransportSub.name}`})
+						prePackage.historyStatus&&prePackage.historyStatus.push({createAt:new Date(),title:`Your order is being delivered to you: ${findTransportSub.name}`})
 						await prePackage.save()
 					}
 				});
