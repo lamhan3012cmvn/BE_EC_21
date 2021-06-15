@@ -24,7 +24,7 @@ export default class AutomaticController extends Controller {
 		{
 			path: `/${AutomaticPath.AUTOMATIC_SUB_TO_PACKAGE}`,
 			method: Methods.GET,
-			handler: this.handleAutomaticPackageToSub,
+			handler: this.handleAutomaticSubToPackage,
 			localMiddleware: [
 				TokenServices.verify,
 				// RoleInstance.getInstance().isRole([Role.ADMIN])
@@ -57,7 +57,27 @@ export default class AutomaticController extends Controller {
 			const _automaticPackage: AutomaticPackageServices =
 				new AutomaticPackageServices();
 			const result = await _automaticPackage.automaticPackageToSub();
-			console.log('dbc');
+			if (result.success) {
+				super.sendSuccess(res, result.data!, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (err) {
+			console.log(err);
+			super.sendError(res);
+		}
+	}
+	async handleAutomaticSubToPackage(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		//Handle
+		try {
+			console.log('abc');
+			const _automaticPackage: AutomaticPackageServices =
+				new AutomaticPackageServices();
+			const result = await _automaticPackage.automaticSubToPackage();
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {
@@ -75,15 +95,9 @@ export default class AutomaticController extends Controller {
 	): Promise<void> {
 		//Handle
 		try {
-			console.log(
-				'===============================Start handleAutomaticSubToSub========================='
-			);
 			const _automaticPackage: AutomaticPackageServices =
 				new AutomaticPackageServices();
 			const result = await _automaticPackage.automaticSubToSub();
-			console.log(
-				'===============================End handleAutomaticSubToSub==========================='
-			);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {

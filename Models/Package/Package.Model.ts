@@ -25,7 +25,7 @@ export default {
 
   FK_Recipient:defaultModel.stringRef,
   isMerchantSend:defaultModel.boolean,
-
+  historyStatus:defaultModel.array,
   recipient:{
     name:defaultModel.stringR,
     phone:defaultModel.stringR,

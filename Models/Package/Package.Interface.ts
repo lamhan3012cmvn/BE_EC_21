@@ -1,5 +1,9 @@
 import { Document } from 'mongoose';
 
+export interface IHistoryStatus{
+  createAt:Date,
+  title:string
+}
 export interface ILocation {
 	address: string;
 	coordinate: { lat: string; lng: string };
@@ -25,7 +29,7 @@ export interface IPackage {
   FK_SubTransport:string,
 	FK_SubTransportAwait:string,
 	isMerchantSend?:boolean,
-
+	historyStatus?:Array<IHistoryStatus>,
   status?:string,
 	isAwait?:boolean,
 	prices?:string,

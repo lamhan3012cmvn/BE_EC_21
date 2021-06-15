@@ -18,17 +18,12 @@ export default class AutomaticPackageServices {
 
 	public automaticPackageToSub = async (): Promise<ReturnServices> => {
 		try {
-
-			const startDay = new Date().setHours(0, 0, 0, 0);
-
-			const endDay = new Date().setHours(23, 59, 59, 59);
-
 			const autoP = await Package.aggregate([
 				{
 					$match: {
 						isAwait: false,
 						status: `${defaultStatusPackage.waitForConfirmation}`,
-						createdAt: { $lt: new Date(endDay) }
+						// createdAt: { $lt: new Date(endDay) }
 					}
 				},
 				{
@@ -42,7 +37,6 @@ export default class AutomaticPackageServices {
 				}
 			]);
 
-
 			const currentPackage = await Promise.all(
 				autoP.map(async current => {
 					const query = current._id;
@@ -52,20 +46,13 @@ export default class AutomaticPackageServices {
 						FK_Transport: query.FK_Transport,
 						isAwait: false,
 						status: `${defaultStatusPackage.waitForConfirmation}`,
-						createdAt: { $lt: new Date(endDay) }
+						// createdAt: { $lt: new Date(endDay) }
 					});
 					return resPack;
 				})
 			);
 
-      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 62 ===> currentPackage`, currentPackage)
 			currentPackage.forEach(async current=>{
-				current.forEach(async change=>{
-					change.isAwait=true
-					change.status=defaultStatusPackage.onGoing
-					await change.save()
-				})
-
 				const obj={
 					packages:current,
 					status:defaultStatusAwaitPackage.goingClientToSub,
@@ -73,14 +60,23 @@ export default class AutomaticPackageServices {
 					FK_from:current[0].FK_SubTransport,
 					FK_to:current[0].FK_SubTransportAwait
 				}
+				current.forEach(async change=>{
+					change.isAwait=true
+					change.status=defaultStatusPackage.onGoing
+					const findTransportSub= await TransportSub.findById(obj.FK_from)
+					if(findTransportSub)
+					change.historyStatus&&change.historyStatus.push({createAt:new Date(),title:`Your order has arrived at transportsub: ${findTransportSub.name}`})
+					await change.save()
+				})
+
+				
 				const newAwaitPackage=new AwaitTranPackage(obj)
-				newAwaitPackage.historyStatus.push(`Your order has arrived at transportsub 1`)
 				newAwaitPackage.save()
 			})
 			return {
 				message: 'Successful updated transport',
 				success: true,
-				data:currentPackage
+				data:{}
 			};
 		} catch (e) {
 			console.log(e);
@@ -91,31 +87,31 @@ export default class AutomaticPackageServices {
 	public automaticSubToSub = async (): Promise<ReturnServices> => {
 		try {
 
-			const startDay = new Date().setHours(0, 0, 0, 0);
-
-			const endDay = new Date(new Date().getDay()-2)
-      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 94 ===> endDay`, endDay)
+			const newPackage:any=await Package.find({status:defaultStatusPackage.onGoing})
+			newPackage.forEach(async (p:any)=>{
+				p.status=defaultStatusPackage.waitForConfirmation
+				p.isAwait=false
+				await p.save()
+			})
 			const awaitPackages=await AwaitTranPackage.find({
 				status:defaultStatusAwaitPackage.goingClientToSub,
-				// createdAt: { $lt: new Date(endDay) },
 			})
-      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 99 ===> awaitPackages`, awaitPackages)
 			awaitPackages.forEach(async currentPackage=>{
-      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 101 ===> currentPackage`, currentPackage)
-
-				currentPackage.historyStatus.push("Your order has arrived at transportsub 2")
-				currentPackage.status=defaultStatusAwaitPackage.goingSubToSub
+				currentPackage.packages.forEach(async change=>{
+					change.isAwait=true
+					change.status=defaultStatusPackage.onGoing
+					const findTransportSub= await TransportSub.findById(change.FK_SubTransportAwait)
+					if(findTransportSub)
+					change.historyStatus&&change.historyStatus.push({createAt:new Date(),title:`Your order has arrived at transportsub: ${findTransportSub.name}`})
+					await change.save()
+				})
 				await currentPackage.save()
 			})
-			console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 101 ===> awaitPackages`, awaitPackages)
 
-
-
-			
 			return {
 				message: 'Successful updated transport',
 				success: true,
-				data:awaitPackages
+				data:{}
 			};
 		} catch (e) {
 			console.log(e);
@@ -126,35 +122,30 @@ export default class AutomaticPackageServices {
 
 	public automaticSubToPackage = async (): Promise<ReturnServices> => {
 		try {
-
-			
-			const startDay = new Date().setHours(0, 0, 0, 0);
-
-			const endDay = new Date(new Date().getDay()-2)
-      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 94 ===> endDay`, endDay)
 			const awaitPackages=await AwaitTranPackage.find({
 				status:defaultStatusAwaitPackage.goingSubToSub,
-				// createdAt: { $lt: new Date(endDay) },
 			})
-      console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 99 ===> awaitPackages`, awaitPackages)
 			awaitPackages.forEach(async currentPackage=>{
 				currentPackage.packages.forEach(async element => {
 					const prePackage=await Package.findById(element._id)
 					if(prePackage)
 					{
 						prePackage.isAwait=false
-						// await prePackage.save()
+						const findTransportSub= await TransportSub.findById(element.FK_SubTransportAwait)
+						if(findTransportSub)
+						element.historyStatus&&element.historyStatus.push({createAt:new Date(),title:`Your order is being delivered to you: ${findTransportSub.name}`})
+						await prePackage.save()
 					}
 				});
 				currentPackage.status=defaultStatusAwaitPackage.goingSubToClient
-				currentPackage.historyStatus.push("Your order is being delivered to you")
 				currentPackage.isDone=true
-				// await currentPackage.save()
+				await currentPackage.save()
 			})
-			console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 101 ===> awaitPackages`, awaitPackages)
-
-
-			return { message: 'An error occurred', success: false };
+			return {
+				message: 'Successful updated transport',
+				success: true,
+				data:awaitPackages
+			};
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };

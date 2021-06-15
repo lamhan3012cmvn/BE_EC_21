@@ -178,7 +178,7 @@ export default class MerchantCartServices {
 						}
 					);
 					const merchant=await Merchant.findById(currentProduct.FK_merchant)
-
+					
 					return {
 						product: product,
 						quantity: p.quantity,
