@@ -357,6 +357,8 @@ export default class UserService {
 			})
 				//canReceive
 				// canDelete
+
+			console.log(resData.length);
 			return {
 				message: 'Get all order by Status',
 				success: true,

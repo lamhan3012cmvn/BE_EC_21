@@ -50,6 +50,7 @@ export default class PackageService {
   ): Promise<ReturnServices> => {
     try {
       const {
+        status,
         title,
         description,
         estimatedDate,
@@ -131,6 +132,7 @@ export default class PackageService {
         weight,
         distance,
         isMerchantSend,
+        status,
       };
 
       const newPackage = new Package(obj);

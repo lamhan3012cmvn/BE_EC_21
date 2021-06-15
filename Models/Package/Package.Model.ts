@@ -16,7 +16,7 @@ export default {
   FK_SubTransport:defaultModel.stringRef,
   FK_SubTransportAwait:defaultModel.stringRef,
 
-  status:{...defaultModel.string,default:defaultStatusPackage.waitForConfirmation},
+  status: defaultModel.stringR,
 
   isAwait:defaultModel.booleanFalse,
 

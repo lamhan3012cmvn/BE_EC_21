@@ -221,6 +221,7 @@ export default class MerchantCartController extends Controller {
           );
 
           const obj: any = {
+            status: defaultStatusPackage.waitForConfirmation,
             title,
             description,
             estimatedDate,

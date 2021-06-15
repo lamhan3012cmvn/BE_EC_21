@@ -191,6 +191,7 @@ export default class ClientCartController extends Controller {
           const resClientCart = await clientCartServices.paymentCart(idUser);
 
           const obj: any = {
+            status: defaultStatusPackage.waitForConfirmation,
             title,
             description,
             estimatedDate,
