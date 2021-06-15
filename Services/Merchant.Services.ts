@@ -107,19 +107,19 @@ export default class MerchantService {
     body: any
   ): Promise<ReturnServices> => {
     try {
-      const user = await User.findById(idUser);
-      if (!user) {
-        return {
-          message: "User does not exists",
-          success: false,
-        };
-      }
-      if (user.role != defaultRoleAccount.ADMIN) {
-        return {
-          message: "Your role does not ADMIN",
-          success: false,
-        };
-      }
+      // const user = await User.findById(idUser);
+      // if (!user) {
+      //   return {
+      //     message: "User does not exists",
+      //     success: false,
+      //   };
+      // }
+      // if (user.role != defaultRoleAccount.ADMIN) {
+      //   return {
+      //     message: "Your role does not ADMIN",
+      //     success: false,
+      //   };
+      // }
       const merchant = await Merchant.findOneAndUpdate(
         { _id: body.idMerchant },
         { status: body.status },
