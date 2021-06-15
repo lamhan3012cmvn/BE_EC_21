@@ -234,21 +234,8 @@ export default class MerchantService {
     }
   };
 
-  public getMerchantByStatus = async (idUser: string, status: string): Promise<ReturnServices> => {
+  public getMerchantByStatus = async ( status: string): Promise<ReturnServices> => {
     try {
-      const user = await User.findById(idUser);
-      if (!user) {
-        return {
-          message: 'User does not exists',
-          success: false,
-        };
-      }
-      if (user.role != defaultRoleAccount.ADMIN) {
-        return {
-          message: 'Your role does not ADMIN',
-          success: false,
-        };
-      }
       const merchant = await Merchant.find({
         status: status,
       });
