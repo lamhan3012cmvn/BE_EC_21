@@ -420,6 +420,47 @@ export default class TransportServices {
 		}
 	};
 
+	// adminUpdateTransport
+	public adminUpdateTransport = async (
+		idSub: string,
+		body: any
+	): Promise<ReturnServices> => {
+		try {
+			const transport = await Transport.findOneAndUpdate(
+        { _id: body.idTransport },
+        { status: body.status },
+        { new: true }
+      );
+      if (!transport) {
+        return {
+          message: "Transport does not exists",
+          success: false,
+        };
+      }
+      return {
+        message: "Update transport successfully",
+        success: true,
+        data: transport,
+      };
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+	public getAdminTransportByStatus = async (
+		status: string,
+	): Promise<ReturnServices> => {
+		try {
+			const transport=await Transport.find({status})
+			return {
+				message: 'Get transport Success', success: true,data:transport 
+			}
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+
 	// private findSubTransport= (SubPackage:Array<ITransportSubDocument>,currentLocation:ILocation):ITransportSubDocument|null=>{
 	// 	if(SubPackage.length<=0) return null
 	// 	const minSub={current:SubPackage[0],value:getDistanceFromLatLonInKm(+SubPackage[0].location.coordinate.lat,+SubPackage[0].location.coordinate.lng,+currentLocation.coordinate.lat,+currentLocation.coordinate.lng)}

@@ -26,6 +26,16 @@ export default class AdminController extends Controller {
 			]
 		},
 		{
+			path: `/${AdminPath.APPROVE_TRANSPORT}`,
+			method: Methods.POST,
+			handler: this.handleApproveTransport,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.ADMIN]),
+				Validate.body(schemaAdmin.updateTransport)
+			]
+		},
+		{
 			path: `/${AdminPath.REJECT_MERCHANT}`,
 			method: Methods.POST,
 			handler: this.handleRejectMerchant,
@@ -33,6 +43,16 @@ export default class AdminController extends Controller {
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([Role.ADMIN]),
 				Validate.body(schemaAdmin.updateMerchant)
+			]
+		},
+		{
+			path: `/${AdminPath.REJECT_TRANSPORT}`,
+			method: Methods.POST,
+			handler: this.handleRejectTransport,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.ADMIN]),
+				Validate.body(schemaAdmin.updateTransport)
 			]
 		},
 		{
@@ -46,9 +66,28 @@ export default class AdminController extends Controller {
 			]
 		},
 		{
+			path: `/${AdminPath.CANCEL_TRANSPORT}`,
+			method: Methods.POST,
+			handler: this.handleCancelTransport,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.ADMIN]),
+				Validate.body(schemaAdmin.updateTransport)
+			]
+		},
+		{
 			path: `/${AdminPath.GET_MERCHANT_BY_STATUS}`,
 			method: Methods.GET,
 			handler: this.handleGetMerchantByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.ADMIN])
+			]
+		},
+		{
+			path: `/${AdminPath.GET_TRANSPORT_BY_STATUS}`,
+			method: Methods.GET,
+			handler: this.handleGetTransportByStatus,
 			localMiddleware: [
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([Role.ADMIN])
@@ -60,7 +99,7 @@ export default class AdminController extends Controller {
 			handler: this.handleGetTransportByAddress,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.ADMIN])
+				RoleInstance.getInstance().isRole([])
 			]
 		},
 		{
@@ -69,7 +108,7 @@ export default class AdminController extends Controller {
 			handler: this.handleGetTransportByAddressClient,
 			localMiddleware: [
 				TokenServices.verify,
-				RoleInstance.getInstance().isRole([Role.ADMIN])
+				RoleInstance.getInstance().isRole([])
 			]
 		}
 	];
@@ -158,6 +197,97 @@ export default class AdminController extends Controller {
 			const status = req.query.status;
 			const merchantServices: MerchantServices = new MerchantServices();
 			const result = await merchantServices.getMerchantByStatus(status);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
+
+	async handleApproveTransport(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const idUser = req.value.body.token.data;
+			let transportInfo = req.value.body;
+			transportInfo.status = defaultTypeStatus.active;
+			const transportService: TransportServices = new TransportServices();
+			const result = await transportService.adminUpdateTransport(
+				idUser,
+				transportInfo
+			);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
+
+	async handleRejectTransport(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const idUser = req.value.body.token.data;
+			let transportInfo = req.value.body;
+			transportInfo.status = defaultTypeStatus.deleted;
+			const transportService: TransportServices = new TransportServices();
+			const result = await transportService.adminUpdateTransport(
+				idUser,
+				transportInfo
+			);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
+
+	async handleCancelTransport(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const idUser = req.value.body.token.data;
+			let transportInfo = req.value.body;
+			transportInfo.status = defaultTypeStatus.inActive;
+			const transportService: TransportServices = new TransportServices();
+			const result = await transportService.adminUpdateTransport(
+				idUser,
+				transportInfo
+			);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
+
+	async handleGetTransportByStatus(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const status = req.query.status;
+			const transportSevices: TransportServices = new TransportServices();
+			const result = await transportSevices.getAdminTransportByStatus(status);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
