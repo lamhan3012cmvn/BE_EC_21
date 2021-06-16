@@ -1,3 +1,4 @@
+import { ReturnServices } from './../Interfaces/Services';
 import { ITransportSub } from './../Models/TransportSub/TransportSub.Interface';
 import {
 	defaultRoleAccount,
@@ -7,63 +8,89 @@ import {
 } from './../common/constants';
 import { ITransport } from '../Models/Transport/Transport.interface';
 import { Package, Transport, TransportSub, User } from '../Models/index';
-import { ReturnServices } from '../Interfaces/Services';
+import { getDistanceFromLatLonInKm } from '../common/helper';
 import TransportSubServices from './TransportSub.Services';
 import UserService from './User.Services';
-import { getDistanceFromLatLonInKm } from '../common/helper';
 
 export default class TransportServices {
 	constructor() {}
 
 	public packageStatistics = async (
+		idUser: string,
 		period: number,
-		type:string
+		type: string
 	): Promise<ReturnServices> => {
 		try {
 			const currentTime = new Date();
-			let findPackage=[]
-			if(type==="daily"){
-				// dayOfWeek
-				const 
-				startTime = new Date(
+			let findPackage = [];
+			const _transport = await Transport.findOne({ FK_createUser: idUser });
+			if (!_transport)
+				return {
+					message: 'Dont find transport',
+					success: false
+				};
+
+			if (type === 'daily') {
+				const resDaily = new Array(period).fill(0);
+				const startTime = new Date(
 					new Date().setMonth(currentTime.getDay() - period)
 				);
 				findPackage = await Package.aggregate([
 					{
 						$match: {
 							createdAt: { $gt: startTime },
-							status: defaultStatusPackage.receive
+							status: defaultStatusPackage.receive,
+							FK_Transport: _transport._id
 						}
 					},
 					{
 						$project: {
-							month: { $dayOfWeek: { $toDate: '$createdAt' } },
+							day: { $dayOfWeek: { $toDate: '$createdAt' } }
 						}
 					},
 					{
 						$group: {
-							_id: { month: '$month' },
+							_id: { day: '$day' },
 							orderNumber: { $sum: 1 }
 						}
 					}
 				]);
-			}
-			else if(type==="month")
-			{
-				const 
-				startTime = new Date(
+				const lineChart = findPackage.reduce(
+					(t, v) => {
+						console.log(t.chart)
+						const day = v._id.day;
+						t.chart[day-1]=t.chart[day-1]+v.orderNumber
+						t.total=t.total+v.orderNumber
+						return t;
+					},
+					// 
+					{ chart: new Array(7).fill(0), total: 0 }
+				);
+				const resChart = lineChart.chart.map((elem: any) => {
+					return ((elem / lineChart.total) * 100).toFixed(2);
+				});
+
+				return {
+					message: 'Get all order by packageStatistics',
+					success: true,
+					data: { lineChart: lineChart.chart, pieChart: resChart }
+				};
+			} else if (type === 'month') {
+				const startTime = new Date(
 					new Date().setMonth(currentTime.getMonth() - period)
 				);
-			 	findPackage = await Package.aggregate([
+				
+				findPackage = await Package.aggregate([
 					{
 						$match: {
 							createdAt: { $gt: startTime },
-							status: defaultStatusPackage.receive
+							status: defaultStatusPackage.receive,
+							FK_Transport: _transport._id
 						}
 					},
 					{
 						$project: {
-							month: { $month: { $toDate: '$createdAt' } },
+							month: { $month: { $toDate: '$createdAt' } }
 						}
 					},
 					{
@@ -73,37 +100,33 @@ export default class TransportServices {
 						}
 					}
 				]);
+				let arr=[]
+				if(+period===3)
+					arr=new Array(3).fill(0)
+				else arr=new Array(12).fill(0)
+				const currentMonth=new Date().getMonth()
+				const lineChart = findPackage.reduce(
+					(t, v) => {
+						const month = v._id.month;
+						t.chart[month-currentMonth]=t.chart[month-currentMonth]+v.orderNumber
+						t.total = t.total + v.orderNumber;
+						return t;
+					},
+					{ chart: arr, total: 0 }
+				);
+				const resChart = lineChart.chart.map((elem: any) => {
+					return ((elem / lineChart.total) * 100).toFixed(2);
+				});
+
+				return {
+					message: 'Get all order by packageStatistics',
+					success: true,
+					data: { lineChart: lineChart.chart.reverse(), pieChart: resChart.reverse() }
+				};
 			}
-			
-			const sortData=findPackage.sort((a,b)=>a._id.month-b._id.month)
-			const lineChart=sortData.reduce((t,v)=>{
-				const month=v._id.month
-				const findIndex=t.chart.findIndex((current:any)=>{
-					return current.month===month
-				})
-				if(findIndex===-1)
-				{
-					t.chart.push(v.orderNumber)
-				}else{
-					// t.chart[findIndex].orderNumber=t.chart[findIndex].orderNumber+v.orderNumber
-				}
-				t.total=t.total+v.orderNumber
-				return t
-			},{chart:[],total:0})
-			const resChart=lineChart.chart.map((elem:any)=>{
-					return (elem/lineChart.total*100).toFixed(2)
-			})
-
-
-			console.log(resChart)
-			//canReceive
-			// canDelete
 			return {
-				message: 'Get all order by packageStatistics',
-				success: true,
-				data: {lineChart:lineChart.chart,
-					pieChart:resChart
-				}
+				message: 'dont find by packageStatistics',
+				success: false,
 			};
 		} catch (e) {
 			console.log(e);
@@ -231,7 +254,7 @@ export default class TransportServices {
 	): Promise<ReturnServices> => {
 		try {
 			const transport = await Transport.findOne({
-				FK_createUser: idUserTransport,
+				FK_createUser: idUserTransport
 			});
 			if (!transport) {
 				return {
@@ -242,12 +265,14 @@ export default class TransportServices {
 
 			for (let index = 0; index < transport.typeSupport.length; index++) {
 				if (transport.typeSupport[index].title === data.title) {
-					transport.typeSupport[index].price[data.type == 'km' ? 'km' : 'kg'] = data.price;
-					transport.typeSupport[index].price[data.type == 'km' ? 'kg' : 'km'] = '0';
+					transport.typeSupport[index].price[data.type == 'km' ? 'km' : 'kg'] =
+						data.price;
+					transport.typeSupport[index].price[data.type == 'km' ? 'kg' : 'km'] =
+						'0';
 					transport.typeSupport[index].available = data.available
 						? defaultTypeStatus.active
 						: defaultTypeStatus.inActive;
-				};
+				}
 			}
 
 			await transport.save();
@@ -691,12 +716,10 @@ export default class TransportServices {
 
 							const distance = km.toFixed(0);
 							console.log(
-								`LHA:  ===> file: Transport.Services.ts ===> line 502 ===> distance`,
 								distance
 							);
 							const price = +typePrice.price.km * +distance;
 							console.log(
-								`LHA:  ===> file: Transport.Services.ts ===> line 504 ===> price`,
 								price
 							);
 							newGroup.push({

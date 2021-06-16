@@ -65,10 +65,39 @@ export default class MerchantController extends Controller {
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([Role.MERCHANT])
 			]
+		},
+		{
+			path: `/${MerchantPath.PACKAGE_STATISTICS}`,
+			method: Methods.GET,
+			handler: this.handlePackageStatistics,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.MERCHANT])
+			]
 		}
 	];
 	constructor() {
 		super();
+	}
+	async	 handlePackageStatistics(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	):Promise<void>{
+		try {
+			const idUser=req.value.body.token.data
+			const {period,type}=req.query
+			const _merchant: MerchantServices = new MerchantServices();
+			const result = await _merchant.packageStatistics(idUser,period,type);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (e) {
+			console.log(e);
+			super.sendError(res);
+		}
 	}
 	async handleCancelPackage(
 		req: IValidateRequest | any,

@@ -47,7 +47,8 @@ export const MerchantPath = {
   GET_BY_ID: "GetById",
   GET_ORDER:"OrderByStatus",
   Cancel_Package:"CancelPackage",
-  Receive_Package:"ReceivePackage"
+  Receive_Package:"ReceivePackage",
+  PACKAGE_STATISTICS:"PackageStatistics"
 };
 
 export const CategoryPath = {

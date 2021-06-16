@@ -295,4 +295,125 @@ export default class MerchantService {
 			return { message: 'An error occurred', success: false };
 		}
 	}
+
+  public packageStatistics = async (
+		idUser: string,
+		period: number,
+		type: string
+	): Promise<ReturnServices> => {
+		try {
+			const currentTime = new Date();
+			let findPackage = [];
+      const _merchant=await Merchant.findOne({FK_createUser:idUser})
+			if(!_merchant) 
+				return {
+					message: 'Dont find merchant',
+					success: false,
+				};
+			if (type === 'daily') {
+				const resDaily = new Array(period).fill(0);
+				const startTime = new Date(
+					new Date().setMonth(currentTime.getDay() - period)
+				);
+				findPackage = await Package.aggregate([
+					{
+						$match: {
+							createdAt: { $gt: startTime },
+							status: defaultStatusPackage.receive,
+							isMerchantSend:true,
+              "FK_Product.FK_Merchant":_merchant._id
+						}
+					},
+					{
+						$project: {
+							day: { $dayOfWeek: { $toDate: '$createdAt' } }
+						}
+					},
+					{
+						$group: {
+							_id: { day: '$day' },
+							orderNumber: { $sum: 1 }
+						}
+					}
+				]);
+				const lineChart = findPackage.reduce(
+					(t, v) => {
+						console.log(t.chart)
+						const day = v._id.day;
+						t.chart[day-1]=t.chart[day-1]+v.orderNumber
+						t.total=t.total+v.orderNumber
+						return t;
+					},
+					// 
+					{ chart: new Array(7).fill(0), total: 0 }
+				);
+				const resChart = lineChart.chart.map((elem: any) => {
+					return ((elem / lineChart.total) * 100).toFixed(2);
+				});
+
+				return {
+					message: 'Get all order by packageStatistics',
+					success: true,
+					data: { lineChart: lineChart.chart, pieChart: resChart }
+				};
+			} else if (type === 'month') {
+				const startTime = new Date(
+					new Date().setMonth(currentTime.getMonth() - period)
+				);
+				
+				findPackage = await Package.aggregate([
+					{
+						$match: {
+							createdAt: { $gt: startTime },
+							status: defaultStatusPackage.receive,
+							isMerchantSend:true,
+              "FK_Product.FK_Merchant":_merchant._id
+						}
+					},
+					{
+						$project: {
+							month: { $month: { $toDate: '$createdAt' } }
+						}
+					},
+					{
+						$group: {
+							_id: { month: '$month' },
+							orderNumber: { $sum: 1 }
+						}
+					}
+				]);
+				let arr=[]
+				if(+period===3)
+					arr=new Array(3).fill(0)
+				else arr=new Array(12).fill(0)
+				const currentMonth=new Date().getMonth()
+				const lineChart = findPackage.reduce(
+					(t, v) => {
+						const month = v._id.month;
+						t.chart[month-currentMonth]=t.chart[month-currentMonth]+v.orderNumber
+						t.total = t.total + v.orderNumber;
+						return t;
+					},
+					{ chart: arr, total: 0 }
+				);
+				const resChart = lineChart.chart.map((elem: any) => {
+					return ((elem / lineChart.total) * 100).toFixed(2);
+				});
+
+				return {
+					message: 'Get all order by packageStatistics',
+					success: true,
+					data: { lineChart: lineChart.chart.reverse(), pieChart: resChart.reverse() }
+				};
+			}
+			return {
+				message: 'dont find by packageStatistics',
+				success: false,
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+  
 }
