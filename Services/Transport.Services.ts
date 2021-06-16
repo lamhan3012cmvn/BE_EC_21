@@ -32,7 +32,7 @@ export default class TransportServices {
 					{
 						$match: {
 							createdAt: { $gt: startTime },
-							// status: defaultStatusPackage.receive
+							status: defaultStatusPackage.receive
 						}
 					},
 					{
@@ -47,7 +47,6 @@ export default class TransportServices {
 						}
 					}
 				]);
-        console.log(`LHA:  ===> file: Transport.Services.ts ===> line 50 ===> findPackage`, findPackage)
 			}
 			else if(type==="month")
 			{
@@ -59,7 +58,7 @@ export default class TransportServices {
 					{
 						$match: {
 							createdAt: { $gt: startTime },
-							// status: defaultStatusPackage.receive
+							status: defaultStatusPackage.receive
 						}
 					},
 					{
@@ -74,7 +73,6 @@ export default class TransportServices {
 						}
 					}
 				]);
-          console.log(`LHA:  ===> file: Transport.Services.ts ===> line 77 ===> findPackage`, findPackage)
 			}
 			
 			const sortData=findPackage.sort((a,b)=>a._id.month-b._id.month)

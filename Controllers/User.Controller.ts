@@ -113,7 +113,7 @@ export default class UserController extends Controller {
 		{
 			path: `/${UserPath.Cancel_Package}`,
 			method: Methods.GET,
-			handler: this.handleGetOrderByStatus,
+			handler: this.handleCancelPackage,
 			localMiddleware: [
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([])
@@ -121,7 +121,7 @@ export default class UserController extends Controller {
 		},{
 			path: `/${UserPath.Receive_Package}`,
 			method: Methods.GET,
-			handler: this.handleGetOrderByStatus,
+			handler: this.handleReceivePackage,
 			localMiddleware: [
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([])
@@ -141,7 +141,7 @@ export default class UserController extends Controller {
 			const idUser = req.value.body.token.data;
 			const {idPackage} = req.query;
 			const userServices: UserServices = new UserServices();
-			const result = await userServices.cancelPackage(idUser, idPackage);
+			const result = await userServices.cancelPackage(idPackage,idUser);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {

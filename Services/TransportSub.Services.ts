@@ -35,8 +35,8 @@ export default class TransportSubServices {
 				await _user.save()
 			}
 			return {
-				message: 'Dont find package receive',
-				success: false,
+				message: 'Successfully receive package',
+				success: true,
 			};
 		} catch (e) {
 			console.log(e);

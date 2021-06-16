@@ -79,7 +79,6 @@ export default class TransportSubController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			const idUser = req.value.body.token.data;
 			const {idPackage} = req.query;
 			const transportSub: TransportSubServices = new TransportSubServices();
 			const result = await transportSub.cancelPackage(idPackage);
