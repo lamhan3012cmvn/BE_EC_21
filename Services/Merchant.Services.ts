@@ -260,4 +260,39 @@ export default class MerchantService {
       return null
     }
   };
+
+	public cancelPackage=async (idPackage:string):Promise<ReturnServices>=>{
+		try {
+			
+			const _package = await Package.findOne(
+				{
+					_id: idPackage,
+					isAwait: false,
+					status:defaultStatusPackage.waitForConfirmation
+				}
+			)
+				if(!_package) 
+			return {
+				message: 'Dont find package receive',
+				success: false,
+			};
+
+			_package.status=defaultStatusPackage.cancel
+			_package.historyStatus&&_package.historyStatus.push({createAt:new Date(),title:"Order has been delivered successfully. Thank you for using the service"})
+			await _package.save()
+			const _user=await User.findById(_package.FK_Recipient)
+      if(_user&&_package.prices)
+			{
+				_user.point=_user.point+(+_package.prices||0)
+				await _user.save()
+			}
+			return {
+				message: 'Dont find package receive',
+				success: false,
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	}
 }

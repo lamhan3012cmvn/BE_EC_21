@@ -74,6 +74,8 @@ export const defaultStatusPackage={
   onGoing:"ON_GOING",
   delivered:"DELIVERED",
   deleted: "DELETED",
+  receive:"RECEIVE",
+  cancel:"CANCEL"
 }
 
 export const defaultStatusAwaitPackage={

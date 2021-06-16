@@ -1,4 +1,4 @@
-import {  Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import Controller, { Methods } from './Controller';
 import TokenServices from '../Services/Token.Services';
 import { AuthPath } from '../common/RoutePath';
@@ -6,6 +6,8 @@ import AuthService from '../Services/Auth.Services';
 import Validate from '../Validates/Validate';
 import schemaAuth from '../Validates/Auth.Validate';
 import { IValidateRequest } from '../common/DefineRequest';
+import { defaultRoleAccount as Role } from '../common/constants';
+import RoleInstance from '../common/RoleInstance';
 export default class AuthController extends Controller {
 	path = '/Auth';
 	routes = [
@@ -25,7 +27,10 @@ export default class AuthController extends Controller {
 			path: `/${AuthPath.REGISTER_STAFF}`,
 			method: Methods.POST,
 			handler: this.handleRegisterStaff,
-			localMiddleware: [Validate.body(schemaAuth.registerStaff)]
+			localMiddleware: [
+				Validate.body(schemaAuth.registerStaff),
+				RoleInstance.getInstance().isRole([Role.TRANSPORT])
+			]
 		},
 		{
 			path: `/${AuthPath.FORGOT_PASSWORD}`,
@@ -37,7 +42,10 @@ export default class AuthController extends Controller {
 			path: `/${AuthPath.CHANGE_PASSWORD}`,
 			method: Methods.PUT,
 			handler: this.handleChangePassword,
-			localMiddleware: [TokenServices.verify,Validate.body(schemaAuth.changePassword)]
+			localMiddleware: [
+				TokenServices.verify,
+				Validate.body(schemaAuth.changePassword)
+			]
 		},
 		{
 			path: `/${AuthPath.VERIFY}`,
@@ -50,7 +58,6 @@ export default class AuthController extends Controller {
 		super();
 	}
 
-	
 	async handleLogin(
 		req: IValidateRequest | any,
 		res: Response,
@@ -84,7 +91,12 @@ export default class AuthController extends Controller {
 		try {
 			const { email, password, phone, fullName }: any = req.value.body;
 			const authService: AuthService = new AuthService();
-			const result = await authService.register(email,password,phone,fullName);
+			const result = await authService.register(
+				email,
+				password,
+				phone,
+				fullName
+			);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {
@@ -101,9 +113,17 @@ export default class AuthController extends Controller {
 	): Promise<void> {
 		//Handle
 		try {
-			const { email, password, phone, fullName,image }: any = req.value.body;
+			const idUserTransport=req.value.body.token
+			const { email, password, phone, fullName, image }: any = req.value.body;
 			const authService: AuthService = new AuthService();
-			const result = await authService.registerStaff(email,password,phone,fullName,image);
+			const result = await authService.registerStaff(
+				idUserTransport,
+				email,
+				password,
+				phone,
+				fullName,
+				image
+			);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {
@@ -114,13 +134,13 @@ export default class AuthController extends Controller {
 		}
 	}
 	async handleForgotPassword(
-		req: IValidateRequest|any,
+		req: IValidateRequest | any,
 		res: Response,
 		next: NextFunction
 	): Promise<void> {
 		//Handle
-		try{
-			const {email}=req.value.body
+		try {
+			const { email } = req.value.body;
 			const authService: AuthService = new AuthService();
 			const result = await authService.forgotPassword(email);
 			if (result.success) {
@@ -128,7 +148,7 @@ export default class AuthController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		}catch(e){
+		} catch (e) {
 			super.sendError(res);
 		}
 		super.sendSuccess(res, {}, 'handleForgotPassword');
@@ -140,9 +160,9 @@ export default class AuthController extends Controller {
 	): Promise<void> {
 		//Handle
 		try {
-			const { oldPassword,newPassword ,token}: any = req.value.body;
+			const { oldPassword, newPassword, token }: any = req.value.body;
 			const authService: AuthService = new AuthService(token.data);
-			const result = await authService.changePassword(oldPassword,newPassword);
+			const result = await authService.changePassword(oldPassword, newPassword);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {
@@ -153,7 +173,7 @@ export default class AuthController extends Controller {
 		}
 	}
 	async handleVerifyAccount(
-		req: IValidateRequest|any,
+		req: IValidateRequest | any,
 		res: Response,
 		next: NextFunction
 	): Promise<void> {
@@ -161,7 +181,7 @@ export default class AuthController extends Controller {
 		try {
 			const { email, otp }: any = req.value.body;
 			const authService: AuthService = new AuthService(req.value.param);
-			const result = await authService.verify(email,otp);
+			const result = await authService.verify(email, otp);
 			if (result.success) {
 				super.sendSuccess(res, result.data!, result.message);
 			} else {

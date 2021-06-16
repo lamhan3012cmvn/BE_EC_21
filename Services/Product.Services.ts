@@ -160,6 +160,48 @@ export default class ProductService {
       return { message: "An error occurred", success: false };
     }
   };
+
+  public searchProduct = async (body: any): Promise<ReturnServices> => {
+    try {
+      let perPage = ~~body.perPage || 12;
+      let page = ~~body.page || 1;
+      const productInfos: Array<any> = await ProductInfo.find({
+        name: {$regex: "/^" + body.search + "/"},
+        status: defaultTypeStatus.active,
+      })
+        .skip(perPage * page - perPage)
+        .limit(perPage);
+
+      if (!productInfos) {
+        return {
+          message: "Get products successfully",
+          success: true,
+          data: [],
+        };
+      } else {
+        let products = JSON.parse(JSON.stringify(productInfos));
+        for (let i = 0; i < products.length; i++) {
+          let FK_product = await Product.findOne({
+            FK_currentInfo: products[i]._id,
+          });
+          if (!FK_product) {
+          } else {
+            products[i].FK_product = FK_product["_id"];
+          }
+        }
+
+        return {
+          message: "Successfully get product",
+          success: true,
+          data: products,
+        };
+      }
+    } catch (e) {
+      console.log(e);
+      return { message: "An error occurred", success: false };
+    }
+  };
+
   public getAllProduct = async (body: any): Promise<ReturnServices> => {
     try {
       let perPage = ~~body.perPage || 12;

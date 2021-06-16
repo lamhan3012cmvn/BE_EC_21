@@ -361,26 +361,82 @@ export default class UserService {
       //canReceive
       // canDelete
 
-      console.log(resData.length);
-      return {
-        message: "Get all order by Status",
-        success: true,
-        data: resData,
-      };
-    } catch (e) {
-      console.log(e);
-      return { message: "An error occurred", success: false };
-    }
-  };
-  public findCoordinateByAddress = async (
-    idUser: string,
-    receiverIdAddress: string
-  ): Promise<any> => {
-    const user = await User.findById(idUser);
-    if (!user) return null;
-    const findAddress = user.address
-      ? user.address.find((ad) => ad.id === receiverIdAddress)
-      : null;
-    return findAddress;
-  };
+			console.log(resData.length);
+			return {
+				message: 'Get all order by Status',
+				success: true,
+				data: resData
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+	public findCoordinateByAddress=async(idUser:string,receiverIdAddress:string):Promise<any>=>{
+		const user=await User.findById(idUser)
+		if(!user) return null
+		const findAddress=user.address?user.address.find(ad=>ad.id===receiverIdAddress):null
+		return findAddress
+	}
+	public receivePackage=async (idPackage:string):Promise<ReturnServices>=>{
+		try {
+			const _package = await Package.findOne(
+				{
+					_id: idPackage,
+					isAwait: false,
+					status:defaultStatusPackage.onGoing
+				}
+			)
+				if(!_package) 
+			return {
+				message: 'Dont find package receive',
+				success: false,
+			};
+
+			_package.status=defaultStatusPackage.receive
+			_package.historyStatus&&_package.historyStatus.push({createAt:new Date(),title:"Order has been delivered successfully. Thank you for using the service"})
+			await _package.save()
+
+			return {
+				message: 'Dont find package receive',
+				success: false,
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	}
+	public cancelPackage=async (idPackage:string,idUser:string):Promise<ReturnServices>=>{
+		try {
+			const _user=await User.findById(idUser)
+			const _package = await Package.findOne(
+				{
+					_id: idPackage,
+					isAwait: false,
+					status:defaultStatusPackage.onGoing
+				}
+			)
+				if(!_package) 
+			return {
+				message: 'Dont find package receive',
+				success: false,
+			};
+
+			_package.status=defaultStatusPackage.cancel
+			_package.historyStatus&&_package.historyStatus.push({createAt:new Date(),title:"Order has been delivered successfully. Thank you for using the service"})
+			await _package.save()
+			if(_user&&_package.prices)
+			{
+				_user.point=_user.point+(+_package.prices||0)
+				await _user.save()
+			}
+			return {
+				message: 'Dont find package receive',
+				success: false,
+			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	}
 }
