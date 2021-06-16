@@ -311,7 +311,6 @@ export default class MerchantService {
 					success: false,
 				};
 			if (type === 'daily') {
-				const resDaily = new Array(period).fill(0);
 				const startTime = new Date(
 					new Date().setMonth(currentTime.getDay() - period)
 				);
@@ -321,7 +320,7 @@ export default class MerchantService {
 							createdAt: { $gt: startTime },
 							status: defaultStatusPackage.receive,
 							isMerchantSend:true,
-              "FK_Product.FK_Merchant":_merchant._id
+              "FK_Product.FK_Merchant":`${_merchant._id}`
 						}
 					},
 					{
@@ -367,7 +366,7 @@ export default class MerchantService {
 							createdAt: { $gt: startTime },
 							status: defaultStatusPackage.receive,
 							isMerchantSend:true,
-              "FK_Product.FK_Merchant":_merchant._id
+              "FK_Product.FK_Merchant":`${_merchant._id}`
 						}
 					},
 					{

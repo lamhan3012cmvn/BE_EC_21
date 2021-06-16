@@ -40,7 +40,7 @@ export default class TransportServices {
 						$match: {
 							createdAt: { $gt: startTime },
 							status: defaultStatusPackage.receive,
-							FK_Transport: _transport._id
+							FK_Transport: `${_transport._id}`
 						}
 					},
 					{
@@ -79,13 +79,12 @@ export default class TransportServices {
 				const startTime = new Date(
 					new Date().setMonth(currentTime.getMonth() - period)
 				);
-				
 				findPackage = await Package.aggregate([
 					{
 						$match: {
 							createdAt: { $gt: startTime },
 							status: defaultStatusPackage.receive,
-							FK_Transport: _transport._id
+							FK_Transport: `${_transport._id}`
 						}
 					},
 					{
@@ -100,6 +99,7 @@ export default class TransportServices {
 						}
 					}
 				]);
+        console.log(`LHA:  ===> file: Transport.Services.ts ===> line 103 ===> findPackage`, findPackage)
 				let arr=[]
 				if(+period===3)
 					arr=new Array(3).fill(0)
@@ -114,8 +114,9 @@ export default class TransportServices {
 					},
 					{ chart: arr, total: 0 }
 				);
+				const toatl= lineChart.total!==0?lineChart.total:1
 				const resChart = lineChart.chart.map((elem: any) => {
-					return ((elem / lineChart.total!==0?lineChart.total:1) * 100).toFixed(2);
+					return ((elem /toatl) * 100).toFixed(2);
 				});
 
 				return {
