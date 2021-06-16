@@ -134,7 +134,7 @@ export default class TransportServices {
 	): Promise<ReturnServices> => {
 		try {
 			const transport = await Transport.findOne({
-				FK_createUser: idUserTransport
+				FK_createUser: idUserTransport,
 			});
 			if (!transport) {
 				return {
@@ -142,17 +142,16 @@ export default class TransportServices {
 					success: false
 				};
 			}
-			transport.typeSupport.forEach(type => {
-				if (type.title === data.title) {
-					const t = data.type === 'km' ? 'km' : 'kg';
-					const p = data.type === 'kg' ? 'km' : 'kg';
-					type.price[t] = data.price;
-					type.price[p] = '0';
-					type.available = data.available
+
+			for (let index = 0; index < transport.typeSupport.length; index++) {
+				if (transport.typeSupport[index].title === data.title) {
+					transport.typeSupport[index].price[data.type == 'km' ? 'km' : 'kg'] = data.price;
+					transport.typeSupport[index].price[data.type == 'km' ? 'kg' : 'km'] = '0';
+					transport.typeSupport[index].available = data.available
 						? defaultTypeStatus.active
 						: defaultTypeStatus.inActive;
-				}
-			});
+				};
+			}
 
 			await transport.save();
 
