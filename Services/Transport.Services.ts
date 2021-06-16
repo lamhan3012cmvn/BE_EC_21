@@ -16,12 +16,12 @@ export default class TransportServices {
 	constructor() {}
 
 	public packageStatistics = async (
-		Period: number
+		period: number
 	): Promise<ReturnServices> => {
 		try {
 			const currentTime = new Date();
 			const startTime = new Date(
-				new Date().setMonth(currentTime.getMonth() - Period)
+				new Date().setMonth(currentTime.getMonth() - period)
 			);
 			const findPackage = await Package.aggregate([
 				{
@@ -38,17 +38,18 @@ export default class TransportServices {
 				{
 					$group: {
 						_id: { month: '$month' },
-						numberofbookings: { $sum: 1 }
+						orderNumber: { $sum: 1 }
 					}
 				}
 			]);
+			const sortData=findPackage.sort((a,b)=>a._id.month-b._id.month)
 			console.log(findPackage);
 			//canReceive
 			// canDelete
 			return {
-				message: 'Get all order by Status',
+				message: 'Get all order by packageStatistics',
 				success: true,
-				data: findPackage
+				data: sortData
 			};
 		} catch (e) {
 			console.log(e);
