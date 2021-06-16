@@ -73,6 +73,7 @@ export const ProductPath = {
   FILTER_ALL: "FilterAll",
   FILTER_BY_CATEGORY: "FilterByCategory",
   DELETE: "Delete",
+  SEARCH: "Search",
 };
 
 export const PackagePath = {

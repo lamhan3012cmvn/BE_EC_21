@@ -63,6 +63,12 @@ export default class ProductController extends Controller {
       handler: this.handleGetAll,
       localMiddleware: [],
     },
+    {
+      path: `/${ProductPath.SEARCH}`,
+      method: Methods.GET,
+      handler: this.handleSearch,
+      localMiddleware: [],
+    },
   ];
   constructor() {
     super();
@@ -151,6 +157,25 @@ export default class ProductController extends Controller {
       const query = req.query;
       const productService: ProductServices = new ProductServices();
       const result = await productService.getAllProduct(query);
+      if (result.success) {
+        super.sendSuccess(res, result.data, result.message);
+      } else {
+        super.sendError(res, result.message);
+      }
+    } catch {
+      super.sendError(res);
+    }
+  }
+
+  async handleSearch(
+    req: IValidateRequest | any,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const query = req.query;
+      const productService: ProductServices = new ProductServices();
+      const result = await productService.searchProduct(query);
       if (result.success) {
         super.sendSuccess(res, result.data, result.message);
       } else {
