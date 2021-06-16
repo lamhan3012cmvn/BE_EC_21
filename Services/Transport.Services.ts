@@ -16,40 +16,96 @@ export default class TransportServices {
 	constructor() {}
 
 	public packageStatistics = async (
-		period: number
+		period: number,
+		type:string
 	): Promise<ReturnServices> => {
 		try {
 			const currentTime = new Date();
-			const startTime = new Date(
-				new Date().setMonth(currentTime.getMonth() - period)
-			);
-			const findPackage = await Package.aggregate([
-				{
-					$match: {
-						createdAt: { $gt: startTime },
-						// status: defaultStatusPackage.receive
+			let findPackage=[]
+			if(type==="daily"){
+				// dayOfWeek
+				const 
+				startTime = new Date(
+					new Date().setMonth(currentTime.getDay() - period)
+				);
+				findPackage = await Package.aggregate([
+					{
+						$match: {
+							createdAt: { $gt: startTime },
+							// status: defaultStatusPackage.receive
+						}
+					},
+					{
+						$project: {
+							month: { $dayOfWeek: { $toDate: '$createdAt' } },
+						}
+					},
+					{
+						$group: {
+							_id: { month: '$month' },
+							orderNumber: { $sum: 1 }
+						}
 					}
-				},
-				{
-					$project: {
-						month: { $month: { $toDate: '$createdAt' } }
+				]);
+        console.log(`LHA:  ===> file: Transport.Services.ts ===> line 50 ===> findPackage`, findPackage)
+			}
+			else if(type==="month")
+			{
+				const 
+				startTime = new Date(
+					new Date().setMonth(currentTime.getMonth() - period)
+				);
+			 	findPackage = await Package.aggregate([
+					{
+						$match: {
+							createdAt: { $gt: startTime },
+							// status: defaultStatusPackage.receive
+						}
+					},
+					{
+						$project: {
+							month: { $month: { $toDate: '$createdAt' } },
+						}
+					},
+					{
+						$group: {
+							_id: { month: '$month' },
+							orderNumber: { $sum: 1 }
+						}
 					}
-				},
-				{
-					$group: {
-						_id: { month: '$month' },
-						orderNumber: { $sum: 1 }
-					}
-				}
-			]);
+				]);
+          console.log(`LHA:  ===> file: Transport.Services.ts ===> line 77 ===> findPackage`, findPackage)
+			}
+			
 			const sortData=findPackage.sort((a,b)=>a._id.month-b._id.month)
-			console.log(findPackage);
+			const lineChart=sortData.reduce((t,v)=>{
+				const month=v._id.month
+				const findIndex=t.chart.findIndex((current:any)=>{
+					return current.month===month
+				})
+				if(findIndex===-1)
+				{
+					t.chart.push(v.orderNumber)
+				}else{
+					// t.chart[findIndex].orderNumber=t.chart[findIndex].orderNumber+v.orderNumber
+				}
+				t.total=t.total+v.orderNumber
+				return t
+			},{chart:[],total:0})
+			const resChart=lineChart.chart.map((elem:any)=>{
+					return (elem/lineChart.total*100).toFixed(2)
+			})
+
+
+			console.log(resChart)
 			//canReceive
 			// canDelete
 			return {
 				message: 'Get all order by packageStatistics',
 				success: true,
-				data: sortData
+				data: {lineChart:lineChart.chart,
+					pieChart:resChart
+				}
 			};
 		} catch (e) {
 			console.log(e);

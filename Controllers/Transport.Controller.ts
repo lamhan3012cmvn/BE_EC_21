@@ -120,9 +120,9 @@ export default class TransportController extends Controller {
 		next: NextFunction
 	):Promise<void>{
 		try {
-			const {period}=req.query
+			const {period,type}=req.query
 			const transport: TransportServices = new TransportServices();
-			const result = await transport.packageStatistics(period);
+			const result = await transport.packageStatistics(period,type);
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
