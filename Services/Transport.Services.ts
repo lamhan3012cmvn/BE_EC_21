@@ -6,12 +6,7 @@ import {
 	defaultStatusPackage
 } from './../common/constants';
 import { ITransport } from '../Models/Transport/Transport.interface';
-import {
-	Package,
-	Transport,
-	TransportSub,
-	User
-} from '../Models/index';
+import { Package, Transport, TransportSub, User } from '../Models/index';
 import { ReturnServices } from '../Interfaces/Services';
 import TransportSubServices from './TransportSub.Services';
 import UserService from './User.Services';
@@ -20,17 +15,63 @@ import { getDistanceFromLatLonInKm } from '../common/helper';
 export default class TransportServices {
 	constructor() {}
 
-	public getOrderByStatus = async (idUser:string,status:string): Promise<ReturnServices> => {
+	public packageStatistics = async (
+		Period: number
+	): Promise<ReturnServices> => {
 		try {
-			const currentTransport= await Transport.findOne({FK_createUser:idUser,status:defaultTypeStatus.active})
-      if(!currentTransport)
-      return {
-				message: 'Dont fine transport',
-				success: false,
+			const currentTime = new Date();
+			const startTime = new Date(
+				new Date().setMonth(currentTime.getMonth() - Period)
+			);
+			const findPackage = await Package.aggregate([
+				{
+					$match: {
+						createdAt: { $gt: startTime },
+						// status: defaultStatusPackage.receive
+					}
+				},
+				{
+					$project: {
+						month: { $month: { $toDate: '$createdAt' } }
+					}
+				},
+				{
+					$group: {
+						_id: { month: '$month' },
+						numberofbookings: { $sum: 1 }
+					}
+				}
+			]);
+			console.log(findPackage);
+			//canReceive
+			// canDelete
+			return {
+				message: 'Get all order by Status',
+				success: true,
+				data: findPackage
 			};
+		} catch (e) {
+			console.log(e);
+			return { message: 'An error occurred', success: false };
+		}
+	};
+	public getOrderByStatus = async (
+		idUser: string,
+		status: string
+	): Promise<ReturnServices> => {
+		try {
+			const currentTransport = await Transport.findOne({
+				FK_createUser: idUser,
+				status: defaultTypeStatus.active
+			});
+			if (!currentTransport)
+				return {
+					message: 'Dont fine transport',
+					success: false
+				};
 			const packages = await Package.find(
 				{
-					FK_Transport:currentTransport._id,
+					FK_Transport: currentTransport._id,
 					status: status
 				},
 				{
@@ -39,30 +80,31 @@ export default class TransportServices {
 					FK_SubTransport: 0,
 					FK_SubTransportAwait: 0
 				}
-			)
-      
-			const sortPackages=JSON.parse(JSON.stringify(packages)).sort(
-				(a: any, b: any) =>
-				new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 			);
-			let canReceive=false
-			let canDelete=false
-			if(status===defaultStatusPackage.waitForConfirmation)
-			{
-				canDelete=true
+
+			const sortPackages = JSON.parse(JSON.stringify(packages)).sort(
+				(a: any, b: any) =>
+					new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+			);
+			let canReceive = false;
+			let canDelete = false;
+			if (status === defaultStatusPackage.waitForConfirmation) {
+				canDelete = true;
 			}
-			if(status===defaultStatusPackage.onGoing)
-			{
-				canReceive=true
+			if (status === defaultStatusPackage.onGoing) {
+				canReceive = true;
 			}
-			const resData=sortPackages.map((pack:any)=>{
-				console.log("canReceive",canReceive)
-				console.log("not is Await",pack.isAwait)
-				console.log("=======================================")
-				return Object.assign(pack,{canReceive:canReceive&&(!pack.isAwait),canDelete})
-			})
+			const resData = sortPackages.map((pack: any) => {
+				console.log('canReceive', canReceive);
+				console.log('not is Await', pack.isAwait);
+				console.log('=======================================');
+				return Object.assign(pack, {
+					canReceive: canReceive && !pack.isAwait,
+					canDelete
+				});
+			});
 			// 	//canReceive
-				// canDelete
+			// canDelete
 			return {
 				message: 'Get all order by Status',
 				success: true,
@@ -208,7 +250,8 @@ export default class TransportServices {
 						lat: '10.759014',
 						lng: '106.684102'
 					},
-					address: '123 Đ. Nguyễn Văn Cừ, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam'
+					address:
+						'123 Đ. Nguyễn Văn Cừ, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam'
 				},
 				FK_Transport: newTransport._id
 			};
@@ -387,15 +430,14 @@ export default class TransportServices {
 				idSub,
 				{
 					FK_CreateUser: idUser,
-					status:defaultTypeStatus.active
+					status: defaultTypeStatus.active
 				}
 			);
 
 			if (updateTransportServices.success) {
 				const userServices: UserService = new UserService();
 				const updateUserService = await userServices.updateInfo(idUser, {
-					role: defaultRoleAccount.TRANSPORT_SUB,
-					
+					role: defaultRoleAccount.TRANSPORT_SUB
 				});
 				if (updateUserService.success) {
 					return {
@@ -427,34 +469,36 @@ export default class TransportServices {
 	): Promise<ReturnServices> => {
 		try {
 			const transport = await Transport.findOneAndUpdate(
-        { _id: body.idTransport },
-        { status: body.status },
-        { new: true }
-      );
-      if (!transport) {
-        return {
-          message: "Transport does not exists",
-          success: false,
-        };
-      }
-      return {
-        message: "Update transport successfully",
-        success: true,
-        data: transport,
-      };
+				{ _id: body.idTransport },
+				{ status: body.status },
+				{ new: true }
+			);
+			if (!transport) {
+				return {
+					message: 'Transport does not exists',
+					success: false
+				};
+			}
+			return {
+				message: 'Update transport successfully',
+				success: true,
+				data: transport
+			};
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
 		}
 	};
 	public getAdminTransportByStatus = async (
-		status: string,
+		status: string
 	): Promise<ReturnServices> => {
 		try {
-			const transport=await Transport.find({status})
+			const transport = await Transport.find({ status });
 			return {
-				message: 'Get transport Success', success: true,data:transport 
-			}
+				message: 'Get transport Success',
+				success: true,
+				data: transport
+			};
 		} catch (e) {
 			console.log(e);
 			return { message: 'An error occurred', success: false };
@@ -488,7 +532,7 @@ export default class TransportServices {
 	): Promise<ReturnServices> => {
 		try {
 			const transportSub = await TransportSub.find(
-				{status:defaultTypeStatus.active},
+				{ status: defaultTypeStatus.active },
 				{
 					_id: 1,
 					__v: 0,
@@ -562,57 +606,62 @@ export default class TransportServices {
 			);
 
 			const newGroup: any = [];
-			for(let i=0;i<startTransport.length;i++)
-			{
+			for (let i = 0; i < startTransport.length; i++) {
 				const findEndTransport = endTransport.find((ed: any) => {
 					return ed.FK_Transport === startTransport[i].FK_Transport;
 				});
 				if (findEndTransport) {
-					const transport = await Transport.findById(startTransport[i].FK_Transport,{_id:1,name:1,avatar:1,phone:1,typeSupport:1});
-					if (transport)
-						{
-							const location1=startTransport[i].transportSub.location.coordinate
-							const location2=findEndTransport.transportSub.location.coordinate
-							const km = getDistanceFromLatLonInKm(
-								+location1.lat,
-								+location1.lng,
-								+location2.lat,
-								+location2.lng
+					const transport = await Transport.findById(
+						startTransport[i].FK_Transport,
+						{ _id: 1, name: 1, avatar: 1, phone: 1, typeSupport: 1 }
+					);
+					if (transport) {
+						const location1 =
+							startTransport[i].transportSub.location.coordinate;
+						const location2 = findEndTransport.transportSub.location.coordinate;
+						const km = getDistanceFromLatLonInKm(
+							+location1.lat,
+							+location1.lng,
+							+location2.lat,
+							+location2.lng
+						);
+						const typePrice = transport.typeSupport.find((tp: any) => {
+							return tp.title === 'Standard';
+						});
+						if (typePrice) {
+							delete startTransport[i].transportSub.FK_Transport;
+							delete findEndTransport.transportSub.FK_Transport;
+
+							delete startTransport[i].transportSub.FK_CreateUser;
+							delete findEndTransport.transportSub.FK_CreateUser;
+
+							const distance = km.toFixed(0);
+							console.log(
+								`LHA:  ===> file: Transport.Services.ts ===> line 502 ===> distance`,
+								distance
 							);
-							const typePrice = transport.typeSupport.find((tp: any) => {
-								return tp.title === 'Standard';
+							const price = +typePrice.price.km * +distance;
+							console.log(
+								`LHA:  ===> file: Transport.Services.ts ===> line 504 ===> price`,
+								price
+							);
+							newGroup.push({
+								FK_Transport: transport,
+								start: Object.assign(startTransport[i].transportSub, {}),
+								end: Object.assign(findEndTransport.transportSub, {}),
+								price: price === 0 ? '15000' : price.toFixed(2),
+								distance:
+									+distance !== 0
+										? distance
+										: getDistanceFromLatLonInKm(
+												+start.lat,
+												+start.lng,
+												+end.lat,
+												+end.lng
+										  ).toFixed(2)
 							});
-							if(typePrice)
-							{
-								delete startTransport[i].transportSub.FK_Transport
-								delete findEndTransport.transportSub.FK_Transport
-
-								delete startTransport[i].transportSub.FK_CreateUser
-								delete findEndTransport.transportSub.FK_CreateUser
-
-								const distance=km.toFixed(0)
-                console.log(`LHA:  ===> file: Transport.Services.ts ===> line 502 ===> distance`, distance)
-								const price=+typePrice.price.km*+distance
-                console.log(`LHA:  ===> file: Transport.Services.ts ===> line 504 ===> price`, price)
-								newGroup.push({
-									FK_Transport:transport,
-									start: Object.assign( startTransport[i].transportSub,{}),
-									end: Object.assign( findEndTransport.transportSub,{}),
-									price:price===0?"15000":price.toFixed(2),
-									distance:+distance!==0?distance:getDistanceFromLatLonInKm(
-										+start.lat,
-										+start.lng,
-										+end.lat,
-										+end.lng
-									).toFixed(2)
-								});
-							}
-								
-						
 						}
-               
-
-					
+					}
 				}
 			}
 			return {

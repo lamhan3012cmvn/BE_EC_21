@@ -16,7 +16,8 @@ export const TransportPath = {
   UPDATE_PRICE_TYPE:"UpdatePriceType",
   REMOVE_STAFF_TRANSPORT:"RemoveStaffTransport",
   GET_ALL_TRANSPORT_SUB:"GetAllTransportSub",
-  GET_ORDER:"OrderByStatus"
+  GET_ORDER:"OrderByStatus",
+  PACKAGE_STATISTICS:"PackageStatistics"
 };
 
 export const TransportSubPath = {
@@ -24,7 +25,8 @@ export const TransportSubPath = {
   GET_INFO: "GetInfo",
   UPDATE: "Update",
   CHANGE_STATUS:"ChangeStatus",
-  GET_ORDER:"OrderByStatus"
+  GET_ORDER:"OrderByStatus",
+  Cancel_Package:"CancelPackage"
 };
 
 export const TransportSubCityPath = {
@@ -43,7 +45,9 @@ export const MerchantPath = {
   UPDATE: "Update",
   GET_INFO: "GetInfo",
   GET_BY_ID: "GetById",
-  GET_ORDER:"OrderByStatus"
+  GET_ORDER:"OrderByStatus",
+  Cancel_Package:"CancelPackage",
+  Receive_Package:"ReceivePackage"
 };
 
 export const CategoryPath = {
@@ -91,7 +95,9 @@ export const UserPath = {
   DELETE_ADDRESS: "DeleteAddress",
   BUY_POINT: "BuyPoint",
   CALC_PRICE_PACKAGE:"CalcPricePackage",
-  GET_ORDER:"OrderByStatus"
+  GET_ORDER:"OrderByStatus",
+  Cancel_Package:"CancelPackage",
+  Receive_Package:"ReceivePackage"
 };
 
 export const PaymentPath = {

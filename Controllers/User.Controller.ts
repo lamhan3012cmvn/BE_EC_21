@@ -109,12 +109,66 @@ export default class UserController extends Controller {
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([])
 			]
+		},
+		{
+			path: `/${UserPath.Cancel_Package}`,
+			method: Methods.GET,
+			handler: this.handleGetOrderByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([])
+			]
+		},{
+			path: `/${UserPath.Receive_Package}`,
+			method: Methods.GET,
+			handler: this.handleGetOrderByStatus,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([])
+			]
 		}
 	];
 	constructor() {
 		super();
 	}
 
+	async handleCancelPackage(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const idUser = req.value.body.token.data;
+			const {idPackage} = req.query;
+			const userServices: UserServices = new UserServices();
+			const result = await userServices.cancelPackage(idUser, idPackage);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
+	async handleReceivePackage(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const {idPackage} = req.query;
+			const userServices: UserServices = new UserServices();
+			const result = await userServices.receivePackage(idPackage);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
 	async handleUpdate(
 		req: IValidateRequest | any,
 		res: Response,

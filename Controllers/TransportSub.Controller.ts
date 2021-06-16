@@ -59,12 +59,39 @@ export default class TransportSubController extends Controller {
 				RoleInstance.getInstance().isRole([Role.TRANSPORT, Role.TRANSPORT_SUB]),
 			]
 		},
+		{
+			path: `/${TransportSubPath.Cancel_Package}`,
+			method: Methods.GET,
+			handler: this.handleCancelPackage,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT_SUB])
+			]
+		}
 		// handleGetOrderByStatus
 	];
 	constructor() {
 		super();
 	}
-
+	async handleCancelPackage(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	): Promise<void> {
+		try {
+			const idUser = req.value.body.token.data;
+			const {idPackage} = req.query;
+			const transportSub: TransportSubServices = new TransportSubServices();
+			const result = await transportSub.cancelPackage(idPackage);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch {
+			super.sendError(res);
+		}
+	}
 	async handleCreateTransportSub(
 		req: IValidateRequest | any,
 		res: Response,

@@ -98,6 +98,15 @@ export default class TransportController extends Controller {
 				TokenServices.verify,
 				RoleInstance.getInstance().isRole([Role.TRANSPORT,Role.TRANSPORT_SUB])
 			]
+		},
+		{
+			path: `/${TransportPath.PACKAGE_STATISTICS}`,
+			method: Methods.GET,
+			handler: this.handlePackageStatistics,
+			localMiddleware: [
+				TokenServices.verify,
+				RoleInstance.getInstance().isRole([Role.TRANSPORT,Role.TRANSPORT_SUB])
+			]
 		}
 		// getOrderByStatus
 	];
@@ -105,6 +114,24 @@ export default class TransportController extends Controller {
 		super();
 	}
 
+	async	 handlePackageStatistics(
+		req: IValidateRequest | any,
+		res: Response,
+		next: NextFunction
+	):Promise<void>{
+		try {
+			const transport: TransportServices = new TransportServices();
+			const result = await transport.packageStatistics(3);
+			if (result.success) {
+				super.sendSuccess(res, result.data, result.message);
+			} else {
+				super.sendError(res, result.message);
+			}
+		} catch (e) {
+			console.log(e);
+			super.sendError(res);
+		}
+	}
 	async	 handleGetOrderByStatus(
 		req: IValidateRequest | any,
 		res: Response,

@@ -1,7 +1,7 @@
 import { defaultRoleAccount } from './../common/constants';
 import { SendMail } from './SendMail.Services';
 import jwtServices from './Token.Services'
-import { ClientCart, MerchantCart, User } from '../Models/index';
+import { ClientCart, MerchantCart, Transport, User } from '../Models/index';
 import bcrypt from 'bcrypt';
 import {getRandString} from '../common/helper';
 import NotificationServices from "./Notifications.Services";
@@ -133,6 +133,7 @@ export default class AuthService {
 		}
 	};
 	public registerStaff = async (
+		idUserTransport:string,
 		email: string,
 		password: string,
 		phone: string,
@@ -140,6 +141,11 @@ export default class AuthService {
 		image:string
 	): Promise<AuthReturnData> => {
 		try {
+			const transport=await Transport.findOne({FK_createUser:idUserTransport})
+			if(!transport)
+			{
+				return { message: 'Transport already exists', success: false };
+			}
 			const userFromDb = await User.findOne({
 				where: { email: email }
 			});
@@ -157,12 +163,12 @@ export default class AuthService {
 					isVerify: true,
 					image
 				});
-
-
+				transport.FK_Staffs.push(createdUser._id)
+				
 				// const send:SendMail = new SendMail()
 				// send.sendMail(email,"Verify",rdVerify)
 				await createdUser.save();
-
+				await transport.save()
 				return {
 					message: 'Successfully registered',
 					success: true,
