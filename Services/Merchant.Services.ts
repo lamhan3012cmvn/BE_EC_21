@@ -348,7 +348,7 @@ export default class MerchantService {
 					{ chart: new Array(7).fill(0), total: 0 }
 				);
 				const resChart = lineChart.chart.map((elem: any) => {
-					return ((elem / lineChart.total) * 100).toFixed(2);
+					return ((elem / lineChart.total!==0?lineChart.total:1) * 100).toFixed(2);
 				});
 
 				return {
@@ -397,7 +397,7 @@ export default class MerchantService {
 					{ chart: arr, total: 0 }
 				);
 				const resChart = lineChart.chart.map((elem: any) => {
-					return ((elem / lineChart.total) * 100).toFixed(2);
+					return ((elem / lineChart.total!==0?lineChart.total:1) * 100).toFixed(2);
 				});
 
 				return {
