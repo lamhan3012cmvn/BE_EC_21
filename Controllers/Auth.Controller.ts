@@ -69,7 +69,6 @@ export default class AuthController extends Controller {
 			const { email, password }: any = req.value.body;
 			const authService: AuthService = new AuthService();
 			const result = await authService.loginServices(email, password);
-			console.log(result);
 			if (result.success) {
 				super.sendSuccess(
 					res,

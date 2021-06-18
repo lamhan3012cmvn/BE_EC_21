@@ -190,10 +190,6 @@ export default class TransportController extends Controller {
 		try {
 			const idUserTransport = req.value.body.token.data;
 			const idStaff = req.value.body.idStaff;
-			console.log(
-				`LHA:  ===> file: Transport.Controller.ts ===> line 110 ===> req.value.body`,
-				req.value.body
-			);
 			const transportServices: TransportServices = new TransportServices();
 			const result = await transportServices.removeStaffTransport(
 				idUserTransport,
@@ -215,30 +211,17 @@ export default class TransportController extends Controller {
 	): Promise<void> {
 		try {
 			const data = req.value.body;
-			console.log(
-				`LHA:  ===> file: Transport.Controller.ts ===> line 151 ===> data`,
-				data
-			);
+
 			const token = req.value.body.token;
-			console.log(
-				`LHA:  ===> file: Transport.Controller.ts ===> line 153 ===> token`,
-				token
-			);
+
 			delete data.token;
-			console.log(
-				`LHA:  ===> file: Transport.Controller.ts ===> line 172 ===> data`,
-				data
-			);
 
 			const transportServices: TransportServices = new TransportServices();
 			const result = await transportServices.updatePriceTypeTransport(
 				token.data,
 				data
 			);
-			// console.log(
-			// 	`LHA:  ===> file: Transport.Controller.ts ===> line 150 ===> result`,
-			// 	result
-			// );
+
 			if (result.success) {
 				super.sendSuccess(res, result.data, result.message);
 			} else {
@@ -292,7 +275,6 @@ export default class TransportController extends Controller {
 		next: NextFunction
 	): Promise<void> {
 		try {
-			console.log('handleAssign Staff');
 			const { idUser, idSub } = req.value.body;
 			const transportServices: TransportServices = new TransportServices();
 			const result = await transportServices.assignStaff(idSub, idUser);

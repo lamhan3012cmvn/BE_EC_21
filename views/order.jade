@@ -54,7 +54,6 @@ block content
     script(type='text/javascript').
         $("#btnPopup").click(function () {
             var postData = $("#createOrder").serialize();
-            console.log(postData);
             var submitUrl = $("#createOrder").attr("action");
             $.ajax({
                 type: "POST",

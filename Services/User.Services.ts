@@ -378,7 +378,9 @@ export default class UserService {
 		idUser: string,
 		receiverIdAddress: string
 	): Promise<any> => {
+    console.log(`LHA:  ===> file: User.Services.ts ===> line 381 ===> receiverIdAddress`, receiverIdAddress)
 		const user = await User.findById(idUser);
+    console.log(`LHA:  ===> file: User.Services.ts ===> line 382 ===> user`, user)
 		if (!user) return null;
 		const findAddress = user.address
 			? user.address.find(ad => ad.id === receiverIdAddress)
@@ -422,16 +424,12 @@ export default class UserService {
 		idPackage: string,
 		idUser: string
 	): Promise<ReturnServices> => {
-		console.log(
-			`LHA:  ===> file: User.Services.ts ===> line 410 ===> idPackage`,
-			idPackage
-		);
 		try {
 			const _user = await User.findById(idUser);
 			const _package = await Package.findOne({
 				_id: idPackage,
 				isAwait: false,
-				status: defaultStatusPackage.onGoing
+				status: defaultStatusPackage.waitForConfirmation
 			});
 			if (!_package)
 				return {

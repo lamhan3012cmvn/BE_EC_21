@@ -150,7 +150,6 @@ export default class MerchantService {
 				success: false,
 			};
       const idMerchant=currentMerchant._id
-      console.log(`LHA:  ===> file: Merchant.Services.ts ===> line 166 ===> idMerchant`, idMerchant)
       const convertPackage=JSON.parse(JSON.stringify(packages))
       const findMerchant=convertPackage.reduce((t:any,v:any)=>{
         const FK_Product=v.FK_Product
@@ -161,7 +160,6 @@ export default class MerchantService {
         }
         return t
       },[])
-      console.log(`LHA:  ===> file: Merchant.Services.ts ===> line 170 ===> findMerchant`, findMerchant)
 
 
 			const sortPackages=findMerchant.sort(
@@ -179,9 +177,6 @@ export default class MerchantService {
 				canReceive=true
 			}
 			const resData=sortPackages.map((pack:any)=>{
-				console.log("canReceive",canReceive)
-				console.log("not is Await",pack.isAwait)
-				console.log("=======================================")
 				return Object.assign(pack,{canReceive:canReceive&&(!pack.isAwait),canDelete})
 			})
 			// 	//canReceive
@@ -337,7 +332,6 @@ export default class MerchantService {
 				]);
 				const lineChart = findPackage.reduce(
 					(t, v) => {
-						console.log(t.chart)
 						const day = v._id.day;
 						t.chart[day-1]=t.chart[day-1]+v.orderNumber
 						t.total=t.total+v.orderNumber

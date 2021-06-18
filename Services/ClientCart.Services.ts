@@ -11,7 +11,6 @@ export default class ClientCartServices {
 				status: defaultTypeStatus.active,
 				FK_CreateUser: idUser
 			});
-      console.log(`LHA:  ===> file: ClientCart.Services.ts ===> line 14 ===> cart`, cart)
 			if (!cart) {
 				const newCart = new ClientCart({
 					FK_CreateUser: idUser,
@@ -21,7 +20,6 @@ export default class ClientCartServices {
 				return { message: 'Add Product success my cart', success: true, data: {} };
 			}
 			cart.products.push(objData)
-			console.log(`LHA:  ===> file: ClientCart.Services.ts ===> line 34 ===> objData`, objData)
 			await cart.save()
 			return { message: 'Add Product success my cart', success: true, data: {} };
 		} catch (e) {
@@ -96,7 +94,6 @@ export default class ClientCartServices {
 				status: defaultTypeStatus.active,
 				FK_CreateUser: idUser
 			});
-      console.log(`LHA:  ===> file: ClientCart.Services.ts ===> line 14 ===> cart`, cart)
 			if (!cart) {
 				const newCart = new ClientCart({
 					FK_CreateUser: idUser,

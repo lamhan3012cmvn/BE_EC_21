@@ -126,8 +126,6 @@ export default class MerchantCartServices {
 					});
 					if (product) {
 						if (product._id + '' !== idProduct) {
-							console.log(product._id);
-							console.log(idProduct);
 							filterProduct.push(newArr[i]);
 						}
 					}
@@ -235,9 +233,6 @@ export default class MerchantCartServices {
 					};
 				})
 			);
-      // console.log(`LHA:  ===> file: MerchantCart.Services.ts ===> line 238 ===> cartFindProduct`, cartFindProduct)
-
-			// console.log(cartFindProduct.products)
 			cartFindProduct.products = cartFindProduct.products.reduce(
 				(t: any, v: any) => {
 					console.log(t);

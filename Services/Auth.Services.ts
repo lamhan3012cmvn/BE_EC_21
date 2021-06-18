@@ -187,7 +187,6 @@ export default class AuthService {
 			if (!user) {
 				return { message: 'User  not already exists', success: false };
 			} else {
-				console.log(oldPassword)
 				const isPasswordEqual = await bcrypt.compare(
 					oldPassword,
 					user.password

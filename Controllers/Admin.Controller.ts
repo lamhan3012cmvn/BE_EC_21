@@ -371,6 +371,7 @@ export default class AdminController extends Controller {
 			);
 			if (!findAddress) {
 				super.sendError(res, 'Dont find address receiver');
+				return
 			}
 
 			// const merchantService:MerchantServices=new MerchantServices()

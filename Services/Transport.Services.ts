@@ -99,7 +99,6 @@ export default class TransportServices {
 						}
 					}
 				]);
-        console.log(`LHA:  ===> file: Transport.Services.ts ===> line 103 ===> findPackage`, findPackage)
 				let arr=[]
 				if(+period===3)
 					arr=new Array(3).fill(0)
@@ -699,6 +698,9 @@ export default class TransportServices {
 						const location1 =
 							startTransport[i].transportSub.location.coordinate;
 						const location2 = findEndTransport.transportSub.location.coordinate;
+						
+						
+						
 						const km = getDistanceFromLatLonInKm(
 							+location1.lat,
 							+location1.lng,
@@ -740,6 +742,7 @@ export default class TransportServices {
 							});
 						}
 					}
+              
 				}
 			}
 			return {

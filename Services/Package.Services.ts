@@ -68,10 +68,6 @@ export default class PackageService {
       } = body;
 
       const currentTransport = await Transport.findById(FK_Transport);
-      console.log(
-        `LHA:  ===> file: Package.Services.ts ===> line 56 ===> currentTransport`,
-        currentTransport
-      );
       if (!currentTransport)
         return { message: "Don't find transport", success: false };
       // const recipientLocation: ILocation = {

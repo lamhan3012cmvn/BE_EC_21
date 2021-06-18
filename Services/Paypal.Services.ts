@@ -25,12 +25,10 @@ export default class PaypalService {
         : dollar2f >= dollar3f
         ? dollar2f
         : dollar2f + 0.01;
-    console.log(formatTransactions + " PAYPAL");
     const return_url =
       body.typeOrders == defaultTypeOrders.POINT
         ? `?price=${formatTransactions}&idUser=${body.idUser}&point=${body.point}&typeOrders=${body.typeOrders}`
         : `?price=${formatTransactions}&idUser=${body.idUser}&typeOrders=${body.typeOrders}&typeCart=${body.typeCart}&idPackageTemp=${body.idPackageTemp}`;
-    console.log(return_url);
     const create_payment_json = {
       intent: "sale",
       payer: {

@@ -92,11 +92,9 @@ export default class AutomaticPackageServices {
 			awaitPackages.forEach(async currentPackage=>{
 				currentPackage.packages.forEach(async change=>{
 					const prePackage=await Package.findById(change._id)
-          console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 102 ===> prePackage`, prePackage)
 					if(prePackage)
 					{
 						const findTransportSub= await TransportSub.findById(change.FK_SubTransportAwait)
-            console.log(`LHA:  ===> file: AutomaticPackage.Services.ts ===> line 106 ===> findTransportSub`, findTransportSub)
 						prePackage.historyStatus&&prePackage.historyStatus.push({createAt:new Date(),title:`Your order has arrived at transportsub: ${findTransportSub&&findTransportSub.name}`})
 						await prePackage.save()
 					}
