@@ -28,6 +28,7 @@ export default class AuthController extends Controller {
 			method: Methods.POST,
 			handler: this.handleRegisterStaff,
 			localMiddleware: [
+				TokenServices.verify,
 				Validate.body(schemaAuth.registerStaff),
 				RoleInstance.getInstance().isRole([Role.TRANSPORT])
 			]
@@ -117,7 +118,7 @@ export default class AuthController extends Controller {
 			const { email, password, phone, fullName, image }: any = req.value.body;
 			const authService: AuthService = new AuthService();
 			const result = await authService.registerStaff(
-				idUserTransport,
+				idUserTransport.data,
 				email,
 				password,
 				phone,
@@ -129,7 +130,8 @@ export default class AuthController extends Controller {
 			} else {
 				super.sendError(res, result.message);
 			}
-		} catch {
+		} catch(err) {
+			console.log(err)
 			super.sendError(res);
 		}
 	}
